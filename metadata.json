@@ -1,0 +1,7 @@
+{
+  "name": "صفر تا فرهنگیان",
+  "description": "جامع‌ترین اپلیکیشن کنکور سراسری انسانی و دانشگاه فرهنگیان ۱۴۰۶",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

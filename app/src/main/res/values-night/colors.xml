@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Night Mode Adaptive Icon Colors (شب: سیاه یکدست، مدرن و نئونی) -->
+    <color name="icon_bg_start">#FF05070B</color>
+    <color name="icon_bg_end">#FF0F172A</color>
+    <color name="icon_ring_stroke">#FF1E293B</color>
+    <color name="icon_card_surface">#FF111827</color>
+    <color name="icon_fg_primary">#FF38BDF8</color>
+    <color name="icon_fg_secondary">#FF60A5FA</color>
+    <color name="icon_fg_accent">#FFFBBF24</color>
+    <color name="icon_fg_badge">#FF34D399</color>
+    <color name="icon_page_fill">#FF0F172A</color>
+</resources>

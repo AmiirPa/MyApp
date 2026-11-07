@@ -1,0 +1,234 @@
+{
+  "entities": {
+    "LessonProgress": {
+      "title": "LessonProgress",
+      "description": "Tracks a user's completion, notes, bookmark, and mastery score for a zero-to-hero Konkoor lesson.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Owner user UID matching request.auth.uid"
+        },
+        "lessonId": {
+          "type": "string",
+          "description": "Unique identifier of the curriculum lesson"
+        },
+        "subjectId": {
+          "type": "string",
+          "description": "Subject identifier (math, arooz, fonoon, arabic, english, farhangian)"
+        },
+        "isCompleted": {
+          "type": "boolean",
+          "description": "Whether the student has completed this lesson"
+        },
+        "isBookmarked": {
+          "type": "boolean",
+          "description": "Whether the lesson is bookmarked for review"
+        },
+        "userNote": {
+          "type": "string",
+          "description": "Student personal summary note on this lesson"
+        },
+        "masteryPercent": {
+          "type": "integer",
+          "description": "Self-check mastery percentage from 0 to 100"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when record was created (FieldValue.serverTimestamp())"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when record was updated (FieldValue.serverTimestamp())"
+        }
+      },
+      "required": [
+        "userId",
+        "lessonId",
+        "subjectId",
+        "isCompleted",
+        "isBookmarked",
+        "userNote",
+        "masteryPercent",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "FlashcardProgress": {
+      "title": "FlashcardProgress",
+      "description": "Tracks Leitner box level (1..5) and review count for a flashcard.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Owner user UID"
+        },
+        "cardId": {
+          "type": "string",
+          "description": "Flashcard identifier"
+        },
+        "subjectId": {
+          "type": "string",
+          "description": "Subject identifier"
+        },
+        "leitnerBox": {
+          "type": "integer",
+          "description": "Leitner box number from 1 to 5"
+        },
+        "reviewCount": {
+          "type": "integer",
+          "description": "Number of times reviewed"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp via FieldValue.serverTimestamp()"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp via FieldValue.serverTimestamp()"
+        }
+      },
+      "required": [
+        "userId",
+        "cardId",
+        "subjectId",
+        "leitnerBox",
+        "reviewCount",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "StudyTask": {
+      "title": "StudyTask",
+      "description": "A study planner task in the student's Konkoor Ensani & Farhangian 1406 roadmap.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Owner user UID"
+        },
+        "title": {
+          "type": "string",
+          "description": "Task description"
+        },
+        "subjectId": {
+          "type": "string",
+          "description": "Subject ID"
+        },
+        "stageTag": {
+          "type": "string",
+          "description": "Study phase tag"
+        },
+        "durationMinutes": {
+          "type": "integer",
+          "description": "Planned study duration in minutes (1..600)"
+        },
+        "isCompleted": {
+          "type": "boolean",
+          "description": "Completion state"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp via FieldValue.serverTimestamp()"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp via FieldValue.serverTimestamp()"
+        }
+      },
+      "required": [
+        "userId",
+        "title",
+        "subjectId",
+        "stageTag",
+        "durationMinutes",
+        "isCompleted",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "ExamResult": {
+      "title": "ExamResult",
+      "description": "Stores a completed practice quiz result for Konkoor Ensani & Farhangian.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Owner user UID"
+        },
+        "subjectId": {
+          "type": "string",
+          "description": "Subject ID"
+        },
+        "subjectTitle": {
+          "type": "string",
+          "description": "Subject display title"
+        },
+        "correctCount": {
+          "type": "integer",
+          "description": "Number of correct answers"
+        },
+        "totalCount": {
+          "type": "integer",
+          "description": "Total questions in the quiz"
+        },
+        "scorePercent": {
+          "type": "integer",
+          "description": "Percentage score (0..100)"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp via FieldValue.serverTimestamp()"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp via FieldValue.serverTimestamp()"
+        }
+      },
+      "required": [
+        "userId",
+        "subjectId",
+        "subjectTitle",
+        "correctCount",
+        "totalCount",
+        "scorePercent",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{userId}/lesson_progress/{lessonId}": {
+      "schema": {
+        "$ref": "#/entities/LessonProgress"
+      },
+      "description": "Per-user lesson progress and personal notes"
+    },
+    "/users/{userId}/flashcards/{cardId}": {
+      "schema": {
+        "$ref": "#/entities/FlashcardProgress"
+      },
+      "description": "Per-user Leitner flashcard progress"
+    },
+    "/users/{userId}/study_tasks/{taskId}": {
+      "schema": {
+        "$ref": "#/entities/StudyTask"
+      },
+      "description": "Per-user study roadmap and daily tasks"
+    },
+    "/users/{userId}/exam_results/{resultId}": {
+      "schema": {
+        "$ref": "#/entities/ExamResult"
+      },
+      "description": "Per-user practice exam results"
+    }
+  }
+}

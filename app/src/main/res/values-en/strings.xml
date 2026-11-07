@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Sefr Ta Farhangian</string>
+    <string name="app_subtitle">Humanities Konkoor &amp; Farhangian 1406</string>
+    <string name="nav_home">درس‌نامه</string>
+    <string name="nav_roadmap">نقشه راه</string>
+    <string name="nav_lessons">درس‌نامه</string>
+    <string name="nav_lab">کارگاه</string>
+    <string name="nav_counseling">برنامه و مشاوره</string>
+    <string name="nav_practice">سوالات و کنکور</string>
+    <string name="nav_planner">برنامه و فرهنگیان</string>
+    <string name="hero_title">از منفی صفر تا قبولی فرهنگیان ۱۴۰۶</string>
+    <string name="hero_subtitle">آموزش گام‌به‌گام و جامع کنکور انسانی و فرهنگیان</string>
+</resources>
