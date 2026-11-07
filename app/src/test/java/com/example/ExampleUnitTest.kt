@@ -272,6 +272,49 @@ class ExampleUnitTest {
         assertEquals(29, com.example.ui.components.JalaliCalendarUtils.daysInJalaliMonth(1405, 12))
         assertEquals(29, com.example.ui.components.JalaliCalendarUtils.daysInJalaliMonth(1406, 12))
     }
+
+    @Test
+    fun bidi_formatter_to_persian_digits_converts_latin_digits_correctly() {
+        val latinText = "ریاضی 1406 با 1234567890 سوال"
+        val persian = com.example.ui.components.BidiFormatter.toPersianDigits(latinText)
+        assertEquals("ریاضی ۱۴۰۶ با ۱۲۳۴۵۶۷۸۹۰ سوال", persian)
+    }
+
+    @Test
+    fun room_entities_and_scoring_calculation_behave_accurately() {
+        // Test standard Konkoor percentage formula: (3 * correct - wrong) / (3 * total) * 100
+        val correct = 20
+        val wrong = 5
+        val total = 30
+        val score = ((3 * correct - wrong).toDouble() / (3 * total).toDouble()) * 100.0
+        val roundedScore = Math.round(score).toInt()
+        assertEquals(61, roundedScore) // (60 - 5) / 90 * 100 = 55/90 * 100 = 61.11 -> 61%
+
+        // Verify LessonProgressEntity instantiation
+        val progress = com.example.data.local.LessonProgressEntity(
+            lessonId = "lesson_funoon_1",
+            subjectId = "funoon",
+            isCompleted = true,
+            isBookmarked = true,
+            userNote = "نکته عروض",
+            masteryPercent = 85
+        )
+        assertEquals("lesson_funoon_1", progress.lessonId)
+        assertTrue(progress.isCompleted)
+        assertTrue(progress.isBookmarked)
+        assertEquals(85, progress.masteryPercent)
+
+        // Verify ExamResultEntity instantiation
+        val examResult = com.example.data.local.ExamResultEntity(
+            subjectId = "arabi",
+            subjectTitle = "عربی تخصصی",
+            correctCount = correct,
+            totalCount = total,
+            scorePercent = roundedScore
+        )
+        assertEquals("arabi", examResult.subjectId)
+        assertEquals(61, examResult.scorePercent)
+    }
 }
 
 

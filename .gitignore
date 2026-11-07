@@ -24,3 +24,7 @@ public/
 public/assets/
 /public/
 /public/assets/
+
+# AI Studio workspace internals
+.aistudio/
+/.aistudio/

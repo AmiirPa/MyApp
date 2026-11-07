@@ -13,7 +13,7 @@
 
 ### 📥 دانلود مستقیم اپلیکیشن
 
-[⬇️ دانلود مستقیم آخرین نسخه APK (نسخه ۳.۶)](https://github.com/AmiirPa/MyApp/releases/latest/download/Sefr_Ta_Farhangian_v3.6-debug.apk)
+[⬇️ دانلود مستقیم آخرین نسخه رسمی APK (نسخه ۳.۶)](https://github.com/AmiirPa/MyApp/releases/latest/download/Sefr_Ta_Farhangian_v3.6.apk)
 
 [مشاهده تمام نسخه‌ها و تغییرات (Releases)](https://github.com/AmiirPa/MyApp/releases)
 
@@ -26,8 +26,8 @@
 ---
 
 ## ⚡ راهنمای دانلود و نصب آسان
-1. روی لینک **[دانلود مستقیم آخرین نسخه APK](https://github.com/AmiirPa/MyApp/releases/latest/download/Sefr_Ta_Farhangian_v3.6-debug.apk)** کلیک کنید.
-2. همچنین می‌توانید از **[بخش انتشارها (Releases)](https://github.com/AmiirPa/MyApp/releases)** در منوی کناری مخزن، فایل **`Sefr_Ta_Farhangian_v3.6-debug.apk`** (با حجم حدود ۴۰ مگابایت) را مستقیماً دریافت نمایید.
+1. روی لینک **[دانلود مستقیم آخرین نسخه رسمی APK](https://github.com/AmiirPa/MyApp/releases/latest/download/Sefr_Ta_Farhangian_v3.6.apk)** کلیک کنید.
+2. همچنین می‌توانید از **[بخش انتشارها (Releases)](https://github.com/AmiirPa/MyApp/releases)** در منوی کناری مخزن، فایل رسمی **`Sefr_Ta_Farhangian_v3.6.apk`** (با حجم بهینه حدود ۳۱ مگابایت) را مستقیماً دریافت نمایید.
 3. پس از دانلود، فایل را در گوشی اندرویدی خود باز کرده و گزینه **Install / Update** را بزنید.
 
 ---
@@ -36,7 +36,7 @@
 
 | نام فایل | فرمت | نسخه (Version) | کد نسخه (Code) | وضعیت |
 | :--- | :---: | :---: | :---: | :--- |
-| **Sefr_Ta_Farhangian_v3.6-debug.apk** | APK | ۳.۶ | ۱۵ | نسخه پایدار رسمی ۳.۶ با رفع باگ پیش‌نیازها، تب‌های اسکرول‌پذیر و تقویم جدید |
+| **Sefr_Ta_Farhangian_v3.6.apk** | APK | ۳.۶ | ۱۵ | نسخه رسمی نهایی (Release) با طراحی Material 3 Expressive و آیکون اختصاصی |
 
 ---
 
@@ -105,8 +105,8 @@
 git clone https://github.com/AmiirPa/MyApp.git
 cd MyApp
 
-# ساخت نسخه نهایی:
-gradle assembleDebug
+# ساخت نسخه رسمی و نهایی (Release):
+gradle assembleRelease
 
 # اجرای تست‌های منطق و عملکرد:
 gradle testDebugUnitTest

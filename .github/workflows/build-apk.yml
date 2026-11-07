@@ -9,7 +9,6 @@ permissions:
   contents: write
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   JAVA_TOOL_OPTIONS: "-Djava.awt.headless=true"
 
 jobs:
@@ -33,9 +32,9 @@ jobs:
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
           $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-36" "build-tools;36.0.0" || true
 
-      - name: Prepare debug keystore
+      - name: Prepare keystore
         run: |
-          if [ ! -f debug.keystore ] && [ -f debug.keystore.base64 ]; then
+          if [ -f debug.keystore.base64 ]; then
             base64 -d debug.keystore.base64 > debug.keystore
           elif [ ! -f debug.keystore ]; then
             keytool -genkeypair -v -keystore debug.keystore \
@@ -43,34 +42,35 @@ jobs:
             -dname "CN=Android Debug,O=Android,C=US"
           fi
 
-      - name: Run Unit Tests & Build Debug APK
+      - name: Run Unit Tests & Build Official Release APK
         run: |
           chmod +x gradlew
-          ./gradlew testDebugUnitTest assembleDebug --no-daemon -Djava.awt.headless=true -Dorg.gradle.jvmargs="-Xmx3072m -XX:MaxMetaspaceSize=1024m -Djava.awt.headless=true"
+          ./gradlew testDebugUnitTest assembleRelease --no-daemon -Djava.awt.headless=true -Dorg.gradle.jvmargs="-Xmx3072m -XX:MaxMetaspaceSize=1024m -Djava.awt.headless=true"
+          cp app/build/outputs/apk/release/Sefr_Ta_Farhangian_v3.6-release.apk app/build/outputs/apk/release/Sefr_Ta_Farhangian_v3.6.apk
 
-      - name: Upload Debug APK
+      - name: Upload Official Release APK
         uses: actions/upload-artifact@v4
         with:
-          name: Sefr_Ta_Farhangian_v3.6_Debug
-          path: app/build/outputs/apk/debug/Sefr_Ta_Farhangian_v3.6-debug.apk
+          name: Sefr_Ta_Farhangian_v3.6
+          path: app/build/outputs/apk/release/Sefr_Ta_Farhangian_v3.6.apk
           if-no-files-found: error
           retention-days: 90
 
-      # Publish a normal GitHub Release only from main or a manual run.
-      # Other branches still get build artifacts, but do not publish releases.
-      - name: Publish APK to GitHub Releases
+      # Publish official GitHub Release on branch pushes or manual runs
+      - name: Publish Official APK to GitHub Releases
         uses: softprops/action-gh-release@v2
-        if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+        if: github.event_name != 'pull_request'
         with:
           tag_name: v3.6-b${{ github.run_number }}
-          name: "نسخه ۳.۶ صفر تا فرهنگیان (بیلد ${{ github.run_number }})"
+          name: "نسخه رسمی ۳.۶ صفر تا فرهنگیان (بیلد ${{ github.run_number }})"
           body: |
-            فایل نصب اندروید اپلیکیشن صفر تا فرهنگیان و کنکور انسانی ۱۴۰۶.
+            فایل نصب رسمی و نهایی اپلیکیشن صفر تا فرهنگیان و کنکور انسانی ۱۴۰۶.
 
-            - خروجی APK پایدار نسخه ۳.۶
+            - خروجی APK نسخه رسمی (Release)
+            - نام فایل: Sefr_Ta_Farhangian_v3.6.apk
             - ساخته‌شده پس از اجرای موفق ۱۰۰٪ تست‌های واحد
-            - اصلاح کامل عناوین، تب‌های اسکرول‌پذیر منابع، تقویم و رادار ارتقای تراز
-          files: app/build/outputs/apk/debug/Sefr_Ta_Farhangian_v3.6-debug.apk
+            - طراحی Material 3 Expressive و آیکون اختصاصی جدید
+          files: app/build/outputs/apk/release/Sefr_Ta_Farhangian_v3.6.apk
           prerelease: false
           make_latest: true
         env:

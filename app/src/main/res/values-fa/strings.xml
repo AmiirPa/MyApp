@@ -2,13 +2,33 @@
 <resources>
     <string name="app_name">صفر تا فرهنگیان</string>
     <string name="app_subtitle">کنکور انسانی و آزمون اختصاصی فرهنگیان ۱۴۰۶</string>
-    <string name="nav_home">درس‌نامه</string>
+    <string name="nav_home">خانه</string>
+    <string name="nav_lessons">درس‌ها</string>
+    <string name="nav_planner">برنامه</string>
+    <string name="nav_exams">آزمون‌ها</string>
+    <string name="nav_more">بیشتر</string>
     <string name="nav_roadmap">نقشه راه</string>
-    <string name="nav_lessons">درس‌نامه</string>
     <string name="nav_lab">کارگاه</string>
-    <string name="nav_counseling">برنامه و مشاوره</string>
-    <string name="nav_practice">سوالات و کنکور</string>
-    <string name="nav_planner">برنامه و فرهنگیان</string>
+    <string name="nav_counseling">مشاوره</string>
+    <string name="nav_practice">سوالات</string>
+    <string name="nav_settings">تنظیمات</string>
     <string name="hero_title">از منفی صفر تا قبولی فرهنگیان ۱۴۰۶</string>
     <string name="hero_subtitle">آموزش گام‌به‌گام و جامع کنکور انسانی و فرهنگیان</string>
+    <string name="btn_back">بازگشت</string>
+    <string name="btn_save">ذخیره</string>
+    <string name="btn_cancel">انصراف</string>
+    <string name="btn_reset">بازنشانی</string>
+    <string name="btn_search">جستجو</string>
+    <string name="btn_read">مطالعه</string>
+    <string name="btn_download">دانلود</string>
+    <string name="settings_title">تنظیمات</string>
+    <string name="settings_appearance">ظاهر و تایپوگرافی</string>
+    <string name="settings_language">زبان برنامه</string>
+    <string name="settings_font_weight">ضخامت قلم</string>
+    <string name="settings_font_size">اندازه متن</string>
+    <string name="settings_theme_palette">پالت رنگی</string>
+    <string name="settings_highlight">شدت هایلایت</string>
+    <string name="settings_persian_digits">ارقام فارسی</string>
+    <string name="settings_dynamic_color">رنگ پویا (Material You)</string>
+    <string name="default_web_client_id" translatable="false">477717264566-vud2f2e2jah6bpci6ad8p7ktsamhm84n.apps.googleusercontent.com</string>
 </resources>
