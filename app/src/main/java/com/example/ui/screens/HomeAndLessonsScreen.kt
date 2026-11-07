@@ -54,6 +54,7 @@ import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.RadioButtonUnchecked
 import androidx.compose.material.icons.filled.AltRoute
 import androidx.compose.material.icons.filled.AutoStories
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.MusicNote
@@ -61,6 +62,9 @@ import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material.icons.filled.Quiz
 import androidx.compose.material.icons.filled.Science
+import androidx.compose.material.icons.filled.TrendingUp
+import com.example.ui.theme.SubjectDesignSystem
+import com.example.ui.theme.SubjectDesignToken
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.ui.res.painterResource
@@ -743,12 +747,20 @@ fun HomeDashboardScreen(
         studentDisplayName?.substringBefore("@")?.takeIf { it.isNotBlank() } ?: "دانش‌آموز عزیز"
     }
 
+    val currentSubjectId = remember(nextLesson) {
+        nextLesson?.normalizedSubjectId() ?: "fonoon"
+    }
+
     StudyFirstHomeScreen(
         dateText = BidiFormatter.applyPreferredDigits("برنامه مطالعاتی کنکور انسانی و فرهنگیان ۱۴۰۶"),
         studentName = cleanStudentName,
         currentSubject = BidiFormatter.applyPreferredDigits(currentSubjectTitle),
         currentLesson = BidiFormatter.applyPreferredDigits(currentLessonTitle),
+        currentSubjectId = currentSubjectId,
         dailyProgress = dailyProgressPct,
+        completedLessonsCount = uiState.completedLessonsCount,
+        totalLessonsCount = uiState.totalLessonsCount,
+        masteredCardsCount = uiState.masteredFlashcardsCount,
         subjects = studySubjects,
         onStartStudy = {
             if (nextLesson != null) {
@@ -779,17 +791,28 @@ fun HomeDashboardScreen(
         },
         onOpenMore = {
             onNavigateTab(AppTab.COUNSELING)
+        },
+        onOpenLab = {
+            onNavigateTab(AppTab.LAB)
+        },
+        onOpenRoadmap = {
+            onNavigateTab(AppTab.ROADMAP)
         }
     )
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun StudyFirstHomeScreen(
     dateText: String,
     studentName: String,
     currentSubject: String,
     currentLesson: String,
+    currentSubjectId: String = "fonoon",
     dailyProgress: Int,
+    completedLessonsCount: Int = 0,
+    totalLessonsCount: Int = 0,
+    masteredCardsCount: Int = 0,
     subjects: List<StudySubjectUi>,
     onStartStudy: () -> Unit,
     onContinueStudy: () -> Unit,
@@ -797,8 +820,17 @@ fun StudyFirstHomeScreen(
     onOpenAllSubjects: () -> Unit = {},
     onOpenPlanner: () -> Unit,
     onOpenTests: () -> Unit,
-    onOpenMore: () -> Unit
+    onOpenMore: () -> Unit,
+    onOpenLab: () -> Unit = onOpenMore,
+    onOpenRoadmap: () -> Unit = onOpenMore
 ) {
+    val isDark = androidx.compose.foundation.isSystemInDarkTheme()
+    val themeController = LocalAppThemeController.current
+    val effectiveDark = themeController.resolveIsDarkTheme(isDark)
+    val subjectToken = remember(currentSubjectId, effectiveDark) {
+        SubjectDesignSystem.getToken(currentSubjectId, effectiveDark)
+    }
+
     androidx.compose.runtime.CompositionLocalProvider(
         androidx.compose.ui.platform.LocalLayoutDirection provides androidx.compose.ui.unit.LayoutDirection.Rtl
     ) {
@@ -806,101 +838,68 @@ fun StudyFirstHomeScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .testTag("home_dashboard_list"),
-            color = HomeBackground
+            color = MaterialTheme.colorScheme.background
         ) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(
-                    horizontal = 20.dp,
-                    vertical = 24.dp
+                    horizontal = 18.dp,
+                    vertical = 20.dp
                 ),
-                verticalArrangement = Arrangement.spacedBy(22.dp)
+                verticalArrangement = Arrangement.spacedBy(18.dp)
             ) {
-                item(key = "home_header") {
-                    Column(
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = "سلام، $studentName",
-                            fontSize = 25.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = HomeText
-                        )
-                        Spacer(Modifier.height(5.dp))
-                        Text(
-                            text = dateText,
-                            fontSize = 13.sp,
-                            color = HomeMuted
-                        )
-                    }
+                // 1. Smart Expressive Header with Monogram and Goal Badge
+                item(key = "home_expressive_header") {
+                    ExpressiveSmartHeader(
+                        studentName = studentName,
+                        dateText = dateText
+                    )
                 }
 
-                item(key = "home_today_study_card") {
-                    TodayStudyCard(
-                        subject = currentSubject,
-                        lesson = currentLesson,
+                // 2. Hero Study Card (کارت ویژه هوشمند مطالعه امروز)
+                item(key = "home_hero_study_card") {
+                    ExpressiveHeroStudyCard(
+                        token = subjectToken,
+                        subjectTitle = currentSubject,
+                        lessonTitle = currentLesson,
                         onStart = onStartStudy
                     )
                 }
 
+                // 3. Continue Study (ادامه مطالعه آخرین مبحث)
                 item(key = "home_continue_study") {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        Text(
-                            text = "ادامه مطالعه",
-                            fontSize = 19.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = HomeText
-                        )
-
-                        Surface(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(18.dp))
-                                .clickable(onClick = onContinueStudy)
-                                .testTag("continue_study_card"),
-                            shape = RoundedCornerShape(18.dp),
-                            color = HomeSurface(),
-                            border = BorderStroke(
-                                1.dp,
-                                HomeBorder
-                            )
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(18.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Column(
-                                    modifier = Modifier.weight(1f)
-                                ) {
-                                    Text(
-                                        text = currentSubject,
-                                        color = HomeText,
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 15.sp
-                                    )
-                                    Spacer(Modifier.height(5.dp))
-                                    Text(
-                                        text = currentLesson,
-                                        color = HomeMuted,
-                                        fontSize = 13.sp
-                                    )
-                                }
-
-                                Text(
-                                    text = "ادامه ←",
-                                    color = HomePrimary,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 13.sp
-                                )
-                            }
-                        }
-                    }
+                    ExpressiveContinueStudyCard(
+                        subject = currentSubject,
+                        lesson = currentLesson,
+                        token = subjectToken,
+                        onContinue = onContinueStudy
+                    )
                 }
 
-                item(key = "home_my_subjects") {
+                // 4. Academic Progress Dashboard (رادار پیشرفت تحصیلی)
+                item(key = "home_academic_progress") {
+                    ExpressiveAcademicProgressDashboard(
+                        dailyProgress = dailyProgress,
+                        completedLessons = completedLessonsCount,
+                        totalLessons = totalLessonsCount,
+                        masteredCards = masteredCardsCount
+                    )
+                }
+
+                // 5. Expressive Quick Actions (میانبرهای سریع آموزشی)
+                item(key = "home_quick_actions") {
+                    ExpressiveQuickToolsGrid(
+                        onOpenPlanner = onOpenPlanner,
+                        onOpenTests = onOpenTests,
+                        onOpenLab = onOpenLab,
+                        onOpenRoadmap = onOpenRoadmap
+                    )
+                }
+
+                // 6. Expressive Subject Cards (کارت‌های دروس با رنگ و هویت اختصاصی)
+                item(key = "home_my_subjects_section") {
                     Column(
+                        modifier = Modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         Row(
@@ -908,141 +907,489 @@ fun StudyFirstHomeScreen(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(
-                                text = "درسهای من",
-                                fontSize = 19.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = HomeText
-                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(4.dp, 18.dp)
+                                        .clip(RoundedCornerShape(2.dp))
+                                        .background(MaterialTheme.colorScheme.primary)
+                                )
+                                Text(
+                                    text = "درس‌های من (۲۳ کتاب کنکور و نهایی)",
+                                    fontSize = 17.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onBackground
+                                )
+                            }
 
-                            Text(
-                                text = "همه دروس",
-                                color = HomePrimary,
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 13.sp,
+                            Surface(
                                 modifier = Modifier
-                                    .clip(RoundedCornerShape(8.dp))
-                                    .clickable(onClick = onOpenAllSubjects)
-                                    .padding(horizontal = 8.dp, vertical = 4.dp)
-                            )
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .clickable(onClick = onOpenAllSubjects),
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                shape = RoundedCornerShape(10.dp)
+                            ) {
+                                Text(
+                                    text = "مشاهده همه دروس ←",
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 12.sp,
+                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                                )
+                            }
                         }
 
                         if (subjects.isEmpty()) {
                             Surface(
                                 modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(16.dp),
-                                color = HomeSurface(),
-                                border = BorderStroke(1.dp, HomeBorder)
+                                shape = RoundedCornerShape(18.dp),
+                                color = MaterialTheme.colorScheme.surface,
+                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
                             ) {
                                 Text(
-                                    text = "در حال آماده‌سازی فهرست دروس...",
-                                    color = HomeMuted,
+                                    text = "در حال بارگذاری هوشمند سرفصل‌های درسی...",
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     fontSize = 13.sp,
-                                    modifier = Modifier.padding(18.dp)
+                                    modifier = Modifier.padding(20.dp)
                                 )
                             }
                         } else {
                             subjects.forEach { subject ->
-                                SubjectListItem(
+                                ExpressiveSubjectCard(
                                     subject = subject,
-                                    onClick = {
-                                        onOpenSubject(subject)
-                                    }
+                                    isDark = effectiveDark,
+                                    onClick = { onOpenSubject(subject) }
                                 )
                             }
                         }
                     }
                 }
-
-                item(key = "home_daily_progress") {
-                    DailyProgressCard(
-                        progress = dailyProgress
-                    )
-                }
-
-                item(key = "home_quick_actions") {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        QuickAction(
-                            modifier = Modifier.weight(1f),
-                            title = "برنامهریزی",
-                            onClick = onOpenPlanner
-                        )
-                        QuickAction(
-                            modifier = Modifier.weight(1f),
-                            title = "آزمونها",
-                            onClick = onOpenTests
-                        )
-                        QuickAction(
-                            modifier = Modifier.weight(1f),
-                            title = "بیشتر",
-                            onClick = onOpenMore
-                        )
-                    }
-                }
             }
         }
     }
 }
 
 @Composable
-private fun TodayStudyCard(
-    subject: String,
-    lesson: String,
+private fun ExpressiveSmartHeader(
+    studentName: String,
+    dateText: String
+) {
+    val initialChar = remember(studentName) {
+        studentName.trim().firstOrNull()?.toString() ?: "ف"
+    }
+
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = MaterialTheme.colorScheme.surface,
+        shape = RoundedCornerShape(22.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f))
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(CircleShape)
+                    .background(
+                        Brush.linearGradient(
+                            listOf(
+                                MaterialTheme.colorScheme.primary,
+                                MaterialTheme.colorScheme.tertiary
+                            )
+                        )
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = initialChar,
+                    color = Color.White,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(3.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Text(
+                        text = "سلام، $studentName",
+                        fontSize = 19.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = MaterialTheme.colorScheme.secondaryContainer
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(3.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Bolt,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                                modifier = Modifier.size(13.dp)
+                            )
+                            Text(
+                                text = "آماده قبولی",
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer
+                            )
+                        }
+                    }
+                }
+                Text(
+                    text = dateText,
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ExpressiveHeroStudyCard(
+    token: SubjectDesignToken,
+    subjectTitle: String,
+    lessonTitle: String,
     onStart: () -> Unit
 ) {
-    val containerBg = MaterialTheme.colorScheme.primaryContainer
-    val onContainer = MaterialTheme.colorScheme.onPrimaryContainer
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("home_hero_study_card"),
+        shape = RoundedCornerShape(26.dp),
         colors = CardDefaults.cardColors(
-            containerColor = containerBg
+            containerColor = token.containerColor
         ),
-        border = BorderStroke(1.dp, HomePrimary.copy(alpha = 0.28f)),
-        elevation = CardDefaults.cardElevation(0.dp)
+        border = BorderStroke(1.5.dp, token.accentColor.copy(alpha = 0.35f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
-            modifier = Modifier.padding(22.dp),
-            verticalArrangement = Arrangement.spacedBy(13.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            Text(
-                text = "برنامه مطالعه امروز",
-                color = onContainer.copy(alpha = 0.8f),
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Medium
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    color = token.accentColor.copy(alpha = 0.15f)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Icon(
+                            imageVector = token.icon,
+                            contentDescription = null,
+                            tint = token.onContainerColor,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Text(
+                            text = subjectTitle,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = token.onContainerColor
+                        )
+                    }
+                }
 
-            Text(
-                text = subject,
-                color = onContainer,
-                fontSize = 23.sp,
-                fontWeight = FontWeight.Bold
-            )
+                Surface(
+                    shape = RoundedCornerShape(10.dp),
+                    color = token.accentColor,
+                    contentColor = Color.White
+                ) {
+                    Text(
+                        text = "پیشنهاد مطالعه هوشمند",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                    )
+                }
+            }
 
-            Text(
-                text = lesson,
-                color = onContainer.copy(alpha = 0.9f),
-                fontSize = 14.sp
-            )
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(
+                    text = lessonTitle,
+                    fontSize = 19.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = token.onContainerColor,
+                    lineHeight = 27.sp,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = "بر اساس سرفصل رسمی کنکور و بودجه‌بندی امتحانات نهایی",
+                    fontSize = 12.sp,
+                    color = token.onContainerColor.copy(alpha = 0.75f)
+                )
+            }
 
             Button(
                 onClick = onStart,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .height(50.dp)
                     .testTag("start_study_btn"),
-                shape = RoundedCornerShape(14.dp),
+                shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = HomePrimary,
-                    contentColor = HomeOnPrimary
+                    containerColor = token.accentColor,
+                    contentColor = Color.White
                 )
             ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.PlayArrow,
+                        contentDescription = null,
+                        modifier = Modifier.size(22.dp)
+                    )
+                    Text(
+                        text = "شروع مطالعه گام‌به‌گام",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ExpressiveContinueStudyCard(
+    subject: String,
+    lesson: String,
+    token: SubjectDesignToken,
+    onContinue: () -> Unit
+) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(20.dp))
+            .clickable(onClick = onContinue)
+            .testTag("continue_study_card"),
+        shape = RoundedCornerShape(20.dp),
+        color = MaterialTheme.colorScheme.surface,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(44.dp)
+                    .clip(RoundedCornerShape(14.dp))
+                    .background(token.containerColor),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = token.icon,
+                    contentDescription = null,
+                    tint = token.onContainerColor,
+                    modifier = Modifier.size(22.dp)
+                )
+            }
+
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
                 Text(
-                    text = "شروع مطالعه",
+                    text = "آخرین درس مطالعه‌شده",
+                    fontSize = 11.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontWeight = FontWeight.Medium
+                )
+                Text(
+                    text = lesson,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(vertical = 5.dp)
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = subject,
+                    fontSize = 12.sp,
+                    color = token.accentColor,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+
+            Surface(
+                shape = RoundedCornerShape(10.dp),
+                color = MaterialTheme.colorScheme.primaryContainer
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(
+                        text = "ادامه",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                        modifier = Modifier.size(14.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ExpressiveAcademicProgressDashboard(
+    dailyProgress: Int,
+    completedLessons: Int,
+    totalLessons: Int,
+    masteredCards: Int
+) {
+    val pctFa = BidiFormatter.applyPreferredDigits(dailyProgress.coerceIn(0, 100).toString())
+    val completedFa = BidiFormatter.applyPreferredDigits(completedLessons.toString())
+    val totalFa = BidiFormatter.applyPreferredDigits(totalLessons.toString())
+    val masteredFa = BidiFormatter.applyPreferredDigits(masteredCards.toString())
+
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("home_academic_progress_card"),
+        shape = RoundedCornerShape(22.dp),
+        color = MaterialTheme.colorScheme.surface,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(18.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.TrendingUp,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Text(
+                        text = "رادار ارتقای تراز و تسلط",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+
+                Surface(
+                    shape = RoundedCornerShape(8.dp),
+                    color = MaterialTheme.colorScheme.primaryContainer
+                ) {
+                    Text(
+                        text = "$pctFa٪ پیشرفت روزانه",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                    )
+                }
+            }
+
+            val safeProgress = dailyProgress.coerceIn(0, 100) / 100f
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(8.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(safeProgress)
+                        .fillMaxSize()
+                        .clip(CircleShape)
+                        .background(
+                            Brush.horizontalGradient(
+                                listOf(
+                                    MaterialTheme.colorScheme.primary,
+                                    MaterialTheme.colorScheme.tertiary
+                                )
+                            )
+                        )
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                StatPillar(
+                    title = "مباحث تکمیل",
+                    value = "$completedFa از $totalFa"
+                )
+                Box(
+                    modifier = Modifier
+                        .width(1.dp)
+                        .height(34.dp)
+                        .background(MaterialTheme.colorScheme.outlineVariant)
+                )
+                StatPillar(
+                    title = "فلش‌کارت مسلط",
+                    value = "$masteredFa کارت"
+                )
+                Box(
+                    modifier = Modifier
+                        .width(1.dp)
+                        .height(34.dp)
+                        .background(MaterialTheme.colorScheme.outlineVariant)
+                )
+                StatPillar(
+                    title = "تراز هدف",
+                    value = "+۸۰۰۰"
                 )
             }
         }
@@ -1050,143 +1397,293 @@ private fun TodayStudyCard(
 }
 
 @Composable
-private fun SubjectListItem(
-    subject: StudySubjectUi,
+private fun StatPillar(title: String, value: String) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(2.dp)
+    ) {
+        Text(
+            text = value,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        Text(
+            text = title,
+            fontSize = 11.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+@Composable
+private fun ExpressiveQuickToolsGrid(
+    onOpenPlanner: () -> Unit,
+    onOpenTests: () -> Unit,
+    onOpenLab: () -> Unit,
+    onOpenRoadmap: () -> Unit
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        Text(
+            text = "جعبه‌ابزار هوشمند داوطلب",
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            ExpressiveToolCard(
+                modifier = Modifier.weight(1f),
+                title = "برنامه‌ریزی",
+                subtitle = "تقویم و وظایف",
+                icon = Icons.Default.CalendarMonth,
+                tint = Color(0xFF006A60),
+                onClick = onOpenPlanner
+            )
+            ExpressiveToolCard(
+                modifier = Modifier.weight(1f),
+                title = "آزمون‌ساز",
+                subtitle = "تست و لایتنر",
+                icon = Icons.Default.Quiz,
+                tint = Color(0xFF886820),
+                onClick = onOpenTests
+            )
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            ExpressiveToolCard(
+                modifier = Modifier.weight(1f),
+                title = "آزمایشگاه",
+                subtitle = "تقطیع عروضی",
+                icon = Icons.Default.Science,
+                tint = Color(0xFF7250A1),
+                onClick = onOpenLab
+            )
+            ExpressiveToolCard(
+                modifier = Modifier.weight(1f),
+                title = "نقشه راه",
+                subtitle = "مسیر تا کنکور",
+                icon = Icons.Default.AltRoute,
+                tint = Color(0xFF243B63),
+                onClick = onOpenRoadmap
+            )
+        }
+    }
+}
+
+@Composable
+private fun ExpressiveToolCard(
+    modifier: Modifier = Modifier,
+    title: String,
+    subtitle: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    tint: Color,
     onClick: () -> Unit
 ) {
+    Surface(
+        modifier = modifier
+            .clip(RoundedCornerShape(18.dp))
+            .clickable(onClick = onClick)
+            .height(82.dp),
+        shape = RoundedCornerShape(18.dp),
+        color = MaterialTheme.colorScheme.surface,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 12.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(42.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(tint.copy(alpha = 0.14f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = tint,
+                    modifier = Modifier.size(22.dp)
+                )
+            }
+
+            Column(
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = title,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1
+                )
+                Text(
+                    text = subtitle,
+                    fontSize = 10.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ExpressiveSubjectCard(
+    subject: StudySubjectUi,
+    isDark: Boolean,
+    onClick: () -> Unit
+) {
+    val token = remember(subject.id, isDark) {
+        SubjectDesignSystem.getToken(subject.id, isDark)
+    }
     val pctFa = BidiFormatter.applyPreferredDigits("${subject.progress.coerceIn(0, 100)}٪")
+
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(20.dp))
             .clickable(onClick = onClick)
             .testTag("home_subject_card_${subject.id}"),
-        shape = RoundedCornerShape(16.dp),
-        color = HomeSurface(),
-        border = BorderStroke(
-            1.dp,
-            HomeBorder
-        )
+        shape = RoundedCornerShape(20.dp),
+        color = MaterialTheme.colorScheme.surface,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
     ) {
         Column(
-            modifier = Modifier.padding(15.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
+                Box(
+                    modifier = Modifier
+                        .size(44.dp)
+                        .clip(RoundedCornerShape(14.dp))
+                        .background(token.containerColor),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = token.icon,
+                        contentDescription = null,
+                        tint = token.onContainerColor,
+                        modifier = Modifier.size(22.dp)
+                    )
+                }
+
                 Column(
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
                     Text(
                         text = subject.title,
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
-                        color = HomeText
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                     Text(
                         text = subject.subtitle,
                         fontSize = 12.sp,
-                        color = HomeMuted
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
 
-                Text(
-                    text = pctFa,
-                    color = HomePrimary,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold
-                )
+                Surface(
+                    shape = RoundedCornerShape(8.dp),
+                    color = token.containerColor
+                ) {
+                    Text(
+                        text = pctFa,
+                        color = token.onContainerColor,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                    )
+                }
             }
 
-            SimpleProgressBar(subject.progress)
+            val safeProgress = subject.progress.coerceIn(0, 100) / 100f
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(6.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(safeProgress)
+                        .fillMaxSize()
+                        .clip(CircleShape)
+                        .background(token.accentColor)
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun DailyProgressCard(
-    progress: Int
+fun SubjectListItem(
+    subject: StudySubjectUi,
+    onClick: () -> Unit
 ) {
-    val pctFa = BidiFormatter.applyPreferredDigits(progress.coerceIn(0, 100).toString())
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(18.dp))
-            .background(HomeSurface())
-            .border(1.dp, HomeBorder, RoundedCornerShape(18.dp))
-            .padding(18.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
-        Text(
-            text = "پیشرفت امروز",
-            color = HomeText,
-            fontWeight = FontWeight.Bold,
-            fontSize = 16.sp
-        )
-
-        SimpleProgressBar(progress)
-
-        Text(
-            text = "$pctFa درصد از هدف روزانه",
-            color = HomeMuted,
-            fontSize = 12.sp
-        )
-    }
+    val isDark = androidx.compose.foundation.isSystemInDarkTheme()
+    val themeController = LocalAppThemeController.current
+    val effectiveDark = themeController.resolveIsDarkTheme(isDark)
+    ExpressiveSubjectCard(
+        subject = subject,
+        isDark = effectiveDark,
+        onClick = onClick
+    )
 }
 
 @Composable
-private fun SimpleProgressBar(
+fun SimpleProgressBar(
     value: Int
 ) {
     val safeProgress = value.coerceIn(0, 100) / 100f
-
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(7.dp)
             .clip(CircleShape)
-            .background(HomeBorder)
+            .background(MaterialTheme.colorScheme.surfaceVariant)
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth(safeProgress)
                 .fillMaxSize()
                 .clip(CircleShape)
-                .background(HomeGreen)
+                .background(
+                    Brush.horizontalGradient(
+                        listOf(
+                            MaterialTheme.colorScheme.primary,
+                            MaterialTheme.colorScheme.tertiary
+                        )
+                    )
+                )
         )
-    }
-}
-
-@Composable
-private fun QuickAction(
-    modifier: Modifier = Modifier,
-    title: String,
-    onClick: () -> Unit
-) {
-    Surface(
-        modifier = modifier
-            .clip(RoundedCornerShape(14.dp))
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(14.dp),
-        color = HomeSurface(),
-        border = BorderStroke(
-            1.dp,
-            HomeBorder
-        )
-    ) {
-        Box(
-            modifier = Modifier.padding(vertical = 17.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = title,
-                color = HomeText,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
     }
 }
 

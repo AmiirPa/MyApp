@@ -55,6 +55,9 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Scaffold
@@ -387,60 +390,54 @@ private fun AppScaffold(
             },
             bottomBar = {
                 if (!isWideScreen && uiState.activeLessonId == null) {
-                    Surface(
-                        color = barSurfaceColor,
-                        modifier = Modifier.fillMaxWidth()
+                    NavigationBar(
+                        containerColor = barSurfaceColor,
+                        contentColor = textColor,
+                        tonalElevation = 3.dp,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("app_bottom_nav_bar")
                     ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .windowInsetsPadding(WindowInsets.navigationBars)
-                        ) {
-                            HorizontalDivider(thickness = 1.dp, color = barBorderColor)
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 8.dp, vertical = 6.dp),
-                                horizontalArrangement = Arrangement.SpaceEvenly,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                navTabs.forEach { (tab, icon, label) ->
-                                    val isMoreGroup = tab == AppTab.COUNSELING &&
-                                        uiState.activeTab in setOf(AppTab.COUNSELING, AppTab.LAB, AppTab.ROADMAP)
-                                    val isSelected = uiState.activeTab == tab || isMoreGroup
+                        navTabs.forEach { (tab, icon, label) ->
+                            val isMoreGroup = tab == AppTab.COUNSELING &&
+                                uiState.activeTab in setOf(AppTab.COUNSELING, AppTab.LAB, AppTab.ROADMAP)
+                            val isSelected = uiState.activeTab == tab || isMoreGroup
 
-                                    Column(
-                                        modifier = Modifier
-                                            .weight(1f)
-                                            .clip(RoundedCornerShape(12.dp))
-                                            .clickable {
-                                                viewModel.openLesson(null)
-                                                if (tab == AppTab.LESSONS && uiState.activeTab == AppTab.LESSONS) {
-                                                    viewModel.selectSubject("all", navigateToLessons = false)
-                                                }
-                                                viewModel.selectTab(tab)
-                                            }
-                                            .padding(vertical = 8.dp)
-                                            .testTag("nav_tab_${tab.name.lowercase()}"),
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        verticalArrangement = Arrangement.spacedBy(4.dp)
-                                    ) {
-                                        Icon(
-                                            imageVector = icon,
-                                            contentDescription = label,
-                                            tint = if (isSelected) primaryColor else mutedColor,
-                                            modifier = Modifier.size(22.dp)
-                                        )
-                                        Text(
-                                            text = label,
-                                            fontSize = 11.sp,
-                                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                            color = if (isSelected) primaryColor else mutedColor,
-                                            maxLines = 1
-                                        )
+                            NavigationBarItem(
+                                selected = isSelected,
+                                onClick = {
+                                    viewModel.openLesson(null)
+                                    if (tab == AppTab.LESSONS && uiState.activeTab == AppTab.LESSONS) {
+                                        viewModel.selectSubject("all", navigateToLessons = false)
                                     }
-                                }
-                            }
+                                    viewModel.selectTab(tab)
+                                },
+                                icon = {
+                                    Icon(
+                                        imageVector = icon,
+                                        contentDescription = label,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                },
+                                label = {
+                                    Text(
+                                        text = label,
+                                        fontSize = 11.sp,
+                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                },
+                                alwaysShowLabel = true,
+                                colors = NavigationBarItemDefaults.colors(
+                                    selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    selectedTextColor = MaterialTheme.colorScheme.primary,
+                                    indicatorColor = MaterialTheme.colorScheme.primaryContainer,
+                                    unselectedIconColor = mutedColor,
+                                    unselectedTextColor = mutedColor
+                                ),
+                                modifier = Modifier.testTag("nav_tab_${tab.name.lowercase()}")
+                            )
                         }
                     }
                 }

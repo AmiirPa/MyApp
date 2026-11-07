@@ -1,14 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Sefr Ta Farhangian</string>
-    <string name="app_subtitle">Humanities Konkoor &amp; Farhangian 1406</string>
-    <string name="nav_home">درس‌نامه</string>
-    <string name="nav_roadmap">نقشه راه</string>
-    <string name="nav_lessons">درس‌نامه</string>
-    <string name="nav_lab">کارگاه</string>
-    <string name="nav_counseling">برنامه و مشاوره</string>
-    <string name="nav_practice">سوالات و کنکور</string>
-    <string name="nav_planner">برنامه و فرهنگیان</string>
-    <string name="hero_title">از منفی صفر تا قبولی فرهنگیان ۱۴۰۶</string>
-    <string name="hero_subtitle">آموزش گام‌به‌گام و جامع کنکور انسانی و فرهنگیان</string>
+    <string name="app_name">Zero to Farhangian</string>
+    <string name="app_subtitle">Humanities &amp; Teacher Training Konkoor 1406</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_lessons">Lessons</string>
+    <string name="nav_planner">Planner</string>
+    <string name="nav_exams">Exams</string>
+    <string name="nav_more">More</string>
+    <string name="nav_roadmap">Roadmap</string>
+    <string name="nav_lab">Labs</string>
+    <string name="nav_counseling">Counseling</string>
+    <string name="nav_practice">Practice</string>
+    <string name="nav_settings">Settings</string>
+    <string name="hero_title">From Minus Zero to Farhangian Success 1406</string>
+    <string name="hero_subtitle">Comprehensive step-by-step prep for Humanities &amp; Teacher Training College</string>
+    <string name="btn_back">Back</string>
+    <string name="btn_save">Save</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_reset">Reset</string>
+    <string name="btn_search">Search</string>
+    <string name="btn_read">Read</string>
+    <string name="btn_download">Download</string>
+    <string name="settings_title">Settings</string>
+    <string name="settings_appearance">Appearance &amp; Typography</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_font_weight">Font Weight</string>
+    <string name="settings_font_size">Font Size</string>
+    <string name="settings_theme_palette">Theme Palette</string>
+    <string name="settings_highlight">Highlight Intensity</string>
+    <string name="settings_persian_digits">Persian Digits</string>
+    <string name="settings_dynamic_color">Dynamic Color (Material You)</string>
 </resources>

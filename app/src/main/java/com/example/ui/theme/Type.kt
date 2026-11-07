@@ -448,19 +448,19 @@ fun buildAppTypography(
     val resolvedLevel = if (isBoldText && fontWeightLevel == 0) 2 else fontWeightLevel.coerceIn(0, 2)
 
     val displayWeight = when (resolvedLevel) {
-        2 -> FontWeight.Black
-        1 -> FontWeight.Bold
-        else -> FontWeight.Bold
+        2 -> FontWeight.Bold
+        1 -> FontWeight.SemiBold
+        else -> FontWeight.Medium
     }
     val headlineWeight = when (resolvedLevel) {
-        2 -> FontWeight.ExtraBold
-        1 -> FontWeight.Bold
-        else -> FontWeight.Bold
+        2 -> FontWeight.Bold
+        1 -> FontWeight.SemiBold
+        else -> FontWeight.Medium
     }
     val titleWeight = when (resolvedLevel) {
         2 -> FontWeight.Bold
-        1 -> FontWeight.SemiBold
-        else -> FontWeight.SemiBold
+        1 -> FontWeight.Medium
+        else -> FontWeight.Normal
     }
     val bodyWeight = when (resolvedLevel) {
         2 -> FontWeight.Bold
@@ -469,8 +469,8 @@ fun buildAppTypography(
     }
     val labelWeight = when (resolvedLevel) {
         2 -> FontWeight.Bold
-        1 -> FontWeight.SemiBold
-        else -> FontWeight.Medium
+        1 -> FontWeight.Medium
+        else -> FontWeight.Normal
     }
 
     val defaultFeatureSettings = "liga 1, rlig 1"
@@ -534,7 +534,7 @@ fun buildAppTypography(
         ),
         titleLarge = TextStyle(
             fontFamily = headlineFontFamily,
-            fontWeight = FontWeight.Bold,
+            fontWeight = headlineWeight,
             fontSynthesis = activeSynthesis,
             fontSize = (15.2f * effectiveScale).sp,
             lineHeight = (25f * lhScale).sp,

@@ -10,6 +10,7 @@ permissions:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  JAVA_TOOL_OPTIONS: "-Djava.awt.headless=true"
 
 jobs:
   build-apk:
@@ -45,22 +46,32 @@ jobs:
       - name: Run Unit Tests & Build Debug APK
         run: |
           chmod +x gradlew
-          ./gradlew testDebugUnitTest assembleDebug --no-daemon -Dorg.gradle.jvmargs="-Xmx2048m -XX:MaxMetaspaceSize=512m"
+          ./gradlew testDebugUnitTest assembleDebug --no-daemon -Djava.awt.headless=true -Dorg.gradle.jvmargs="-Xmx3072m -XX:MaxMetaspaceSize=1024m -Djava.awt.headless=true"
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
           name: Sefr_Ta_Farhangian_v3.6_Debug
           path: app/build/outputs/apk/debug/Sefr_Ta_Farhangian_v3.6-debug.apk
+          if-no-files-found: error
+          retention-days: 90
 
+      # Publish a normal GitHub Release only from main or a manual run.
+      # Other branches still get build artifacts, but do not publish releases.
       - name: Publish APK to GitHub Releases
         uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
+        if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
         with:
           tag_name: v3.6-b${{ github.run_number }}
-          name: "نسخه ۳.۶ اپلیکیشن صفر تا فرهنگیان (بیلد ${{ github.run_number }})"
-          body: "✅ نسخه جدید ۳.۶ شامل اصلاح کامل نمایش عنوان درس‌ها، تب‌های اسکرول‌پذیر منابع، رفع باگ تقویم و ارتقای ساختار رابط کاربری."
+          name: "نسخه ۳.۶ صفر تا فرهنگیان (بیلد ${{ github.run_number }})"
+          body: |
+            فایل نصب اندروید اپلیکیشن صفر تا فرهنگیان و کنکور انسانی ۱۴۰۶.
+
+            - خروجی APK پایدار نسخه ۳.۶
+            - ساخته‌شده پس از اجرای موفق ۱۰۰٪ تست‌های واحد
+            - اصلاح کامل عناوین، تب‌های اسکرول‌پذیر منابع، تقویم و رادار ارتقای تراز
           files: app/build/outputs/apk/debug/Sefr_Ta_Farhangian_v3.6-debug.apk
-          prerelease: true
+          prerelease: false
+          make_latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

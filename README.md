@@ -7,28 +7,36 @@
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.0-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white)](#)
 [![Jetpack Compose](https://img.shields.io/badge/Jetpack_Compose-M3-4285F4?style=for-the-badge&logo=jetpackcompose&logoColor=white)](#)
 [![Offline](https://img.shields.io/badge/Offline-100%25_No_Internet-059669?style=for-the-badge)](#)
-[![Build](https://img.shields.io/badge/Build-Passing_Verified-brightgreen?style=for-the-badge)](#)
+[![Build Android APK](https://github.com/AmiirPa/MyApp/actions/workflows/build-apk.yml/badge.svg?branch=main)](https://github.com/AmiirPa/MyApp/actions/workflows/build-apk.yml)
 
 <br/>
 
-### 📥 دانلود فایل نصبی APK
-> **نکته برای دانلود در گوشی:** فایل نصبی **Sefr_Ta_Farhangian_v3.6-debug.apk** را از بخش **Releases** دریافت نمایید.
+### 📥 دانلود مستقیم اپلیکیشن
+
+[⬇️ دانلود مستقیم آخرین نسخه APK (نسخه ۳.۶)](https://github.com/AmiirPa/MyApp/releases/latest/download/Sefr_Ta_Farhangian_v3.6-debug.apk)
+
+[مشاهده تمام نسخه‌ها و تغییرات (Releases)](https://github.com/AmiirPa/MyApp/releases)
+
+[دانلود سورس کامل پروژه به‌صورت ZIP](https://github.com/AmiirPa/MyApp/archive/refs/heads/main.zip)
+
+[مشاهده وضعیت ساخت و خروجی‌های موقت (GitHub Actions)](https://github.com/AmiirPa/MyApp/actions/workflows/build-apk.yml)
 
 </div>
 
 ---
 
-## ⚡ راهنمای دانلود سریع فایل APK
-1. از بخش **Releases**، فایل **`Sefr_Ta_Farhangian_v3.6-debug.apk`** را دریافت کنید.
-2. چنانچه مرورگر پیام تایید نصب نمایش داد، روی گزینه تایید/دانلود بزنید.
+## ⚡ راهنمای دانلود و نصب آسان
+1. روی لینک **[دانلود مستقیم آخرین نسخه APK](https://github.com/AmiirPa/MyApp/releases/latest/download/Sefr_Ta_Farhangian_v3.6-debug.apk)** کلیک کنید.
+2. همچنین می‌توانید از **[بخش انتشارها (Releases)](https://github.com/AmiirPa/MyApp/releases)** در منوی کناری مخزن، فایل **`Sefr_Ta_Farhangian_v3.6-debug.apk`** (با حجم حدود ۴۰ مگابایت) را مستقیماً دریافت نمایید.
+3. پس از دانلود، فایل را در گوشی اندرویدی خود باز کرده و گزینه **Install / Update** را بزنید.
 
 ---
 
-## 📊 مشخصات فایل نصبی
+## 📊 مشخصات آخرین نسخه نصبی
 
-| نام فایل | فرمت | نسخه | مشخصه |
-| :--- | :---: | :---: | :--- |
-| **Sefr_Ta_Farhangian_v3.5.apk** | APK | ۳.۵ | نسخه رسمی با تفکیک آزمون‌های سراسری و سوالات کلی دروس |
+| نام فایل | فرمت | نسخه (Version) | کد نسخه (Code) | وضعیت |
+| :--- | :---: | :---: | :---: | :--- |
+| **Sefr_Ta_Farhangian_v3.6-debug.apk** | APK | ۳.۶ | ۱۵ | نسخه پایدار رسمی ۳.۶ با رفع باگ پیش‌نیازها، تب‌های اسکرول‌پذیر و تقویم جدید |
 
 ---
 
@@ -94,8 +102,8 @@
 
 ```bash
 # دریافت پروژه و ورود به پوشه:
-git clone <repository_url>
-cd SefrTaFarhangian
+git clone https://github.com/AmiirPa/MyApp.git
+cd MyApp
 
 # ساخت نسخه نهایی:
 gradle assembleDebug

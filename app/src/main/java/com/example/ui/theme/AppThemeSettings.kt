@@ -433,8 +433,8 @@ class AppThemeController(context: Context) {
     }
 
     private fun loadColorPalette(): AppColorPalette {
-        val saved = prefs.getString(KEY_COLOR_PALETTE, AppColorPalette.PIXEL_EXPRESSIVE_17.name)
-        return AppColorPalette.entries.find { it.name == saved } ?: AppColorPalette.PIXEL_EXPRESSIVE_17
+        val saved = prefs.getString(KEY_COLOR_PALETTE, AppColorPalette.EMERALD_PERSIAN_ROYAL.name)
+        return AppColorPalette.entries.find { it.name == saved } ?: AppColorPalette.EMERALD_PERSIAN_ROYAL
     }
 
     private fun loadFontPreset(): BuiltInFontPreset {
@@ -722,7 +722,7 @@ class AppThemeController(context: Context) {
 
     fun resetAllAppearanceToStandard() {
         themeMode = AppThemeMode.SYSTEM
-        selectedColorPalette = AppColorPalette.PIXEL_EXPRESSIVE_17
+        selectedColorPalette = AppColorPalette.EMERALD_PERSIAN_ROYAL
         useDynamicColor = false
         selectedFontPreset = BuiltInFontPreset.VAZIRMATN
         customFontFamily = null

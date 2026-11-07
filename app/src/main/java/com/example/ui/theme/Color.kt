@@ -82,14 +82,23 @@ enum class AppColorPalette(
     val previewTertiary: Color,
     val isFeatured: Boolean = false
 ) {
+    EMERALD_PERSIAN_ROYAL(
+        persianTitle = "زمردی، طلایی و عاجی ایرانی (Material 3 Expressive)",
+        englishTitle = "Persian Emerald & Amber",
+        persianSubtitle = "سبز زمردی عمیق، طلایی کهربایی و پس‌زمینه عاجی متناسب با کنکور و دانشگاه فرهنگیان",
+        previewPrimary = Color(0xFF006A60),
+        previewSecondary = Color(0xFF886820),
+        previewTertiary = Color(0xFF7250A1),
+        isFeatured = true
+    ),
     PIXEL_EXPRESSIVE_17(
-        persianTitle = "دفتر مطالعه کلاسیک سرمه‌ای (پیش‌فرض)",
+        persianTitle = "دفتر مطالعه کلاسیک سرمه‌ای",
         englishTitle = "Academic Navy & Sage",
         persianSubtitle = "سرمه‌ای رسمی، سبز یشمی و پس‌زمینه روشن با کنتراست استاندارد",
         previewPrimary = Color(0xFF243B63),
         previewSecondary = Color(0xFF58769C),
         previewTertiary = Color(0xFF38836B),
-        isFeatured = true
+        isFeatured = false
     ),
     TURQUOISE_GOLD(
         persianTitle = "فیروزه‌ای ایرانی و کهربایی",
@@ -215,6 +224,33 @@ enum class AppColorPalette(
     }
 
     fun toLightColorScheme(): ColorScheme = when (this) {
+        EMERALD_PERSIAN_ROYAL -> lightColorScheme(
+            primary = Color(0xFF006A60),
+            onPrimary = Color.White,
+            primaryContainer = Color(0xFF9EF2E4),
+            onPrimaryContainer = Color(0xFF00201C),
+            secondary = Color(0xFF886820),
+            onSecondary = Color.White,
+            secondaryContainer = Color(0xFFFBE0A6),
+            onSecondaryContainer = Color(0xFF2C1E00),
+            tertiary = Color(0xFF7250A1),
+            onTertiary = Color.White,
+            tertiaryContainer = Color(0xFFEBDDFF),
+            onTertiaryContainer = Color(0xFF2B0053),
+            background = Color(0xFFF7F6F0),
+            onBackground = Color(0xFF191C1B),
+            surface = Color(0xFFFFFCF6),
+            onSurface = Color(0xFF191C1B),
+            surfaceVariant = Color(0xFFDAE5E1),
+            onSurfaceVariant = Color(0xFF3F4947),
+            outline = Color(0xFF6F7977),
+            outlineVariant = Color(0xFFBFC9C5),
+            surfaceContainerLowest = Color(0xFFFFFFFF),
+            surfaceContainerLow = Color(0xFFF7F6F0),
+            surfaceContainer = Color(0xFFF2F0EA),
+            surfaceContainerHigh = Color(0xFFECEAE4),
+            surfaceContainerHighest = Color(0xFFE6E4DE)
+        )
         PIXEL_EXPRESSIVE_17 -> lightColorScheme(
             primary = StudyPrimary,
             onPrimary = Color(0xFFFFFFFF),
@@ -510,6 +546,33 @@ enum class AppColorPalette(
     }
 
     fun toDarkColorScheme(): ColorScheme = when (this) {
+        EMERALD_PERSIAN_ROYAL -> darkColorScheme(
+            primary = Color(0xFF82D5C8),
+            onPrimary = Color(0xFF003731),
+            primaryContainer = Color(0xFF005048),
+            onPrimaryContainer = Color(0xFF9EF2E4),
+            secondary = Color(0xFFECC278),
+            onSecondary = Color(0xFF473300),
+            secondaryContainer = Color(0xFF664D07),
+            onSecondaryContainer = Color(0xFFFBE0A6),
+            tertiary = Color(0xFFD6BAFF),
+            onTertiary = Color(0xFF421F70),
+            tertiaryContainer = Color(0xFF5A3888),
+            onTertiaryContainer = Color(0xFFEBDDFF),
+            background = Color(0xFF111B19),
+            onBackground = Color(0xFFE0E3E1),
+            surface = Color(0xFF192723),
+            onSurface = Color(0xFFE0E3E1),
+            surfaceVariant = Color(0xFF3F4947),
+            onSurfaceVariant = Color(0xFFBFC9C5),
+            outline = Color(0xFF899390),
+            outlineVariant = Color(0xFF3F4947),
+            surfaceContainerLowest = Color(0xFF0D1412),
+            surfaceContainerLow = Color(0xFF14201C),
+            surfaceContainer = Color(0xFF192723),
+            surfaceContainerHigh = Color(0xFF23322D),
+            surfaceContainerHighest = Color(0xFF2E3D38)
+        )
         PIXEL_EXPRESSIVE_17 -> darkColorScheme(
             primary = Color(0xFFA8C7FA),
             onPrimary = Color(0xFF062E6F),
