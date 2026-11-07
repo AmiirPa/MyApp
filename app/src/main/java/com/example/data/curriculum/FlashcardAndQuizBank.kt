@@ -30,6 +30,7 @@ object FlashcardAndQuizBank {
             addAll(CentPercentMasteryCurriculum1406.lessons)
             addAll(CentPercentFullCurriculum1406.lessons)
             addAll(UltraFastTechniquesEncyclopedia1406.lessons)
+            addAll(PsychologyCompletion1406.lessons)
         }
             .distinctBy { it.id }
             .map { it.copy(subjectId = it.normalizedSubjectId()) }
