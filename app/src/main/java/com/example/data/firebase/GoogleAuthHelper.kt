@@ -2,6 +2,7 @@ package com.example.data.firebase
 
 import android.app.Activity
 import android.content.Context
+import android.content.ContextWrapper
 import android.util.Log
 import androidx.credentials.ClearCredentialStateRequest
 import androidx.credentials.CredentialManager
@@ -26,6 +27,23 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 private const val TAG = "Auth"
+
+/**
+ * CredentialManager's interactive sign-in must run with an Activity context: it shows
+ * UI (account picker / bottom sheet). `context as? Activity` alone is not enough —
+ * a ContextWrapper (e.g. a themed or Compose-wrapped context) is not an Activity
+ * even when it wraps one — so the wrapper chain is unwrapped here. Returns null
+ * when no Activity is reachable (e.g. an application context); callers must fail
+ * gracefully instead of passing the non-Activity context through.
+ */
+internal fun Context.resolveActivity(): Activity? {
+    var current: Context? = this
+    while (current != null) {
+        if (current is Activity) return current
+        current = (current as? ContextWrapper)?.baseContext
+    }
+    return null
+}
 
 internal fun FirebaseAuth.authStateFlow(): Flow<FirebaseUser?> = callbackFlow {
     val listener = FirebaseAuth.AuthStateListener { auth ->
@@ -54,6 +72,14 @@ fun attemptAutoSignIn(
         return
     }
 
+    // getCredential() may show UI, so it needs an Activity context. Without one
+    // (e.g. an application context) there is nothing to auto-select from: stay
+    // unauthenticated instead of calling it with a context that cannot show UI.
+    val activity = context.resolveActivity() ?: run {
+        onUnauthenticated()
+        return
+    }
+
     val googleIdOption = GetGoogleIdOption.Builder()
         .setFilterByAuthorizedAccounts(true)
         .setServerClientId(clientId)
@@ -67,7 +93,7 @@ fun attemptAutoSignIn(
 
     scope.launch {
         try {
-            val result = credentialManager.getCredential(context, request)
+            val result = credentialManager.getCredential(activity, request)
             val credential = result.credential
             if (credential is CustomCredential && credential.type == TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
                 val googleIdToken = GoogleIdTokenCredential.createFrom(credential.data).idToken
@@ -98,6 +124,19 @@ fun onGoogleSignInClicked(
         return
     }
 
+    // getCredential() with a sign-in option always may show UI, so it requires an
+    // Activity context. The old code fell back to the raw context when the cast
+    // failed, silently passing a non-Activity context straight through, so a call
+    // from an application context failed inside CredentialManager instead of
+    // failing here with a clear error. Fail fast with onAuthError instead.
+    // (resolveActivity also unwraps ContextWrapper, which a plain cast misses.)
+    val activity = context.resolveActivity()
+    if (activity == null) {
+        Log.e(TAG, "Google Sign-In requires an Activity context; got ${context.javaClass.name}")
+        onAuthError("ورود با گوگل نیاز به صفحه فعال دارد؛ دوباره تلاش کنید.")
+        return
+    }
+
     // One option per request: GetSignInWithGoogleOption exclusively for interactive sign-in
     val signInOption = GetSignInWithGoogleOption.Builder(serverClientId = clientId).build()
     val request = GetCredentialRequest.Builder()
@@ -106,8 +145,7 @@ fun onGoogleSignInClicked(
 
     scope.launch {
         try {
-            val activityContext = context as? Activity ?: context
-            val result = credentialManager.getCredential(activityContext, request)
+            val result = credentialManager.getCredential(activity, request)
             val credential = result.credential
             if (credential is CustomCredential && credential.type == TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
                 val googleIdToken = GoogleIdTokenCredential.createFrom(credential.data).idToken

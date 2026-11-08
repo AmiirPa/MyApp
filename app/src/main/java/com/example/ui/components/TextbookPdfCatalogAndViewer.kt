@@ -863,6 +863,22 @@ object TextbookPdfCatalog {
 }
 
 /**
+ * Builds the external-viewer intent for an official ministry PDF.
+ *
+ * FLAG_ACTIVITY_NEW_TASK is required: the callers hand
+ * [NativeTextbookPdfGenerator.startOfficialMinistryPdfDownload] a plain
+ * [Context] (LocalContext.current), which is not guaranteed to be an Activity
+ * context — and startActivity() from a non-Activity context throws
+ * ("Calling startActivity() from outside of an Activity context requires the
+ * FLAG_ACTIVITY_NEW_TASK flag"). The flag is harmless when the context already
+ * is an Activity, so it is set unconditionally.
+ */
+fun buildExternalPdfViewIntent(pdfUrl: String): Intent =
+    Intent(Intent.ACTION_VIEW, Uri.parse(pdfUrl)).apply {
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+
+/**
  * تولیدکننده فایل PDF چندصفحه‌ای با فونت رسمی وزیرمتن، کادربندی استاندارد دولایه، راست‌چین دقیق و گرافیک کتاب درسی
  */
 object NativeTextbookPdfGenerator {
@@ -1393,8 +1409,7 @@ object NativeTextbookPdfGenerator {
             ).show()
         } catch (_: Exception) {
             try {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(book.officialChapPdfUrl))
-                context.startActivity(intent)
+                context.startActivity(buildExternalPdfViewIntent(book.officialChapPdfUrl))
             } catch (_: Exception) {
                 Toast.makeText(
                     context,

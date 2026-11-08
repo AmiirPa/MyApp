@@ -14,7 +14,9 @@ import com.example.data.firebase.CloudExamResult
 import com.example.data.firebase.CloudFlashcardProgress
 import com.example.data.firebase.CloudLessonProgress
 import com.example.data.firebase.CloudStudyTask
+import com.example.data.firebase.CloudSyncTransition
 import com.example.data.firebase.KonkoorCloudRepository
+import com.example.data.firebase.resolveCloudSyncTransition
 import com.example.data.local.LocalKonkoorStore
 import com.example.ui.components.BidiFormatter
 import com.example.util.StreakCalculator
@@ -26,6 +28,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -56,7 +59,6 @@ data class KonkoorUiState(
     val examResults: List<CloudExamResult> = emptyList(),
     val selectedSubjectId: String = "all",
     val activeLessonId: String? = null,
-    val selectedGradeFilter: Int = 0,
     val activeTab: AppTab = AppTab.HOME,
     val statusMessage: String? = null,
     val completedRoadmapSteps: Set<String> = emptySet(),
@@ -92,18 +94,90 @@ data class KonkoorUiState(
     }
 }
 
+/**
+ * The constructor arguments are only the *initial* snapshot (whatever auth state existed
+ * at launch). They are NOT the live session: [onAuthChanged] must be called on every
+ * auth change (MainActivity wires the Firebase AuthStateListener flow to it), and the
+ * live session below is what the sync flows and the cloud writes actually read.
+ * Freezing `currentUserId` / `repository` here used to mean a user who signed in after
+ * launch never got cloud sync.
+ */
 class KonkoorViewModel(
-    private val repository: KonkoorCloudRepository?,
-    private val currentUserId: String?,
+    repository: KonkoorCloudRepository?,
+    currentUserId: String?,
     private val localStore: LocalKonkoorStore? = null
 ) : ViewModel() {
 
-    private val isCloudAuthenticated: Boolean
-        get() = !currentUserId.isNullOrBlank() && repository != null
+    private data class CloudSession(val repository: KonkoorCloudRepository, val userId: String)
+
+    private val _cloudSession = MutableStateFlow<CloudSession?>(
+        if (!currentUserId.isNullOrBlank() && repository != null) {
+            CloudSession(repository, currentUserId)
+        } else {
+            null
+        }
+    )
+    private val cloudSession: StateFlow<CloudSession?> = _cloudSession.asStateFlow()
+
+    /** Last user id the cloud roadmap was seeded for; cleared on sign-out so a fresh
+     * sign-in retries the (server-side idempotent) seed instead of assuming it ran. */
+    private var lastSeededUserId: String? = null
+
+    /**
+     * Called by MainActivity on every Firebase auth-state emission (including the first
+     * one, which is a no-op when it matches the constructor snapshot). START/SWITCH
+     * (re)starts cloud sync, STOP cancels the Firestore listeners (via flatMapLatest
+     * below) and falls back to the local store; NONE leaves everything untouched.
+     */
+    fun onAuthChanged(userId: String?, repository: KonkoorCloudRepository?) {
+        val previous = _cloudSession.value
+        when (
+            resolveCloudSyncTransition(
+                previousUserId = previous?.userId,
+                newUserId = userId,
+                previouslyHadCloud = previous != null,
+                nowHasCloud = repository != null && !userId.isNullOrBlank()
+            )
+        ) {
+            CloudSyncTransition.NONE -> return
+            CloudSyncTransition.STOP -> {
+                _cloudSession.value = null
+                lastSeededUserId = null
+            }
+            CloudSyncTransition.START, CloudSyncTransition.SWITCH -> {
+                val uid = userId?.takeIf { it.isNotBlank() } ?: return
+                val repo = repository ?: return
+                val session = CloudSession(repo, uid)
+                _cloudSession.value = session
+                seedCloudRoadmapIfNeeded(session)
+            }
+        }
+    }
+
+    private fun seedCloudRoadmapIfNeeded(session: CloudSession) {
+        if (lastSeededUserId == session.userId) return
+        lastSeededUserId = session.userId
+        viewModelScope.launch {
+            runCatching { session.repository.seedInitialCloudRoadmapIfNeeded() }
+                .onFailure { Log.w(TAG, "Seeding cloud roadmap failed", it) }
+        }
+    }
+
+    /**
+     * Runs a cloud write against the *current* session (read at call time, never the
+     * frozen constructor values). A failure — including signing out mid-write, where
+     * the repository throws from `requireUserId()` — is logged, never crashed.
+     */
+    private fun launchCloudWrite(block: suspend KonkoorCloudRepository.() -> Unit) {
+        val session = _cloudSession.value ?: return
+        viewModelScope.launch {
+            runCatching { session.repository.block() }
+                .onFailure { Log.w(TAG, "Cloud write failed", it) }
+        }
+    }
 
     private val _selectedSubjectId = MutableStateFlow("all")
     private val _activeLessonId = MutableStateFlow<String?>(null)
-    private val _selectedGradeFilter = MutableStateFlow(0)
     private val _activeTab = MutableStateFlow(AppTab.HOME)
     private val _statusMessage = MutableStateFlow<String?>(null)
     private val _completedRoadmapSteps = MutableStateFlow(localStore?.getCompletedRoadmapSteps() ?: emptySet())
@@ -119,55 +193,63 @@ class KonkoorViewModel(
             val quizzes = FlashcardAndQuizBank.quizQuestions
             _curriculumDataFlow.value = Triple(lessons, cards, quizzes)
         }
-        if (isCloudAuthenticated) {
-            viewModelScope.launch {
-                repository?.seedInitialCloudRoadmapIfNeeded()
-            }
-        }
+        _cloudSession.value?.let { seedCloudRoadmapIfNeeded(it) }
     }
 
+    // Each flow below re-selects its source on every session change (flatMapLatest):
+    // a new session subscribes to that user's Firestore collections, and leaving a
+    // session cancels the previous subscription, so no listener for a signed-out (or
+    // previous) user keeps running. While there is no session the local store is used.
     private val lessonProgressFlow: Flow<List<CloudLessonProgress>> =
-        if (isCloudAuthenticated && repository != null && currentUserId != null) {
-            repository.observeLessonProgress(currentUserId)
-                .catch { e ->
-                    Log.w(TAG, "Error observing lesson_progress", e)
-                    emit(localStore?.lessonProgress?.value ?: emptyList())
-                }
-        } else {
-            localStore?.lessonProgress ?: emptyFlow()
+        cloudSession.flatMapLatest { session ->
+            if (session != null) {
+                session.repository.observeLessonProgress(session.userId)
+                    .catch { e ->
+                        Log.w(TAG, "Error observing lesson_progress", e)
+                        emit(localStore?.lessonProgress?.value ?: emptyList())
+                    }
+            } else {
+                localStore?.lessonProgress ?: emptyFlow()
+            }
         }
 
     private val flashcardProgressFlow: Flow<List<CloudFlashcardProgress>> =
-        if (isCloudAuthenticated && repository != null && currentUserId != null) {
-            repository.observeFlashcardProgress(currentUserId)
-                .catch { e ->
-                    Log.w(TAG, "Error observing flashcards", e)
-                    emit(localStore?.flashcardProgress?.value ?: emptyList())
-                }
-        } else {
-            localStore?.flashcardProgress ?: emptyFlow()
+        cloudSession.flatMapLatest { session ->
+            if (session != null) {
+                session.repository.observeFlashcardProgress(session.userId)
+                    .catch { e ->
+                        Log.w(TAG, "Error observing flashcards", e)
+                        emit(localStore?.flashcardProgress?.value ?: emptyList())
+                    }
+            } else {
+                localStore?.flashcardProgress ?: emptyFlow()
+            }
         }
 
     private val studyTasksFlow: Flow<List<CloudStudyTask>> =
-        if (isCloudAuthenticated && repository != null && currentUserId != null) {
-            repository.observeStudyTasks(currentUserId)
-                .catch { e ->
-                    Log.w(TAG, "Error observing study_tasks", e)
-                    emit(localStore?.studyTasks?.value ?: emptyList())
-                }
-        } else {
-            localStore?.studyTasks ?: emptyFlow()
+        cloudSession.flatMapLatest { session ->
+            if (session != null) {
+                session.repository.observeStudyTasks(session.userId)
+                    .catch { e ->
+                        Log.w(TAG, "Error observing study_tasks", e)
+                        emit(localStore?.studyTasks?.value ?: emptyList())
+                    }
+            } else {
+                localStore?.studyTasks ?: emptyFlow()
+            }
         }
 
     private val examResultsFlow: Flow<List<CloudExamResult>> =
-        if (isCloudAuthenticated && repository != null && currentUserId != null) {
-            repository.observeExamResults(currentUserId)
-                .catch { e ->
-                    Log.w(TAG, "Error observing exam_results", e)
-                    emit(localStore?.examResults?.value ?: emptyList())
-                }
-        } else {
-            localStore?.examResults ?: emptyFlow()
+        cloudSession.flatMapLatest { session ->
+            if (session != null) {
+                session.repository.observeExamResults(session.userId)
+                    .catch { e ->
+                        Log.w(TAG, "Error observing exam_results", e)
+                        emit(localStore?.examResults?.value ?: emptyList())
+                    }
+            } else {
+                localStore?.examResults ?: emptyFlow()
+            }
         }
 
     private val completedDaysFlow: Flow<Set<Long>> =
@@ -191,10 +273,17 @@ class KonkoorViewModel(
         IntermediateState(lessons, cards, tasks, exams, completedDays)
     }
 
+    // NOTE (dead grade filter removed): KonkoorUiState used to carry a
+    // selectedGradeFilter (Int) fed by _selectedGradeFilter, with
+    // selectGradeFilter()/selectSubjectAndGrade() writers and onSelectGradeFilter /
+    // onSelectSubjectAndGrade callbacks plumbed from MainActivity into
+    // HomeDashboardScreen. No composable ever read uiState.selectedGradeFilter and
+    // HomeDashboardScreen never invoked either callback, so the whole filter was
+    // write-only state: selecting a grade changed nothing on screen. Removed
+    // entirely (state, writers, callbacks) — behaviour-preserving.
     private data class UiSettingsState(
         val selectedSubject: String,
         val activeLesson: String?,
-        val gradeFilter: Int,
         val tab: AppTab,
         val msg: String?,
         val roadmapSteps: Set<String>
@@ -203,7 +292,6 @@ class KonkoorViewModel(
     private data class BaseUiSettings(
         val sub: String,
         val lesson: String?,
-        val grade: Int,
         val tab: AppTab,
         val msg: String?
     )
@@ -211,18 +299,17 @@ class KonkoorViewModel(
     private val baseUiSettingsFlow = combine(
         _selectedSubjectId,
         _activeLessonId,
-        _selectedGradeFilter,
         _activeTab,
         _statusMessage
-    ) { sub, lesson, grade, tab, msg ->
-        BaseUiSettings(sub, lesson, grade, tab, msg)
+    ) { sub, lesson, tab, msg ->
+        BaseUiSettings(sub, lesson, tab, msg)
     }
 
     private val uiSettingsFlow = combine(
         baseUiSettingsFlow,
         _completedRoadmapSteps
     ) { base, steps ->
-        UiSettingsState(base.sub, base.lesson, base.grade, base.tab, base.msg, steps)
+        UiSettingsState(base.sub, base.lesson, base.tab, base.msg, steps)
     }
 
     val uiState: StateFlow<KonkoorUiState> = combine(
@@ -248,7 +335,6 @@ class KonkoorViewModel(
             examResults = sortedExams,
             selectedSubjectId = settings.selectedSubject,
             activeLessonId = settings.activeLesson,
-            selectedGradeFilter = settings.gradeFilter,
             activeTab = settings.tab,
             statusMessage = settings.msg,
             completedRoadmapSteps = settings.roadmapSteps,
@@ -277,22 +363,11 @@ class KonkoorViewModel(
         _activeTab.value = tab
     }
 
-    fun selectGradeFilter(grade: Int) {
-        _selectedGradeFilter.value = grade
-        _selectedSubjectId.value = "all"
-    }
-
     fun selectSubject(subjectId: String, navigateToLessons: Boolean = false) {
         _selectedSubjectId.value = subjectId
         if (navigateToLessons) {
             _activeTab.value = AppTab.LESSONS
         }
-    }
-
-    fun selectSubjectAndGrade(subjectId: String, grade: Int) {
-        _selectedSubjectId.value = subjectId
-        _selectedGradeFilter.value = grade
-        _activeTab.value = AppTab.HOME
     }
 
     fun openLesson(lessonId: String?) {
@@ -322,17 +397,15 @@ class KonkoorViewModel(
             userNote = userNote,
             masteryPercent = masteryPercent
         )
-        if (isCloudAuthenticated && repository != null) {
-            viewModelScope.launch {
-                repository.saveLessonProgress(
-                    lessonId = lesson.id,
-                    subjectId = lesson.subjectId,
-                    isCompleted = isCompleted,
-                    isBookmarked = isBookmarked,
-                    userNote = userNote,
-                    masteryPercent = masteryPercent
-                )
-            }
+        launchCloudWrite {
+            saveLessonProgress(
+                lessonId = lesson.id,
+                subjectId = lesson.subjectId,
+                isCompleted = isCompleted,
+                isBookmarked = isBookmarked,
+                userNote = userNote,
+                masteryPercent = masteryPercent
+            )
         }
         _statusMessage.value = if (isCompleted) "درس با موفقیت تکمیل و ذخیره شد!" else "یادداشت و وضعیت درس ذخیره شد."
     }
@@ -352,17 +425,15 @@ class KonkoorViewModel(
             userNote = note,
             masteryPercent = mastery
         )
-        if (isCloudAuthenticated && repository != null) {
-            viewModelScope.launch {
-                repository.saveLessonProgress(
-                    lessonId = lesson.id,
-                    subjectId = lesson.subjectId,
-                    isCompleted = isDone,
-                    isBookmarked = newBookmarked,
-                    userNote = note,
-                    masteryPercent = mastery
-                )
-            }
+        launchCloudWrite {
+            saveLessonProgress(
+                lessonId = lesson.id,
+                subjectId = lesson.subjectId,
+                isCompleted = isDone,
+                isBookmarked = newBookmarked,
+                userNote = note,
+                masteryPercent = mastery
+            )
         }
         _statusMessage.value = if (newBookmarked) "درس به نشان‌شده‌ها و علاقه‌مندی‌ها افزوده شد ⭐" else "درس از نشان‌شده‌ها حذف شد."
     }
@@ -379,15 +450,13 @@ class KonkoorViewModel(
             newBox = nextBox,
             currentReviews = currentReviews
         )
-        if (isCloudAuthenticated && repository != null) {
-            viewModelScope.launch {
-                repository.updateFlashcardBox(
-                    cardId = card.id,
-                    subjectId = card.subjectId,
-                    newBox = nextBox,
-                    currentReviews = currentReviews
-                )
-            }
+        launchCloudWrite {
+            updateFlashcardBox(
+                cardId = card.id,
+                subjectId = card.subjectId,
+                newBox = nextBox,
+                currentReviews = currentReviews
+            )
         }
     }
 
@@ -399,36 +468,26 @@ class KonkoorViewModel(
             stageTag = stageTag,
             durationMinutes = durationMinutes
         )
-        if (isCloudAuthenticated && repository != null) {
-            viewModelScope.launch {
-                repository.createStudyTask(
-                    title = title.trim(),
-                    subjectId = subjectId,
-                    stageTag = stageTag,
-                    durationMinutes = durationMinutes
-                )
-            }
+        launchCloudWrite {
+            createStudyTask(
+                title = title.trim(),
+                subjectId = subjectId,
+                stageTag = stageTag,
+                durationMinutes = durationMinutes
+            )
         }
     }
 
     fun toggleStudyTask(task: CloudStudyTask) {
         if (task.id.isBlank()) return
         localStore?.toggleStudyTask(task.id, task.isCompleted)
-        if (isCloudAuthenticated && repository != null) {
-            viewModelScope.launch {
-                repository.toggleStudyTask(task.id, task.isCompleted)
-            }
-        }
+        launchCloudWrite { toggleStudyTask(task.id, task.isCompleted) }
     }
 
     fun deleteStudyTask(taskId: String) {
         if (taskId.isBlank()) return
         localStore?.deleteStudyTask(taskId)
-        if (isCloudAuthenticated && repository != null) {
-            viewModelScope.launch {
-                repository.deleteStudyTask(taskId)
-            }
-        }
+        launchCloudWrite { deleteStudyTask(taskId) }
     }
 
     fun submitExamResult(subjectId: String, subjectTitle: String, correctCount: Int, totalCount: Int) {
@@ -438,15 +497,13 @@ class KonkoorViewModel(
             correctCount = correctCount,
             totalCount = totalCount
         )
-        if (isCloudAuthenticated && repository != null) {
-            viewModelScope.launch {
-                repository.recordExamResult(
-                    subjectId = subjectId,
-                    subjectTitle = subjectTitle,
-                    correctCount = correctCount,
-                    totalCount = totalCount
-                )
-            }
+        launchCloudWrite {
+            recordExamResult(
+                subjectId = subjectId,
+                subjectTitle = subjectTitle,
+                correctCount = correctCount,
+                totalCount = totalCount
+            )
         }
     }
 

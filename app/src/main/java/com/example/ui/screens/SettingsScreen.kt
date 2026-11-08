@@ -922,86 +922,7 @@ fun SettingsScreen(
                         color = MaterialTheme.colorScheme.onSurface
                     )
 
-                    // ۱. انتخاب سطح شروع
-                    Text(
-                        text = "سطح شروع آموزش در تمام دروس:",
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        listOf(
-                            "MINUS_ZERO" to "منفی صفر",
-                            "BEGINNER" to "مقدماتی",
-                            "INTERMEDIATE" to "متوسط",
-                            "ADVANCED" to "پیشرفته"
-                        ).forEach { (key, label) ->
-                            val sel = themeController.learningStartLevel == key
-                            Surface(
-                                onClick = { themeController.updateLearningStartLevel(key) },
-                                shape = RoundedCornerShape(8.dp),
-                                color = if (sel) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.background,
-                                border = BorderStroke(
-                                    1.dp,
-                                    if (sel) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant
-                                ),
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                Text(
-                                    text = label,
-                                    style = MaterialTheme.typography.labelSmall,
-                                    fontWeight = if (sel) FontWeight.Bold else FontWeight.Medium,
-                                    color = if (sel) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 2.dp)
-                                )
-                            }
-                        }
-                    }
-
-                    // ۲. میزان جزئیات توضیح درس‌نامه
-                    Text(
-                        text = "میزان جزئیات توضیحات درس‌نامه:",
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        listOf(
-                            "BRIEF" to "کوتاه و خلاصه",
-                            "NORMAL" to "معمولی",
-                            "COMPLETE" to "کامل و تشریحی"
-                        ).forEach { (key, label) ->
-                            val sel = themeController.explanationDetailLevel == key
-                            Surface(
-                                onClick = { themeController.updateExplanationDetailLevel(key) },
-                                shape = RoundedCornerShape(8.dp),
-                                color = if (sel) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.background,
-                                border = BorderStroke(
-                                    1.dp,
-                                    if (sel) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant
-                                ),
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                Text(
-                                    text = label,
-                                    style = MaterialTheme.typography.labelSmall,
-                                    fontWeight = if (sel) FontWeight.Bold else FontWeight.Medium,
-                                    color = if (sel) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 4.dp)
-                                )
-                            }
-                        }
-                    }
-
-                    // ۳. حالت پیش‌فرض نمایش جدول‌های چندستونی
+                    // ۱. حالت پیش‌فرض نمایش جدول‌های چندستونی
                     Text(
                         text = "حالت پیش‌فرض نمایش جدول‌های آموزشی:",
                         style = MaterialTheme.typography.labelMedium,
@@ -1040,7 +961,7 @@ fun SettingsScreen(
                         }
                     }
 
-                    // ۴. سوئیچ‌های کاربردی یادگیری و دسترس‌پذیری
+                    // ۲. سوئیچ‌های کاربردی یادگیری و دسترس‌پذیری
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -1092,7 +1013,7 @@ fun SettingsScreen(
                         )
                     }
 
-                    // ۵. هدف مطالعه روزانه و پاک‌سازی امن حافظه موقت آفلاین
+                    // ۳. هدف مطالعه روزانه و پاک‌سازی امن حافظه موقت آفلاین
                     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                     Row(
                         modifier = Modifier.fillMaxWidth(),

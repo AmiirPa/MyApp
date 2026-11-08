@@ -43,7 +43,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
@@ -67,9 +67,9 @@ import com.example.data.curriculum.officialTextbookReference
 import com.example.data.curriculum.prerequisiteStepOrder
 import com.example.data.curriculum.subcategoryFolder
 import com.example.ui.KonkoorUiState
+import com.example.ui.sharedPomodoroTimer
 import com.example.util.StreakCalculator
 import java.util.Calendar
-import kotlinx.coroutines.delay
 
 data class SoldierRoutineSlot(
     val timeRange: String,
@@ -92,7 +92,13 @@ data class CalendarDayPlan(
     val prescribedLessons: List<ZeroLesson>
 )
 
-private object ShamsiHolidayCatalog {
+// internal (نه private) تا تست واحد ShamsiHolidayCatalogTest بتواند جدول را مستقیم بخواند.
+internal object ShamsiHolidayCatalog {
+    // فقط تعطیلات خورشیدی با تاریخ ثابت جلالی — دست نخورده‌اند.
+    // ورودی‌های قمری جدول قدیمی (فطر، صادق، قربان، غدیر، تاسوعا، عاشورا، اربعین،
+    // رحلت پیامبر، رضا، عسکری، میلاد، فاطمه، ولادت علی، مبعث، نیمه شعبان، شهادت
+    // علی) از اینجا حذف و به جدول سالانهٔ lunarHolidaysByYear / lunarOccasionsByYear
+    // در پایین منتقل شدند؛ نگه‌داشتنشان یعنی همان خطای ~۳ هفته‌ای.
     private val holidaysByMonth: Map<Int, Map<Int, String>> = mapOf(
         1 to mapOf(
             1 to "عید نوروز (تعطیل رسمی)",
@@ -102,56 +108,210 @@ private object ShamsiHolidayCatalog {
             12 to "روز جمهوری اسلامی (تعطیل رسمی)",
             13 to "روز طبیعت / سیزده‌به‌در (تعطیل رسمی)"
         ),
-        2 to mapOf(
-            2 to "عید سعید فطر (تعطیل رسمی)",
-            3 to "تعطیل به مناسبت عید سعید فطر",
-            25 to "شهادت امام جعفر صادق (ع) (تعطیل رسمی)"
-        ),
         3 to mapOf(
             14 to "رحلت حضرت امام خمینی (ره) (تعطیل رسمی)",
-            15 to "قیام ۱۵ خرداد (تعطیل رسمی)",
-            16 to "عید سعید قربان (تعطیل رسمی)",
-            24 to "عید سعید غدیر خم (تعطیل رسمی)"
-        ),
-        4 to mapOf(
-            15 to "تاسوعای حسینی (تعطیل رسمی)",
-            16 to "عاشورای حسینی (تعطیل رسمی)"
-        ),
-        5 to mapOf(
-            24 to "اربعین حسینی (تعطیل رسمی)"
-        ),
-        6 to mapOf(
-            2 to "رحلت پیامبر اکرم (ص) و شهادت امام حسن مجتبی (ع) (تعطیل رسمی)",
-            4 to "شهادت امام رضا (ع) (تعطیل رسمی)",
-            12 to "شهادت امام حسن عسکری (ع) (تعطیل رسمی)",
-            21 to "میلاد پیامبر اکرم (ص) و امام جعفر صادق (ع) (تعطیل رسمی)"
+            15 to "قیام ۱۵ خرداد (تعطیل رسمی)"
         ),
         7 to mapOf(
             13 to "جمعه طلایی جمع‌بندی مهرماه"
         ),
-        8 to mapOf(
-            15 to "شهادت حضرت فاطمه زهرا (س) (تعطیل رسمی)"
-        ),
-        9 to mapOf(
-            13 to "شهادت حضرت فاطمه زهرا (س) — روایت دوم (تعطیل رسمی)"
-        ),
-        10 to mapOf(
-            13 to "ولادت امام علی (ع) و روز پدر (تعطیل رسمی)",
-            27 to "مبعث حضرت رسول اکرم (ص) (تعطیل رسمی)"
-        ),
         11 to mapOf(
-            15 to "ولادت حضرت قائم (عج) — نیمه شعبان (تعطیل رسمی)",
             22 to "پیروزی انقلاب اسلامی ایران (تعطیل رسمی)"
         ),
         12 to mapOf(
-            20 to "شهادت حضرت علی (ع) — شب قدر (تعطیل رسمی)",
             29 to "روز ملی شدن صنعت نفت ایران (تعطیل رسمی)"
         )
     )
 
-    fun getHolidayOccasion(month: Int, day: Int): String? = holidaysByMonth[month]?.get(day)
-    fun getMonthHolidays(month: Int): List<Pair<Int, String>> =
-        holidaysByMonth[month]?.entries?.map { it.key to it.value }?.sortedBy { it.first } ?: emptyList()
+    // ─── تعطیلات قمری با تاریخ دقیق جلالی هر سال (۱۴۰۴–۱۴۰۶) ───
+    // مشکل قبلی: تعطیلات قمری روی تاریخ‌های ثابت جلالی گذاشته شده بودند؛ چون سال
+    // قمری ~۱۱ روز از سال خورشیدی کوتاه‌تر است، در ۱۴۰۴ خطا تا ~۳ هفته بود (مثلاً
+    // عید فطر روی ۲–۳ اردیبهشت گذاشته شده بود، در حالی که ۱۱–۱۲ فروردین است؛
+    // شهادت امام صادق روی ۲۵ اردیبهشت بود، در حالی که ۴ اردیبهشت است).
+    // منبع تاریخ‌ها: تقویم رسمی ایران آن‌گونه که time.ir منتشر می‌کند
+    // (بازیابی ۱۷ آبان ۱۴۰۵ / 2026-11-08)؛ برای ۱۴۰۴ و ۱۴۰۵ با
+    // bahesab.ir/time/1404/ و bahesab.ir/time/1405/ (آینهٔ همان تقویم رسمی) و
+    // صفحهٔ اصلی time.ir (۱۷ آبان ۱۴۰۵ = ۲۸ جمادی‌الاول ۱۴۴۸؛ مناسبت‌های آبان
+    // شامل «۲۲ آبان شهادت حضرت فاطمه زهرا (س)»)، و برای ۱۴۰۶ با جدول
+    // iranian_holidays 0.3.0 که می‌گوید «هر دو سال ۱۴۰۵ و ۱۴۰۶ با تقویم
+    // منتشرشده در time.ir روزبه‌روز مطابق‌اند» و با multicalendar و nayrika و
+    // roozaneh مقابله شد. جدول کامل با تاریخ قمری هر مناسبت در سند
+    // lunar-holidays-1404-1407.md کنار همین کار آمده است.
+    // «نامشخص»: (۱) سال ۱۴۰۷ — تقویم رسمی ۱۴۰۷ هنوز منتشر نشده، پس هیچ تاریخ
+    // قمری برای ۱۴۰۷ در جدول نیست و lookup برای ۱۴۰۷ فقط خورشیدی برمی‌گرداند؛
+    // پس از انتشار تقویم رسمی ۱۴۰۷ باید اضافه شود. (۲) شهادت حضرت فاطمه (س) —
+    // روایت دوم (۱۳ جمادی‌الاول) در ۱۴۰۶ — در هیچ منبع معتبری تاریخ جلالی آن
+    // یافت نشد، پس حدس زده نشد و ثبت نشد.
+    // توجه: ماه‌های قمری با رؤیت هلال قطعی می‌شوند؛ اگر اعلام رسمی تاریخ را یک
+    // روز جابه‌جا کرد، جدول باید اصلاح شود.
+    private val lunarHolidaysByYear: Map<Int, Map<Int, Map<Int, String>>> = mapOf(
+        1404 to mapOf(
+            1 to mapOf(
+                2 to "شهادت حضرت علی (ع) (تعطیل رسمی)",
+                11 to "عید سعید فطر (تعطیل رسمی)",
+                12 to "تعطیل به مناسبت عید سعید فطر (تعطیل رسمی)"
+            ),
+            2 to mapOf(
+                4 to "شهادت امام جعفر صادق (ع) (تعطیل رسمی)"
+            ),
+            3 to mapOf(
+                16 to "عید سعید قربان (تعطیل رسمی)",
+                24 to "عید سعید غدیر خم (تعطیل رسمی)"
+            ),
+            4 to mapOf(
+                14 to "تاسوعای حسینی (تعطیل رسمی)",
+                15 to "عاشورای حسینی (تعطیل رسمی)"
+            ),
+            5 to mapOf(
+                23 to "اربعین حسینی (تعطیل رسمی)",
+                31 to "رحلت پیامبر اکرم (ص) و شهادت امام حسن مجتبی (ع) (تعطیل رسمی)"
+            ),
+            6 to mapOf(
+                2 to "شهادت امام رضا (ع) (تعطیل رسمی)",
+                10 to "شهادت امام حسن عسکری (ع) (تعطیل رسمی)",
+                19 to "میلاد پیامبر اکرم (ص) و امام جعفر صادق (ع) (تعطیل رسمی)"
+            ),
+            9 to mapOf(
+                3 to "شهادت حضرت فاطمه زهرا (س) (تعطیل رسمی)"
+            ),
+            10 to mapOf(
+                13 to "ولادت امام علی (ع) و روز پدر (تعطیل رسمی)",
+                27 to "مبعث حضرت رسول اکرم (ص) (تعطیل رسمی)"
+            ),
+            11 to mapOf(
+                15 to "ولادت حضرت قائم (عج) — نیمه شعبان (تعطیل رسمی)"
+            ),
+            12 to mapOf(
+                20 to "شهادت حضرت علی (ع) (تعطیل رسمی)"
+            )
+        ),
+        1405 to mapOf(
+            1 to mapOf(
+                1 to "عید سعید فطر (تعطیل رسمی)",
+                2 to "تعطیل به مناسبت عید سعید فطر (تعطیل رسمی)",
+                25 to "شهادت امام جعفر صادق (ع) (تعطیل رسمی)"
+            ),
+            3 to mapOf(
+                6 to "عید سعید قربان (تعطیل رسمی)",
+                14 to "عید سعید غدیر خم (تعطیل رسمی)"
+            ),
+            4 to mapOf(
+                3 to "تاسوعای حسینی (تعطیل رسمی)",
+                4 to "عاشورای حسینی (تعطیل رسمی)"
+            ),
+            5 to mapOf(
+                13 to "اربعین حسینی (تعطیل رسمی)",
+                21 to "رحلت پیامبر اکرم (ص) و شهادت امام حسن مجتبی (ع) (تعطیل رسمی)",
+                22 to "شهادت امام رضا (ع) (تعطیل رسمی)",
+                30 to "شهادت امام حسن عسکری (ع) (تعطیل رسمی)"
+            ),
+            6 to mapOf(
+                8 to "میلاد پیامبر اکرم (ص) و امام جعفر صادق (ع) (تعطیل رسمی)"
+            ),
+            8 to mapOf(
+                22 to "شهادت حضرت فاطمه زهرا (س) (تعطیل رسمی)"
+            ),
+            10 to mapOf(
+                2 to "ولادت امام علی (ع) و روز پدر (تعطیل رسمی)",
+                16 to "مبعث حضرت رسول اکرم (ص) (تعطیل رسمی)"
+            ),
+            11 to mapOf(
+                4 to "ولادت حضرت قائم (عج) — نیمه شعبان (تعطیل رسمی)"
+            ),
+            12 to mapOf(
+                9 to "شهادت حضرت علی (ع) (تعطیل رسمی)",
+                19 to "عید سعید فطر (تعطیل رسمی)",
+                20 to "تعطیل به مناسبت عید سعید فطر (تعطیل رسمی)"
+            )
+        ),
+        1406 to mapOf(
+            1 to mapOf(
+                14 to "شهادت امام جعفر صادق (ع) (تعطیل رسمی)"
+            ),
+            2 to mapOf(
+                27 to "عید سعید قربان (تعطیل رسمی)"
+            ),
+            3 to mapOf(
+                4 to "عید سعید غدیر خم (تعطیل رسمی)",
+                25 to "تاسوعای حسینی (تعطیل رسمی)",
+                26 to "عاشورای حسینی (تعطیل رسمی)"
+            ),
+            5 to mapOf(
+                3 to "اربعین حسینی (تعطیل رسمی)",
+                11 to "رحلت پیامبر اکرم (ص) و شهادت امام حسن مجتبی (ع) (تعطیل رسمی)",
+                12 to "شهادت امام رضا (ع) (تعطیل رسمی)",
+                20 to "شهادت امام حسن عسکری (ع) (تعطیل رسمی)",
+                29 to "میلاد پیامبر اکرم (ص) و امام جعفر صادق (ع) (تعطیل رسمی)"
+            ),
+            8 to mapOf(
+                12 to "شهادت حضرت فاطمه زهرا (س) (تعطیل رسمی)"
+            ),
+            9 to mapOf(
+                21 to "ولادت امام علی (ع) و روز پدر (تعطیل رسمی)"
+            ),
+            10 to mapOf(
+                5 to "مبعث حضرت رسول اکرم (ص) (تعطیل رسمی)",
+                23 to "ولادت حضرت قائم (عج) — نیمه شعبان (تعطیل رسمی)"
+            ),
+            11 to mapOf(
+                29 to "شهادت حضرت علی (ع) (تعطیل رسمی)"
+            ),
+            12 to mapOf(
+                8 to "عید سعید فطر (تعطیل رسمی)",
+                9 to "تعطیل به مناسبت عید سعید فطر (تعطیل رسمی)"
+            )
+        )
+        // ۱۴۰۷: «نامشخص» — تقویم رسمی ۱۴۰۷ هنوز منتشر نشده است.
+    )
+
+    // مناسبت‌های قمری که در تقویم رسمی «مناسبت»‌اند نه تعطیل: شهادت حضرت فاطمه (س)
+    // به روایت ۱۳ جمادی‌الاول. نامشان در برنامه نمایش داده می‌شود اما روز مطالعه
+    // را تعطیل نمی‌کنند (isOfficialHoliday=false). در جدول قدیمی هر دو روایت
+    // فاطمه «تعطیل رسمی» خورده بودند که خلاف تقویم رسمی است.
+    private val lunarOccasionsByYear: Map<Int, Map<Int, Map<Int, String>>> = mapOf(
+        1404 to mapOf(
+            8 to mapOf(
+                13 to "شهادت حضرت فاطمه زهرا (س) — روایت دوم (مناسبت مذهبی)"
+            )
+        ),
+        1405 to mapOf(
+            8 to mapOf(
+                2 to "شهادت حضرت فاطمه زهرا (س) — روایت دوم (مناسبت مذهبی)"
+            )
+        )
+        // ۱۴۰۶: «نامشخص» — تاریخ جلالی ۱۳ جمادی‌الاول ۱۴۴۹ در منبع معتبری یافت نشد.
+        // ۱۴۰۷: «نامشخص» — تقویم رسمی ۱۴۰۷ هنوز منتشر نشده است.
+    )
+
+    private fun mergeHolidayTitles(first: String, second: String): String {
+        val a = first.removeSuffix(" (تعطیل رسمی)")
+        val b = second.removeSuffix(" (تعطیل رسمی)")
+        return "$a + $b (تعطیل رسمی)"
+    }
+
+    fun getHolidayOccasion(year: Int, month: Int, day: Int): String? {
+        val solar = holidaysByMonth[month]?.get(day)
+        val lunar = lunarHolidaysByYear[year]?.get(month)?.get(day)
+            ?: lunarOccasionsByYear[year]?.get(month)?.get(day)
+        if (solar == null) return lunar
+        if (lunar == null) return solar
+        return mergeHolidayTitles(solar, lunar)
+    }
+
+    fun isOfficialHoliday(year: Int, month: Int, day: Int): Boolean {
+        // خورشیدی: رفتار قبلی حفظ شده (هر ورودی جدول خورشیدی تعطیل محسوب می‌شود).
+        if (holidaysByMonth[month]?.containsKey(day) == true) return true
+        return lunarHolidaysByYear[year]?.get(month)?.containsKey(day) == true
+    }
+
+    fun getMonthHolidays(year: Int, month: Int): List<Pair<Int, String>> {
+        val merged = mutableMapOf<Int, String>()
+        holidaysByMonth[month]?.forEach { (day, title) -> merged[day] = title }
+        lunarHolidaysByYear[year]?.get(month)?.forEach { (day, title) ->
+            merged[day] = merged[day]?.let { mergeHolidayTitles(it, title) } ?: title
+        }
+        return merged.entries.map { it.key to it.value }.sortedBy { it.first }
+    }
 }
 
 object JalaliCalendarUtils {
@@ -291,21 +451,12 @@ fun SmartSoldierTeacherPlannerCard(
     // Map to track mastery status: lessonId -> true (بلد شدم) / false (بلد نشدم - انتقال به فردا)
     val lessonMasteryStatus = remember { mutableStateMapOf<String, Boolean>() }
 
-    // Pomodoro Timer State
-    var pomodoroSecondsLeft by remember { mutableIntStateOf(25 * 60) }
-    var isPomodoroRunning by remember { mutableStateOf(false) }
-    var isPomodoroBreak by remember { mutableStateOf(false) }
-
-    LaunchedEffect(isPomodoroRunning, pomodoroSecondsLeft) {
-        if (isPomodoroRunning && pomodoroSecondsLeft > 0) {
-            delay(1000L)
-            pomodoroSecondsLeft -= 1
-        } else if (isPomodoroRunning && pomodoroSecondsLeft <= 0) {
-            isPomodoroRunning = false
-            isPomodoroBreak = !isPomodoroBreak
-            pomodoroSecondsLeft = if (isPomodoroBreak) 5 * 60 else 25 * 60
-        }
-    }
+    // Pomodoro Timer State — hoisted OUT of this composable into
+    // sharedPomodoroTimer (see PomodoroTimer.kt). The old remember { ... } state
+    // + LaunchedEffect lived inside this card, so switching tabs disposed the
+    // composition and the countdown silently reset to 25:00. The shared holder
+    // survives tab switches; this card only collects and displays it.
+    val pomodoro by sharedPomodoroTimer.state.collectAsState()
 
     val daysInSelectedMonth = remember(selectedShamsiYear, selectedShamsiMonth) {
         JalaliCalendarUtils.daysInJalaliMonth(selectedShamsiYear, selectedShamsiMonth)
@@ -334,6 +485,7 @@ fun SmartSoldierTeacherPlannerCard(
 
     val thirtyDayPlans = remember(
         uiState.allLessons,
+        selectedShamsiYear,
         selectedShamsiMonth,
         daysInSelectedMonth,
         firstDayOfMonthDowIndex,
@@ -366,8 +518,8 @@ fun SmartSoldierTeacherPlannerCard(
         (1..daysInSelectedMonth).map { dayIdx ->
             val dowIdx = (firstDayOfMonthDowIndex + (dayIdx - 1)) % 7
             val dowName = persianWeekDays[dowIdx]
-            val holidayTitle = ShamsiHolidayCatalog.getHolidayOccasion(selectedShamsiMonth, dayIdx)
-            val isOfficialHol = holidayTitle != null || dowIdx == 6
+            val holidayTitle = ShamsiHolidayCatalog.getHolidayOccasion(selectedShamsiYear, selectedShamsiMonth, dayIdx)
+            val isOfficialHol = ShamsiHolidayCatalog.isOfficialHoliday(selectedShamsiYear, selectedShamsiMonth, dayIdx) || dowIdx == 6
             val isWeekend = dowIdx == 5 || dowIdx == 6 || isOfficialHol
 
             val monthOffset = (selectedShamsiMonth - currentShamsiMonth).coerceAtLeast(0) * 30
@@ -1039,14 +1191,14 @@ fun SmartSoldierTeacherPlannerCard(
                             )
                             Column {
                                 Text(
-                                    text = if (isPomodoroBreak) "☕ استراحت پومودورو" else "⚡ پومودورو تمرکز (۲۵ دقیقه)",
+                                    text = if (pomodoro.isBreak) "☕ استراحت پومودورو" else "⚡ پومودورو تمرکز (۲۵ دقیقه)",
                                     style = MaterialTheme.typography.labelMedium,
                                     fontWeight = FontWeight.Black,
                                     color = MaterialTheme.colorScheme.primary,
                                     maxLines = 1
                                 )
-                                val mins = pomodoroSecondsLeft / 60
-                                val secs = pomodoroSecondsLeft % 60
+                                val mins = pomodoro.secondsLeft / 60
+                                val secs = pomodoro.secondsLeft % 60
                                 Text(
                                     text = BidiFormatter.toPersianDigits(String.format(java.util.Locale.US, "%02d:%02d", mins, secs)),
                                     style = MaterialTheme.typography.titleMedium,
@@ -1061,23 +1213,19 @@ fun SmartSoldierTeacherPlannerCard(
                             horizontalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
                             Surface(
-                                onClick = { isPomodoroRunning = !isPomodoroRunning },
+                                onClick = { sharedPomodoroTimer.toggle() },
                                 shape = RoundedCornerShape(8.dp),
                                 color = MaterialTheme.colorScheme.primary
                             ) {
                                 Icon(
-                                    imageVector = if (isPomodoroRunning) Icons.Default.Pause else Icons.Default.PlayArrow,
+                                    imageVector = if (pomodoro.isRunning) Icons.Default.Pause else Icons.Default.PlayArrow,
                                     contentDescription = "شروع / توقف",
                                     tint = MaterialTheme.colorScheme.onPrimary,
                                     modifier = Modifier.padding(6.dp).size(20.dp)
                                 )
                             }
                             Surface(
-                                onClick = {
-                                    isPomodoroRunning = false
-                                    isPomodoroBreak = false
-                                    pomodoroSecondsLeft = 25 * 60
-                                },
+                                onClick = { sharedPomodoroTimer.reset() },
                                 shape = RoundedCornerShape(8.dp),
                                 color = MaterialTheme.colorScheme.surface,
                                 border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.primary)
@@ -1283,8 +1431,8 @@ fun SmartSoldierTeacherPlannerCard(
                         }
 
                         // فهرست تعطیلات رسمی این ماه برای برنامه‌ریزی جهشی و شروع صبحگاهی
-                        val monthHolidays = remember(selectedShamsiMonth) {
-                            ShamsiHolidayCatalog.getMonthHolidays(selectedShamsiMonth)
+                        val monthHolidays = remember(selectedShamsiYear, selectedShamsiMonth) {
+                            ShamsiHolidayCatalog.getMonthHolidays(selectedShamsiYear, selectedShamsiMonth)
                         }
                         if (monthHolidays.isNotEmpty()) {
                             HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
