@@ -661,8 +661,6 @@ fun HomeDashboardScreen(
     onSelectSubjectForLessons: (String) -> Unit,
     onOpenLesson: (String?) -> Unit,
     onNavigateTab: (AppTab) -> Unit,
-    onSelectGradeFilter: (Int) -> Unit = {},
-    onSelectSubjectAndGrade: (String, Int) -> Unit = { _, _ -> },
     onSaveLessonState: (ZeroLesson, Boolean, Boolean, String, Int) -> Unit = { _, _, _, _, _ -> }
 ) {
     // 1. If a lesson is open, render LessonDetailView directly

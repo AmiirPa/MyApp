@@ -1333,6 +1333,35 @@ private fun VerticalSubjectSelectorCard(
 }
 
 
+/**
+ * Pure helpers for the archive exam ([KonkoorPastExamsArchiveView]), kept outside
+ * the composable so they are unit-testable without a Compose runtime.
+ * Covered by `ArchiveExamLogicTest`.
+ */
+
+/** Initial countdown for an archive paper: its official minutes, 85 when unknown. */
+internal fun initialArchiveExamRemainingSeconds(totalTimeMinutes: Int?): Int =
+    (totalTimeMinutes ?: 85) * 60
+
+/**
+ * Number of questions answered with the correct option. The source of truth is
+ * the recorded answers map — the same data the report card renders — so the
+ * stored result always matches the report the user sees. Unanswered questions
+ * (absent from the map) and wrong answers both count as not correct.
+ */
+internal fun countArchiveExamCorrect(
+    questions: List<QuizQuestionItem>,
+    answeredOptions: Map<String, Int>
+): Int = questions.count { q -> answeredOptions[q.id] == q.correctOptionIndex }
+
+/**
+ * Whether the correct answer / written solution may be shown for a question in
+ * the archive view. Simulation mode (1) hides everything until the exam is
+ * submitted; practice (0) and the full-list answer key (2) show it by design.
+ */
+internal fun isArchiveAnswerRevealAllowed(examMode: Int, isExamFinished: Boolean): Boolean =
+    examMode != 1 || isExamFinished
+
 @Composable
 private fun KonkoorPastExamsArchiveView(
     uiState: KonkoorUiState,
@@ -1345,13 +1374,30 @@ private fun KonkoorPastExamsArchiveView(
     var correctAnswersCount by remember { mutableIntStateOf(0) }
     var isExamFinished by remember { mutableStateOf(false) }
     var activeExamMode by remember { mutableIntStateOf(0) } // 0: Normal Practice (تمرین عادی بدون استرس), 1: Live Simulation (شبیه ساز کنکور با تایمر), 2: Full List (فهرست‌وار و پاسخ‌نامه)
-    var remainingSeconds by remember(activePaper?.id, activeExamMode) {
-        mutableIntStateOf((activePaper?.totalTimeMinutes ?: 85) * 60)
+    // Timer state is hoisted above the exam-mode switch: it is keyed ONLY by the
+    // paper id, so switching between practice / simulation / full-list keeps the
+    // remaining time instead of resetting it to the full paper time.
+    // (Before, activeExamMode was a remember key, so every mode switch
+    // recreated the timer from scratch.)
+    var remainingSeconds by remember(activePaper?.id) {
+        mutableIntStateOf(initialArchiveExamRemainingSeconds(activePaper?.totalTimeMinutes))
     }
-    var isTimerRunning by remember(activePaper?.id, activeExamMode) { mutableStateOf(false) }
+    var isTimerRunning by remember(activePaper?.id) { mutableStateOf(false) }
+    // Set once the current attempt's result has been submitted, so the three
+    // finish paths (timer expiry, "پایان آزمون", last-question button) can only
+    // ever store one result per attempt. Keyed by paper id: opening another
+    // paper (or going back to the list) starts a fresh attempt; the in-place
+    // "شروع مجدد شبیه‌ساز" button resets it explicitly.
+    var archiveExamResultSubmitted by remember(activePaper?.id) { mutableStateOf(false) }
 
-    val revealedSolutionsMap = remember { mutableStateMapOf<String, Boolean>() }
-    val answeredOptionsMap = remember { mutableStateMapOf<String, Int>() }
+    // Second layer of the answer-leak fix (audit-confirmed): both answer-state
+    // maps are keyed by the paper id, so switching papers clears all recorded
+    // answers and revealed solutions. Before, they were plain remember { ... }
+    // with no key and keyed only by q.id, so opening another paper kept the
+    // previous paper's answers/solutions. (The primary fix — re-identifying
+    // the yearly papers' questions — lives in KonkoorPastExamsArchive.kt.)
+    val revealedSolutionsMap = remember(activePaper?.id) { mutableStateMapOf<String, Boolean>() }
+    val answeredOptionsMap = remember(activePaper?.id) { mutableStateMapOf<String, Int>() }
 
     // Live countdown timer effect for exam simulation mode
     LaunchedEffect(isTimerRunning, remainingSeconds, activeExamMode) {
@@ -1392,6 +1438,26 @@ private fun KonkoorPastExamsArchiveView(
         val questions = remember(allPaperQuestions, selectedBookletSubject) {
             if (selectedBookletSubject == "all") allPaperQuestions
             else allPaperQuestions.filter { it.subjectId == selectedBookletSubject }
+        }
+
+        // Archive exam results are stored exactly once per attempt. All three
+        // finish paths (timer expiry, the "پایان آزمون" button, and the
+        // last-question "مشاهده کارنامه" button) converge on isExamFinished,
+        // and none of them submitted before this effect existed, so finished
+        // archive exams never reached the local store or the cloud.
+        // The count is computed from the recorded answers map, the same data
+        // the report card renders, so the stored result always matches the
+        // report the user sees. Empty papers (no questions) submit nothing.
+        LaunchedEffect(isExamFinished, paper.id) {
+            if (isExamFinished && !archiveExamResultSubmitted && questions.isNotEmpty()) {
+                archiveExamResultSubmitted = true
+                onSubmitExamResult(
+                    paper.id,
+                    paper.title,
+                    countArchiveExamCorrect(questions, answeredOptionsMap),
+                    questions.size
+                )
+            }
         }
 
         LazyColumn(
@@ -1970,6 +2036,7 @@ private fun KonkoorPastExamsArchiveView(
                                             selectedOptionIdx = -1
                                             correctAnswersCount = 0
                                             isExamFinished = false
+                                            archiveExamResultSubmitted = false
                                             answeredOptionsMap.clear()
                                             revealedSolutionsMap.clear()
                                             remainingSeconds = paper.totalTimeMinutes * 60
@@ -2084,14 +2151,22 @@ private fun KonkoorPastExamsArchiveView(
                                     fontWeight = FontWeight.Bold
                                 )
 
-                                // Options
+                                // Options (simulation mode): answering only records the
+                                // choice. Correctness is NEVER shown while the exam is
+                                // running — no green correct option, no red wrong option,
+                                // only a neutral mark on the option the user picked.
+                                // The correct answer becomes visible only after the exam
+                                // is submitted, in the full-list answer key (mode 2).
+                                // See isArchiveAnswerRevealAllowed.
+                                val revealAllowed = isArchiveAnswerRevealAllowed(activeExamMode, isExamFinished)
                                 q.options.forEachIndexed { idx, opt ->
                                     val answered = selectedOptionIdx != -1
                                     val isCorrect = idx == q.correctOptionIndex
                                     val isChosen = idx == selectedOptionIdx
                                     val bg = when {
-                                        answered && isCorrect -> Color(0xFF16A34A).copy(alpha = 0.18f)
-                                        answered && isChosen && !isCorrect -> MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.65f)
+                                        revealAllowed && answered && isCorrect -> Color(0xFF16A34A).copy(alpha = 0.18f)
+                                        revealAllowed && answered && isChosen && !isCorrect -> MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.65f)
+                                        isChosen -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.55f)
                                         else -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.40f)
                                     }
                                     Surface(
@@ -2107,8 +2182,11 @@ private fun KonkoorPastExamsArchiveView(
                                         shape = RoundedCornerShape(10.dp),
                                         border = androidx.compose.foundation.BorderStroke(
                                             0.6.dp,
-                                            if (answered && isCorrect) Color(0xFF16A34A)
-                                            else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
+                                            when {
+                                                revealAllowed && answered && isCorrect -> Color(0xFF16A34A)
+                                                isChosen -> MaterialTheme.colorScheme.primary
+                                                else -> MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
+                                            }
                                         )
                                     ) {
                                         Row(
@@ -2119,7 +2197,9 @@ private fun KonkoorPastExamsArchiveView(
                                                 text = BidiFormatter.formatMixedPersianText("گزینه ${idx + 1}) "),
                                                 style = MaterialTheme.typography.labelMedium,
                                                 fontWeight = FontWeight.Black,
-                                                color = if (answered && isCorrect) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.onSurface
+                                                color = if (revealAllowed && answered && isCorrect) MaterialTheme.colorScheme.tertiary
+                                                else if (isChosen) MaterialTheme.colorScheme.primary
+                                                else MaterialTheme.colorScheme.onSurface
                                             )
                                             BiDiText(
                                                 text = opt,
@@ -2131,8 +2211,12 @@ private fun KonkoorPastExamsArchiveView(
                                     }
                                 }
 
-                                // Step-by-Step Solution with Golden Key Callout Card if answered
-                                if (selectedOptionIdx != -1) {
+                                // Step-by-Step Solution with Golden Key Callout Card if answered.
+                                // In simulation mode the written solution stays hidden until
+                                // the exam is submitted (revealAllowed is false while the
+                                // exam is running); it is available afterwards in the
+                                // full-list answer key (mode 2).
+                                if (selectedOptionIdx != -1 && revealAllowed) {
                                     Spacer(modifier = Modifier.height(4.dp))
                                     GoldenKeyPointCalloutCard(
                                         keyPointText = "💡 پاسخ تشریحی: ${q.zeroLevelSolution}",
