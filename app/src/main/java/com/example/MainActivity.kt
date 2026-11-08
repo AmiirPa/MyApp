@@ -671,6 +671,23 @@ private fun MoreSectionScreen(
         )
     }
 
+    // گروه‌بندی تب‌های فرعی برای خلوت‌کردن ردیف بالا: سه گروه جمع‌وجور،
+    // و فقط چیپ‌های گروه فعال نشان داده می‌شود (حداکثر دو ضربه تا هر مقصد:
+    // یک ضربه روی گروه + یک ضربه روی چیپ؛ مقصد اول هر گروه با یک ضربه).
+    val groups = remember(themeController.appLanguage) {
+        listOf(
+            Triple(0, themeController.tr("یادگیری", "Learning"), listOf(0, 1, 2)),
+            Triple(1, themeController.tr("برنامه‌ریزی", "Planning"), listOf(4, 5, 6, 7)),
+            Triple(2, themeController.tr("منابع", "Resources"), listOf(3, 8))
+        )
+    }
+    val activeGroup = when (activeSection) {
+        0, 1, 2 -> 0
+        4, 5, 6, 7 -> 1
+        else -> 2
+    }
+    val activeGroupItems = items.filter { (idx, _, _) -> idx in groups[activeGroup].third }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -685,33 +702,84 @@ private fun MoreSectionScreen(
             color = surfaceColor,
             border = BorderStroke(1.dp, borderColor)
         ) {
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState())
                     .padding(4.dp),
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                items.forEach { (idx, label, tag) ->
-                    val isSelected = activeSection == idx
-                    Surface(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(10.dp))
-                            .clickable { activeSection = idx }
-                            .testTag(tag),
-                        color = if (isSelected) primaryColor else Color.Transparent,
-                        shape = RoundedCornerShape(10.dp)
-                    ) {
-                        Text(
-                            text = BidiFormatter.applyPreferredDigits(label),
-                            fontSize = 13.sp,
-                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                            color = if (isSelected) onPrimaryColor else mutedColor,
-                            maxLines = 1,
-                            softWrap = false,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 9.dp)
-                        )
+                // ردیف گروه‌ها: فقط سه چیپ هم‌اندازه، همیشه کامل جا می‌شود.
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    groups.forEach { (groupIdx, groupLabel, groupItems) ->
+                        val isGroupSelected = activeGroup == groupIdx
+                        Surface(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clip(RoundedCornerShape(10.dp))
+                                .clickable {
+                                    // ضربه روی گروهِ دیگر، به نخستین مقصد آن گروه می‌رود؛
+                                    // ضربه روی گروه فعال، جای فعلی را عوض نمی‌کند.
+                                    if (activeGroup != groupIdx) activeSection = groupItems.first()
+                                }
+                                .testTag(
+                                    when (groupIdx) {
+                                        0 -> "more_group_learning"
+                                        1 -> "more_group_planning"
+                                        else -> "more_group_resources"
+                                    }
+                                ),
+                            color = if (isGroupSelected) primaryColor else Color.Transparent,
+                            shape = RoundedCornerShape(10.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = BidiFormatter.applyPreferredDigits(groupLabel),
+                                    fontSize = 13.sp,
+                                    fontWeight = if (isGroupSelected) FontWeight.Bold else FontWeight.Medium,
+                                    color = if (isGroupSelected) onPrimaryColor else mutedColor,
+                                    maxLines = 1,
+                                    softWrap = false,
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 9.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+                // ردیف چیپ‌های گروه فعال: فقط ۳ یا ۴ چیپ، با همان testTagهای قبلی.
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    activeGroupItems.forEach { (idx, label, tag) ->
+                        val isSelected = activeSection == idx
+                        Surface(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(10.dp))
+                                .clickable { activeSection = idx }
+                                .testTag(tag),
+                            color = if (isSelected) primaryColor else Color.Transparent,
+                            shape = RoundedCornerShape(10.dp)
+                        ) {
+                            Text(
+                                text = BidiFormatter.applyPreferredDigits(label),
+                                fontSize = 13.sp,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                color = if (isSelected) onPrimaryColor else mutedColor,
+                                maxLines = 1,
+                                softWrap = false,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 9.dp)
+                            )
+                        }
                     }
                 }
             }
