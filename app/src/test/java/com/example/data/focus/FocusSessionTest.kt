@@ -1,6 +1,6 @@
 package com.example.data.focus
 
-import android.content.Context
+import android.content.SharedPreferences
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -8,10 +8,55 @@ import org.junit.Test
 
 /**
  * Tests for the focus module (§۸): pure session logic + the SharedPreferences
- * store round-trip. The store test runs against the functional test-only
- * org.json / Context stubs of the focus harness (NOT the no-op adaptive stubs).
+ * store round-trip.
+ *
+ * The store tests use an in-memory fake `SharedPreferences` implementing the
+ * FULL real Android API — never `Context()`: `Context` is abstract in real
+ * Android, so `Context()` compiles only against a test stub and broke CI
+ * (run #79: "Cannot create an instance of an abstract class"). The fake
+ * keeps the round-trip test runnable both locally and in CI.
  */
 class FocusSessionTest {
+
+    /** `SharedPreferences` درون‌حافظه‌ای؛ یک نمونه = یک فایل prefs مشترک. */
+    private class InMemoryPrefs : SharedPreferences {
+        val data = HashMap<String, String?>()
+        override fun getAll(): Map<String, *> = data.toMap()
+        override fun getString(key: String, defValue: String?): String? =
+            if (data.containsKey(key)) data[key] else defValue
+        override fun getStringSet(key: String, defValues: Set<String>?): Set<String>? = defValues
+        override fun getInt(key: String, defValue: Int): Int = defValue
+        override fun getLong(key: String, defValue: Long): Long = defValue
+        override fun getFloat(key: String, defValue: Float): Float = defValue
+        override fun getBoolean(key: String, defValue: Boolean): Boolean = defValue
+        override fun contains(key: String): Boolean = data.containsKey(key)
+        override fun edit(): SharedPreferences.Editor = Editor()
+        override fun registerOnSharedPreferenceChangeListener(
+            listener: SharedPreferences.OnSharedPreferenceChangeListener
+        ) = Unit
+        override fun unregisterOnSharedPreferenceChangeListener(
+            listener: SharedPreferences.OnSharedPreferenceChangeListener
+        ) = Unit
+
+        private inner class Editor : SharedPreferences.Editor {
+            override fun putString(key: String, value: String?): SharedPreferences.Editor {
+                data[key] = value; return this
+            }
+            override fun putStringSet(key: String, values: Set<String>?): SharedPreferences.Editor = this
+            override fun putInt(key: String, value: Int): SharedPreferences.Editor = this
+            override fun putLong(key: String, value: Long): SharedPreferences.Editor = this
+            override fun putFloat(key: String, value: Float): SharedPreferences.Editor = this
+            override fun putBoolean(key: String, value: Boolean): SharedPreferences.Editor = this
+            override fun remove(key: String): SharedPreferences.Editor {
+                data.remove(key); return this
+            }
+            override fun clear(): SharedPreferences.Editor {
+                data.clear(); return this
+            }
+            override fun commit(): Boolean = true
+            override fun apply() = Unit
+        }
+    }
 
     private fun session(
         day: Long,
@@ -93,8 +138,8 @@ class FocusSessionTest {
 
     @Test
     fun store_roundTrip_persistsAndReloads() {
-        val ctx = Context()
-        val store1 = FocusSessionStore(ctx, prefsName = "test-focus-roundtrip")
+        val prefs = InMemoryPrefs()
+        val store1 = FocusSessionStore(prefs)
         store1.recordFocusInterval(
             actualFocusSeconds = 1500, completed = true, interruptions = 1,
             startedAtEpochMillis = 1_000L, endedAtEpochMillis = 2_000L
@@ -104,7 +149,7 @@ class FocusSessionTest {
             startedAtEpochMillis = 3_000L, endedAtEpochMillis = 4_000L
         )
         // نمونه تازه روی همان فایل prefs: باید همان دو جلسه را بخواند.
-        val store2 = FocusSessionStore(ctx, prefsName = "test-focus-roundtrip")
+        val store2 = FocusSessionStore(prefs)
         val loaded = store2.sessions.value
         assertEquals(2, loaded.size)
         assertEquals(600, loaded[0].actualFocusSeconds)
@@ -119,8 +164,7 @@ class FocusSessionTest {
 
     @Test
     fun store_ignoresZeroSecondInterval() {
-        val ctx = Context()
-        val store = FocusSessionStore(ctx, prefsName = "test-focus-zero")
+        val store = FocusSessionStore(InMemoryPrefs())
         store.recordFocusInterval(
             actualFocusSeconds = 0, completed = false, interruptions = 0,
             startedAtEpochMillis = 1_000L, endedAtEpochMillis = 2_000L
@@ -130,8 +174,7 @@ class FocusSessionTest {
 
     @Test
     fun store_completedAndPartialBothCountInMinutes() {
-        val ctx = Context()
-        val store = FocusSessionStore(ctx, prefsName = "test-focus-minutes")
+        val store = FocusSessionStore(InMemoryPrefs())
         // endedAt روی روز ۰ می‌افتد (epochDayFromMillis(2000) == 0).
         store.recordFocusInterval(
             actualFocusSeconds = 1500, completed = true, interruptions = 0,

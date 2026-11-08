@@ -1,6 +1,7 @@
 package com.example.data.focus
 
 import android.content.Context
+import android.content.SharedPreferences
 import com.example.util.StreakCalculator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,14 +19,19 @@ import org.json.JSONObject
  *
  * جلسه‌ها فقط محلی‌اند — همگام‌سازی ابری برای آن‌ها هنوز وصل نشده است؛
  * با حذف اپ یا پاک شدن داده‌ها، سابقه تمرکز از بین می‌رود.
+ *
+ * سازنده اصلی `SharedPreferences` می‌گیرد تا تست بدون `Context` واقعی ممکن
+ * باشد (`Context` در اندروید واقعی کلاس انتزاعی است و نمی‌شود آن را با
+ * سازنده ساخت — تست قبلی همین‌جا در CI خراب شد)؛ سازنده دوم همان مسیر
+ * عادی برنامه است (MainActivity هنوز `Context` می‌دهد).
  */
 class FocusSessionStore(
-    context: Context,
-    prefsName: String = PREFS_NAME
+    private val prefs: SharedPreferences,
 ) : FocusSessionRecorder {
 
-    private val prefs =
+    constructor(context: Context, prefsName: String = PREFS_NAME) : this(
         context.applicationContext.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
+    )
 
     private val _sessions = MutableStateFlow(loadSessions())
     val sessions: StateFlow<List<FocusSession>> = _sessions.asStateFlow()
