@@ -720,13 +720,18 @@ fun HomeDashboardScreen(
         nextLesson?.title ?: "شروع گام اول مطالعه"
     }
 
-    val dailyProgressPct = remember(uiState.overallProgressFraction, uiState.studyTasks) {
-        val taskProgress = if (uiState.studyTasks.isNotEmpty()) {
+    // Daily progress = the day's task checklist only.
+    // (The old code took max(task %, ALL-TIME lesson %) — overall curriculum
+    // progress is not daily progress: it kept "today" at >=40% even on a day
+    // with zero study. The overall figure is already shown separately on this
+    // card as completed/total lessons.)
+    // Limitation, kept visible: tasks are not auto-reset each day, so this is
+    // the checklist's completion share, not a clock-based daily metric.
+    val dailyProgressPct = remember(uiState.studyTasks) {
+        if (uiState.studyTasks.isNotEmpty()) {
             (uiState.studyTasks.count { it.isCompleted } * 100) / uiState.studyTasks.size
         } else 0
-        val lessonPct = (uiState.overallProgressFraction * 100).toInt()
-        maxOf(taskProgress, lessonPct).coerceIn(0, 100)
-    }
+    }.coerceIn(0, 100)
 
     val studySubjects = remember(uiState.subjects, uiState.allLessons, uiState.lessonProgressMap) {
         uiState.subjects.map { sub ->
@@ -2115,7 +2120,7 @@ fun ZeroLessonsScreen(
                                             prev?.isCompleted ?: false,
                                             !(prev?.isBookmarked ?: false),
                                             prev?.userNote ?: "",
-                                            prev?.masteryPercent ?: 50
+                                            prev?.masteryPercent ?: 0
                                         )
                                     },
                                     onSelectLesson = { lesson -> onOpenLesson(lesson.id) }
@@ -2331,7 +2336,7 @@ private fun LessonDetailView(
                                     isCompleted,
                                     isBookmarked,
                                     userNote,
-                                    if (isCompleted) 100 else (progress?.masteryPercent ?: 50)
+                                    progress?.masteryPercent ?: 0
                                 )
                             },
                             modifier = Modifier.size(36.dp).testTag("bookmark_lesson_button")
@@ -2820,7 +2825,7 @@ private fun LessonDetailView(
                                             isCompleted,
                                             isBookmarked,
                                             userNote,
-                                            if (isCompleted) 100 else (progress?.masteryPercent ?: 50)
+                                            progress?.masteryPercent ?: 0
                                         )
                                     }
                                     .testTag("toggle_favorite_banner"),
@@ -4023,7 +4028,7 @@ private fun LessonDetailView(
                                     isCompleted,
                                     isBookmarked,
                                     userNote,
-                                    if (isCompleted) 100 else 50
+                                    progress?.masteryPercent ?: 0
                                 )
                             },
                             modifier = Modifier
