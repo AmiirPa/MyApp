@@ -164,7 +164,7 @@ object ElementaryE39Completion1406 {
                 correctIndex = 2,
                 explanation = "گزینه اول درست است، چون «در حالی که» دو چیز متفاوت را هم‌زمان کنار هم می‌گذارد: بلندی چنار و کوتاهی کدوبن. در گزینه دوم و سوم، دو طرف جمله یکی‌اند و مقایسه‌ای نیست؛ در گزینه چهارم، باران ربطی به بلندی چنار ندارد."
             )
-        )
+        ),
         ZeroLesson(
             id = "elem5-negaresh-06-sorud",
             subjectId = "negaresh",
@@ -290,7 +290,7 @@ object ElementaryE39Completion1406 {
                 correctIndex = 0,
                 explanation = "اول باید موضوع را انتخاب کنی و آن را کوچک کنی تا به یک صحنه برسد؛ بعد مطلب جمع می‌کنی و می‌نویسی و آخر سر عنوان می‌گذاری. عنوان آخر کار است، نه اول کار؛ و درس آزاد متن ثابت ندارد که حفظش کنی."
             )
-        )
+        ),
         ZeroLesson(
             id = "elem5-negaresh-08-defa",
             subjectId = "negaresh",
@@ -416,7 +416,7 @@ object ElementaryE39Completion1406 {
                 correctIndex = 3,
                 explanation = "گزینه سوم یادگار است، چون می‌گوید چه چیزی از او برای مردم مانده است: کتاب‌ها و بیمارستانش. گزینه اول تولد، گزینه دوم یادگیری و گزینه چهارم کار بزرگ است."
             )
-        )
+        ),
         ZeroLesson(
             id = "elem5-negaresh-10-namniko",
             subjectId = "negaresh",
@@ -542,7 +542,7 @@ object ElementaryE39Completion1406 {
                 correctIndex = 3,
                 explanation = "گزینه دوم مثال درستی است، چون یک نمونه واقعی است که نشان می‌دهد مشورت نتیجه خوبی داشته است. گزینه اول بی‌ربط است؛ گزینه سوم دلیل نیست، فقط تکرار نظر است؛ گزینه چهارم فقط یک نظر دیگر است و مثال نیست."
             )
-        )
+        ),
         ZeroLesson(
             id = "elem5-negaresh-12-azad2",
             subjectId = "negaresh",
