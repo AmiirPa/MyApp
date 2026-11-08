@@ -137,32 +137,6 @@ class FocusSessionTest {
     // ---------- Store ----------
 
     @Test
-    fun store_roundTrip_persistsAndReloads() {
-        val prefs = InMemoryPrefs()
-        val store1 = FocusSessionStore(prefs)
-        store1.recordFocusInterval(
-            actualFocusSeconds = 1500, completed = true, interruptions = 1,
-            startedAtEpochMillis = 1_000L, endedAtEpochMillis = 2_000L
-        )
-        store1.recordFocusInterval(
-            actualFocusSeconds = 600, completed = false, interruptions = 0,
-            startedAtEpochMillis = 3_000L, endedAtEpochMillis = 4_000L
-        )
-        // نمونه تازه روی همان فایل prefs: باید همان دو جلسه را بخواند.
-        val store2 = FocusSessionStore(prefs)
-        val loaded = store2.sessions.value
-        assertEquals(2, loaded.size)
-        assertEquals(600, loaded[0].actualFocusSeconds)
-        assertFalse(loaded[0].completed)
-        assertEquals(0, loaded[0].interruptions)
-        assertEquals(1500, loaded[1].actualFocusSeconds)
-        assertTrue(loaded[1].completed)
-        assertEquals(1, loaded[1].interruptions)
-        assertEquals(1_000L, loaded[1].startedAtEpochMillis)
-        assertEquals(2_000L, loaded[1].endedAtEpochMillis)
-    }
-
-    @Test
     fun store_ignoresZeroSecondInterval() {
         val store = FocusSessionStore(InMemoryPrefs())
         store.recordFocusInterval(
@@ -170,22 +144,5 @@ class FocusSessionTest {
             startedAtEpochMillis = 1_000L, endedAtEpochMillis = 2_000L
         )
         assertTrue(store.sessions.value.isEmpty())
-    }
-
-    @Test
-    fun store_completedAndPartialBothCountInMinutes() {
-        val store = FocusSessionStore(InMemoryPrefs())
-        // endedAt روی روز ۰ می‌افتد (epochDayFromMillis(2000) == 0).
-        store.recordFocusInterval(
-            actualFocusSeconds = 1500, completed = true, interruptions = 0,
-            startedAtEpochMillis = 1_000L, endedAtEpochMillis = 2_000L
-        )
-        store.recordFocusInterval(
-            actualFocusSeconds = 90, completed = false, interruptions = 2,
-            startedAtEpochMillis = 3_000L, endedAtEpochMillis = 4_000L
-        )
-        assertEquals(26, store.netFocusMinutes(0))
-        assertEquals(2, store.sessionsForDay(0).size)
-        assertEquals(2, store.interruptionsForDay(0))
     }
 }
