@@ -637,6 +637,8 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "math_07_combinatorics_probability",
     "math_10_conditional_probability",
     "math_05_sequences_arithmetic",
+    "math_05d_sequences_arithmetic_deep",
+    "math_05e_sequences_geometric_deep",
     "math_12_konkoor_80_percent_shortcuts",
     "math_04_sequences",
     "math_05b_counting_permutations_combinations",
@@ -915,6 +917,8 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "arooz_00_bahr_barcode",
     "arooz_03_samaei_rhythms",
     "arooz_03_meters_samaei",
+    "arooz_11_lesson3_vocal_bases",
+    "arooz_11_lesson6_hamsan_meters",
     "arooz_11_ch2_nahamsan_meters",
     "arooz_04_mnemonics_mastery" -> 3 to "📙 پایه یازدهم انسانی (چاپ ۱۴۰۴ ویژه کنکور ۱۴۰۶) — علوم و فنون ادبی ۲ (اوزان همسان و دولختی)"
 
@@ -934,6 +938,7 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "fonoon_10_ch1_history_khorasani",
     "fonoon_10_ch2_badi_tarsee_movazeneh",
     "fonoon_10_ch3_tashbih_majaz_10",
+    "fonoon_10_lesson10_sade5_6",
     "fonoon_01b_verbal_figures_saj" -> 2 to "📗 پایه دهم انسانی (چاپ ۱۴۰۳ ویژه کنکور ۱۴۰۶) — علوم و فنون ادبی ۱ کامل (درس ۱ تا ۱۲)"
 
     "fonoon_11_ch1_history_eraqi",
@@ -1733,6 +1738,8 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     // 20. Scientific Learning Methods & Speed Reading (روش‌های نوین یادگیری و تست‌زنی)
     "study_01_feynman_active_recall_leitner",
     "study_04_feynman_technique_deep_mastery",
+    "study_05_daily_weekly_planning",
+    "study_06_sleep_focus_phone",
     "methods1406-01-sq3r",
     "methods1406-02-memory-palace",
     "methods1406-03-interleaving",
@@ -3256,8 +3263,8 @@ fun ZeroLesson.officialTextbookReference(): String = when (id) {
     "english_11_vision2_lesson3_culture_and_art" -> "📚 مطابق درس ۳ کتاب Vision 2 — پایه یازدهم (چاپ ۱۴۰۴، کد ۱۱۱۲۱۲: Art & Culture, Conditional Type 1 & Phrasal Verbs)"
     "arooz_00_bahr_barcode" -> "📚 مطابق علوم و فنون ادبی ۲ و ۳ (چاپ ۱۴۰۴ و ۱۴۰۵) — جدول بارکد ۴ رقمی بحرها و تشخیص فوری اوزان"
     "arooz_10_ch2_ghafieh_tabsareha" -> "📚 مطابق درس ۹ و ۱۲ علوم و فنون ادبی ۱ — پایه دهم انسانی (چاپ ۱۴۰۳، کد ۱۱۰۲۱۸: قواعد، حروف و تبصره‌های قافیه)"
-    "arooz_11_ch2_nahamsan_meters" -> "📚 مطابق درس ۶، ۹ و ۱۲ علوم و فنون ادبی ۲ — پایه یازدهم انسانی (چاپ ۱۴۰۴، کد ۱۱۱۲۱۸: اوزان ناهمسان و دولختی)"
-    "fonoon_01_bayani_figures" -> "📚 مطابق درس ۲، ۵، ۸ و ۱۱ علوم و فنون ادبی ۲ — پایه یازدهم انسانی (چاپ ۱۴۰۴، کد ۱۱۱۲۱۸: تشبیه، استعاره، مجاز و کنایه)"
+    "arooz_11_ch2_nahamsan_meters" -> "📚 مطابق درس ۶، ۹ و ۱۲ علوم و فنون ادبی ۲ — پایه یازدهم انسانی (چاپ ۱۴۰۴، کد ۱۱۱۲۰۳: اوزان ناهمسان و دولختی)"
+    "fonoon_01_bayani_figures" -> "📚 مطابق درس ۲، ۵، ۸ و ۱۱ علوم و فنون ادبی ۲ — پایه یازدهم انسانی (چاپ ۱۴۰۴، کد ۱۱۱۲۰۳: تشبیه، استعاره، مجاز و کنایه)"
     "philo_03_logic_syllogism_conditional" -> "📚 مطابق درس ۸، ۹ و ۱۰ منطق — پایه دهم انسانی (چاپ ۱۴۰۳، کد ۱۱۰۲۲۰: قیاس اقترانی، قیاس استثنایی و مغالطات)"
     "logic_10_lesson1_2_concepts_terms" -> "📚 مطابق درس ۱ و ۲ منطق — پایه دهم انسانی (چاپ ۱۴۰۳، کد ۱۱۰۲۲۰: تفکر، تصور و تصدیق، دلالت و اقسام الفاظ)"
     "logic_10_lesson3_4_relations_five_universals" -> "📚 مطابق درس ۳ و ۴ منطق — پایه دهم انسانی (چاپ ۱۴۰۳، کد ۱۱۰۲۲۰: مفاهیم جزئی و کلی، نسب اربع و کلیات خمس)"
