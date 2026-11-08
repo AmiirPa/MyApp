@@ -69,6 +69,7 @@ object FlashcardAndQuizBank {
             addAll(EnglishCompletion1406.lessons)
             addAll(StudyMethodsCompletion1406.lessons)
             addAll(StudyMethodsPlanningCompletion1406.lessons)
+            addAll(SocialStudyTipsCompletion1406.lessons)
             addAll(AroozAndLogicMethods1406.lessons)
             addAll(NegareshCompletion1406.lessons)
             addAll(Negaresh12Part1Completion1406.lessons)
@@ -110,6 +111,7 @@ object FlashcardAndQuizBank {
             addAll(Geography2Part3Completion1406.lessons)
             addAll(Arooz12Completion1406.lessons)
             addAll(AroozFonoon2LessonsCompletion1406.lessons)
+            addAll(SocialArabicTipsCompletion1406.lessons)
             addAll(Fonoon12Completion1406.lessons)
             addAll(Fonoon3HistoryCompletion1406.lessons)
             addAll(Fonoon3MusicCompletion1406.lessons)
@@ -262,6 +264,7 @@ object FlashcardAndQuizBank {
             addAll(ElementaryE56Completion1406.lessons)
             addAll(ElementaryE57Completion1406.lessons)
             addAll(ElementaryE58Completion1406.lessons)
+            addAll(SocialHumanitiesTipsCompletion1406.lessons)
         }
             .distinctBy { it.id }
             .map { it.copy(subjectId = it.normalizedSubjectId()) }
