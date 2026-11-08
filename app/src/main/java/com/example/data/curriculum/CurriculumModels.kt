@@ -355,7 +355,7 @@ object SubjectCatalog {
             targetForZeroStudent = "هدف قطعی: روخوانی روان قرآن از صفر",
             color = Color(0xFF059669),
             zeroReassurance = "قرآن را قدم‌به‌قدم، از حروف تا سوره‌ها، از صفر یاد می‌گیری!"
-        )
+        ),
         SubjectMeta(
             id = "social_studies",
             shortTitle = "مطالعات اجتماعی",
