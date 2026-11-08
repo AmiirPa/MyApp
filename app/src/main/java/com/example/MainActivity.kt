@@ -100,6 +100,7 @@ import com.example.ui.components.BidiFormatter
 import com.example.ui.components.SavedItemsModalSheet
 import com.example.data.adaptive.AdaptiveEngine
 import com.example.data.focus.FocusSessionStore
+import com.example.util.CrashReporter
 import com.example.ui.screens.CounselingAndMentorshipScreen
 import com.example.ui.screens.DailyPlanScreen
 import com.example.ui.screens.DiagnosticFlowScreen
@@ -129,6 +130,9 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // گزارش‌گیر خرابی: اگر برنامه به‌خاطر خطایی بمیرد، متن کامل خطا در
+        // فایل crash-report.txt ذخیره می‌شود تا علت واقعی پیدا شود.
+        CrashReporter.install(applicationContext)
         enableEdgeToEdge()
         setContent {
             val context = LocalContext.current
@@ -148,7 +152,11 @@ class MainActivity : ComponentActivity() {
             // onAuthChanged, which (re)starts or cleanly stops cloud sync. Recreating
             // the ViewModel per user would wipe UI state (tab, open lesson) instead.
             val viewModel = remember {
-                val store = LocalKonkoorStore(context.applicationContext)
+                // فروشگاه محلی: اگر ساخته نشد، ViewModel بدون آن کار می‌کند
+                // (برنامه خراب نمی‌شود؛ فقط پیشرفت محلی ذخیره نمی‌شود).
+                val store = try {
+                    LocalKonkoorStore(context.applicationContext)
+                } catch (_: Exception) { null }
                 val user = try { Firebase.auth.currentUser } catch (_: Exception) { null }
                 val repo = if (user != null) {
                     try { KonkoorCloudRepository(context.applicationContext) } catch (_: Exception) { null }
