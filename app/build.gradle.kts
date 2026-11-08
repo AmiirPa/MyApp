@@ -106,6 +106,12 @@ secrets {
 
 googleServices { missingGoogleServicesStrategy = MissingGoogleServicesStrategy.WARN }
 
+// Room schema export location (required now that exportSchema = true in KonkoorDatabase;
+// version is 1 and fallbackToDestructiveMigration() was removed, so no silent data loss)
+ksp {
+  arg("room.schemaLocation", "$projectDir/schemas")
+}
+
 dependencies {
   implementation(platform(libs.androidx.compose.bom))
   implementation(platform(libs.firebase.bom))

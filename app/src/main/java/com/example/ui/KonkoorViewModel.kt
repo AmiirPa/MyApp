@@ -17,6 +17,7 @@ import com.example.data.firebase.CloudStudyTask
 import com.example.data.firebase.KonkoorCloudRepository
 import com.example.data.local.LocalKonkoorStore
 import com.example.ui.components.BidiFormatter
+import com.example.util.StreakCalculator
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -25,6 +26,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -42,6 +44,13 @@ enum class AppTab {
 data class KonkoorUiState(
     val subjects: List<SubjectMeta> = SubjectCatalog.subjects,
     val lessonProgressMap: Map<String, CloudLessonProgress> = emptyMap(),
+    /**
+     * Epoch days (see [StreakCalculator]) on which at least one lesson was
+     * completed. Union of the locally recorded study days and the days derived
+     * from completed lessons' real `updatedAt` timestamps (cloud-synced data).
+     * The planner's streak is computed from this set — never from a count.
+     */
+    val completedStudyDays: Set<Long> = emptySet(),
     val flashcardProgressMap: Map<String, CloudFlashcardProgress> = emptyMap(),
     val studyTasks: List<CloudStudyTask> = emptyList(),
     val examResults: List<CloudExamResult> = emptyList(),
@@ -161,20 +170,25 @@ class KonkoorViewModel(
             localStore?.examResults ?: emptyFlow()
         }
 
+    private val completedDaysFlow: Flow<Set<Long>> =
+        localStore?.completedDays ?: flowOf(emptySet())
+
     private data class IntermediateState(
         val lessons: List<CloudLessonProgress>,
         val cards: List<CloudFlashcardProgress>,
         val tasks: List<CloudStudyTask>,
-        val exams: List<CloudExamResult>
+        val exams: List<CloudExamResult>,
+        val completedDays: Set<Long>
     )
 
     private val intermediateFlow = combine(
         lessonProgressFlow,
         flashcardProgressFlow,
         studyTasksFlow,
-        examResultsFlow
-    ) { lessons, cards, tasks, exams ->
-        IntermediateState(lessons, cards, tasks, exams)
+        examResultsFlow,
+        completedDaysFlow
+    ) { lessons, cards, tasks, exams, completedDays ->
+        IntermediateState(lessons, cards, tasks, exams, completedDays)
     }
 
     private data class UiSettingsState(
@@ -221,8 +235,14 @@ class KonkoorViewModel(
                 .thenByDescending { it.createdAt?.seconds ?: 0L }
         )
         val sortedExams = state.exams.sortedByDescending { it.createdAt?.seconds ?: 0L }
+        val studyDaysFromProgress = state.lessons
+            .filter { it.isCompleted }
+            .mapNotNull { it.updatedAt }
+            .map { StreakCalculator.epochDayFromMillis(it.seconds * 1000L) }
+            .toSet()
         KonkoorUiState(
             lessonProgressMap = state.lessons.associateBy { it.lessonId },
+            completedStudyDays = state.completedDays + studyDaysFromProgress,
             flashcardProgressMap = state.cards.associateBy { it.cardId },
             studyTasks = sortedTasks,
             examResults = sortedExams,
@@ -322,7 +342,7 @@ class KonkoorViewModel(
         val newBookmarked = !(current?.isBookmarked ?: false)
         val isDone = current?.isCompleted ?: false
         val note = current?.userNote ?: ""
-        val mastery = current?.masteryPercent ?: (if (isDone) 100 else 50)
+        val mastery = current?.masteryPercent ?: 0
 
         localStore?.saveLessonProgress(
             lessonId = lesson.id,

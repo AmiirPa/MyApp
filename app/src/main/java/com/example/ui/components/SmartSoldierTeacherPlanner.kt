@@ -67,6 +67,7 @@ import com.example.data.curriculum.officialTextbookReference
 import com.example.data.curriculum.prerequisiteStepOrder
 import com.example.data.curriculum.subcategoryFolder
 import com.example.ui.KonkoorUiState
+import com.example.util.StreakCalculator
 import java.util.Calendar
 import kotlinx.coroutines.delay
 
@@ -272,7 +273,7 @@ fun SmartSoldierTeacherPlannerCard(
         Triple(Triple(jy, jm, jd), Triple(gy, gm, gd), todayDowIdx)
     }
 
-    val currentShamsiYear = todayInfo.first.first.coerceIn(1404, 1406)
+    val currentShamsiYear = todayInfo.first.first.coerceIn(1404, 1407)
     val currentShamsiMonth = todayInfo.first.second
     val defaultTodayNumber = todayInfo.first.third.coerceIn(1, 31)
     val currentGregorianMonth = todayInfo.second.second
@@ -311,9 +312,23 @@ fun SmartSoldierTeacherPlannerCard(
     }
 
     val firstDayOfMonthDowIndex = remember(selectedShamsiYear, selectedShamsiMonth, currentShamsiYear, currentShamsiMonth, defaultTodayNumber, todayDowIndex) {
-        val yearDiffDays = (selectedShamsiYear - currentShamsiYear) * 365
-        val monthDiffDays = (selectedShamsiMonth - currentShamsiMonth) * 30
-        val offsetFromToday = (1 - defaultTodayNumber) + monthDiffDays + yearDiffDays
+        // Days from today to the 1st of the selected month, counted with real Jalali
+        // month lengths (31/30/29-30) instead of the old 365/30 approximation, which
+        // drifted by one day per leap year and per 31-day month crossed.
+        var offsetFromToday = 1 - defaultTodayNumber
+        var y = currentShamsiYear
+        var m = currentShamsiMonth
+        while (y != selectedShamsiYear || m != selectedShamsiMonth) {
+            if (y < selectedShamsiYear || (y == selectedShamsiYear && m < selectedShamsiMonth)) {
+                offsetFromToday += JalaliCalendarUtils.daysInJalaliMonth(y, m)
+                m++
+                if (m > 12) { m = 1; y++ }
+            } else {
+                m--
+                if (m < 1) { m = 12; y-- }
+                offsetFromToday -= JalaliCalendarUtils.daysInJalaliMonth(y, m)
+            }
+        }
         ((todayDowIndex + offsetFromToday) % 7 + 7) % 7
     }
 
@@ -576,8 +591,10 @@ fun SmartSoldierTeacherPlannerCard(
     val todayGregorianMonthName = gregorianMonthNames[(currentGregorianMonth - 1).coerceIn(0, 11)]
     val todayDowName = persianWeekDays[todayDowIndex.coerceIn(0, 6)]
 
-    val totalCompletedLessons = uiState.lessonProgressMap.values.count { it.isCompleted }
-    val streakDays = (totalCompletedLessons / 3 + 1).coerceIn(1, 120)
+    // Real streak: consecutive days with at least one completed lesson.
+    // (The old formula `(totalCompletedLessons / 3 + 1)` invented a streak
+    // from a bare count and never looked at a date — it is gone.)
+    val streakDays = StreakCalculator.currentStreak(uiState.completedStudyDays)
 
     // Total required tests for today
     val totalRequiredTestsToday = hourlyRoutineSlots.sumOf { it.requiredTestCount }
@@ -1087,7 +1104,7 @@ fun SmartSoldierTeacherPlannerCard(
                         modifier = Modifier.padding(8.dp),
                         verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        // انتخاب سال تحصیلی و کنکور (۱۴۰۴، ۱۴۰۵، ۱۴۰۶)
+                        // انتخاب سال تحصیلی و کنکور (۱۴۰۴ تا ۱۴۰۷ — ۱۴۰۷ دومین شانس کنکور است)
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -1099,7 +1116,7 @@ fun SmartSoldierTeacherPlannerCard(
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
-                            listOf(1404, 1405, 1406).forEach { yr ->
+                            listOf(1404, 1405, 1406, 1407).forEach { yr ->
                                 val isYrSelected = selectedShamsiYear == yr
                                 Surface(
                                     onClick = {
