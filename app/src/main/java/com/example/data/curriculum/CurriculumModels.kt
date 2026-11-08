@@ -776,6 +776,12 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "ar12-01-lesson1-la-nafy-jins",
     "ar12-02-lesson2-hal",
     "ar12-03-lesson3-istithna-tamyiz",
+    "ar-tip-01",
+    "ar-tip-02",
+    "ar-tip-03",
+    "ar-tip-04",
+    "ar-tip-05",
+    "ar-tip-06",
     "ar12-04-lesson4-5-monada-mafoul-ialal" -> 4 to "📕 پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶) — کتاب عربی، زبان قرآن ۳ و جمع‌بندی ۱۰۰٪"
     "mid9-arabic-01-review",
     "mid9-arabic-02-safe-crossing",
@@ -996,6 +1002,7 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "philo_02_logic_propositions_square",
     "philo_03_logic_syllogism_conditional",
     "logic_phil_complete_mastery",
+    "logic-tip-01",
     "logic1406-05-esteghra-tamsil" -> 2 to "📗 پایه دهم انسانی (چاپ ۱۴۰۳ ویژه کنکور ۱۴۰۶) — کتاب منطق کامل به زبان خودمونی (درس ۱ تا ۱۰)"
 
     // 7. Philosophy 1 & 2 (فلسفه ۱ یازدهم ۱۴۰۴ و فلسفه ۲ دوازدهم ۱۴۰۵)
@@ -1031,6 +1038,7 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "phil2-05-khoda-dar-falsafe-1",
     "phil2-06-khoda-dar-falsafe-2",
     "phil2-07-details-aghl-dore-jadid",
+    "phil-tip-01",
     "phil2-08-stages-roshd-aghl" -> 4 to "📕 پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶) — کتاب فلسفه ۲ کامل به زبان خودمونی (درس ۱ تا ۱۲)"
 
     // 8. History 1, 2, 3 (تاریخ ۱، ۲ و ۳)
@@ -1147,6 +1155,7 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "soc_000_khodemoni_zero_to_100",
     "soc_00_elementary_to_9th_zero",
     "found1406-soc-09-rights-law",
+    "soc-tip-03",
     "found1406-soc-10-culture-identity" -> 1 to "📘 از زیرِ صفر به زبان کوچه و بازار — ترجمه تمام کلمات قلمبه‌سلمبه جامعه‌شناسی ۱، ۲ و ۳"
     "soc_10_ch1_human_social_action",
     "soc_10_ch2_culture_layers_values",
@@ -1208,6 +1217,8 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "soc3-08",
     "soc3-09",
     "soc3-10",
+    "soc-tip-01",
+    "soc-tip-02",
     "soc-gap-soc3-06-personality-persuasive-power" -> 4 to "📕 پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶) — صفحه ۰ تا آخر کتاب جامعه‌شناسی ۳ و ۳ رویکرد کنکور"
 
     // 11. Psychology 11 (روان‌شناسی یازدهم چاپ ۱۴۰۴)
@@ -1221,6 +1232,7 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "psych_11_ch4_stress_mental_health",
     "psych1406-erikson-stages",
     "psych1406-07-negaresh",
+    "psych-tip-01",
     "psych1406-08-sabk-zendegi-salem" -> 3 to "📙 پایه یازدهم انسانی (چاپ ۱۴۰۴ ویژه کنکور ۱۴۰۶) — صفحه ۰ تا آخر کتاب روان‌شناسی یازدهم (درس ۱ تا ۸ کامل)"
 
     // 12. Economics 10 (اقتصاد دهم چاپ ۱۴۰۳)
@@ -1713,6 +1725,7 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "hoviyat_02_society_culture",
     "hoviyat_03_reproduction_changes",
     "hoviyat_04_iranian_islamic_identity_globalization",
+    "hum-tip-01",
     "gen_02_hoviyat_family_grade12_1405" -> 4 to "📕 پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه نهایی) — صفحه ۰ تا آخر کتاب هویت اجتماعی دوازدهم"
 
     // 18. Health & Hygiene 12 (سلامت و بهداشت دوازدهم چاپ ۱۴۰۵)
@@ -1747,8 +1760,13 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "methods1406-05-active-study",
     "methods1406-08-pomodoro",
     "methods1406-09-summary-mindmap",
+    "sm-tip-02",
+    "sm-tip-03",
+    "sm-tip-04",
+    "sm-tip-05",
     "methods1406-10-sleep-energy" -> 1 to "📘 روش‌های علمی یادگیری جهانی — تکنیک فاینمن، بازیابی فعال (Active Recall) و مرور فاصله‌دار لایتنر"
-    "study_02_cornell_mindmap_speed_reading" -> 2 to "📗 خلاصه‌نویسی و تندخوانی — روش کرنل (Cornell)، نقشه ذهنی (Mind Map)، رمزگردانی دوگانه و تندخوانی"
+    "study_02_cornell_mindmap_speed_reading",
+    "sm-tip-01" -> 2 to "📗 خلاصه‌نویسی و تندخوانی — روش کرنل (Cornell)، نقشه ذهنی (Mind Map)، رمزگردانی دوگانه و تندخوانی"
     "study_03_konkoor_test_strategy_final20" -> 4 to "📕 مهندسی جلسه کنکور و امتحان نهایی — تکنیک ضربدر و منها، زمان‌های نقصانی، رد گزینه و فرمول نمره ۲۰ نهایی"
 
     // 21. Elementary Grade 1 & 2 new subjects (علوم، هدیه‌های آسمانی، قرآن)
@@ -3195,7 +3213,7 @@ fun ZeroLesson.officialTextbookReference(): String = when (id) {
     "hist_03_grade12_1405" -> "📚 صفحه ۰ تا آخر کتاب تاریخ ۳ (ایران و جهان معاصر) — پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶)"
     "hist_04_treaties_kings_konkoor_tables" -> "📚 جداول جامع عهدنامه‌ها، شاهان و مناصب دیوانی تاریخ ۱ (۱۴۰۳)، ۲ (۱۴۰۴) و ۳ (۱۴۰۵) ویژه کنکور ۱۴۰۶"
     "geo_00_zero_maps_coordinates" -> "📚 آموزش تصویری و بدون فرمول مسائل ساعت، نصف‌النهار و مقیاس نقشه در جغرافیای کنکور"
-    "geo_01_grade10_1403" -> "📚 صفحه ۰ تا آخر کتاب جغرافیای ایران (فصل ۱ تا ۶ کامل) — پایه دهم انسانی (چاپ ۱۴۰۳ ویژه کنکور ۱۴۰۶)"
+    "geo_01_grade10_1403" -> "📚 صفحه ۰ تا آخر کتاب جغرافیای ایران (۳ فصل و ۱۰ درس کامل) — پایه دهم انسانی (چاپ ۱۴۰۳ ویژه کنکور ۱۴۰۶)"
     "geo_02_grade11_1404" -> "📚 صفحه ۰ تا آخر کتاب جغرافیا ۲ (ناحیه‌ای جهان) — پایه یازدهم انسانی (چاپ ۱۴۰۴ ویژه کنکور ۱۴۰۶)"
     "geo_03_grade12_1405" -> "📚 صفحه ۰ تا آخر کتاب جغرافیا ۳ (کاربردی) — پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶)"
 
@@ -3216,7 +3234,7 @@ fun ZeroLesson.officialTextbookReference(): String = when (id) {
 
     // Din o Zendegi, Farsi, Farhangian & Remaining Humanities Textbooks
     "dini_01_grade10_1403_complete" -> "📚 صفحه ۰ تا آخر کتاب دین و زندگی ۱ (درس ۱ تا ۱۲ کامل + پیام آیات) — پایه دهم انسانی (چاپ ۱۴۰۳)"
-    "dini_02_grade11_1404_complete" -> "📚 صفحه ۰ تا آخر کتاب دین و زندگی ۲ اختصاصی انسانی (درس ۱ تا ۱۴ کامل) — پایه یازدهم انسانی (چاپ ۱۴۰۴)"
+    "dini_02_grade11_1404_complete" -> "📚 صفحه ۰ تا آخر کتاب دین و زندگی ۲ اختصاصی انسانی (درس ۱ تا ۱۸ کامل) — پایه یازدهم انسانی (چاپ ۱۴۰۴)"
     "dini_03_grade12_1405_complete" -> "📚 صفحه ۰ تا آخر کتاب دین و زندگی ۳ اختصاصی انسانی (درس ۱ تا ۱۰: توحید ذاتی/صفاتی/افعالی/عملی و قضا و قدر) — دوازدهم (چاپ ۱۴۰۵)"
     "far_05_dini_farhangian_ensani" -> "📚 مطابق منتخبی از دین و زندگی دهم (چاپ ۱۴۰۳)، یازدهم (چاپ ۱۴۰۴) و دوازدهم انسانی (چاپ ۱۴۰۵)"
     "far_08_dini_complete_10_11_12_1406" -> "📚 بانک جامع پیام آیات و روایات دین و زندگی ۱ (۱۴۰۳)، ۲ (۱۴۰۴) و ۳ (۱۴۰۵) ویژه کنکور و نهایی"
