@@ -107,6 +107,7 @@ import com.example.ui.screens.DailyPlanScreen
 import com.example.ui.screens.DiagnosticFlowScreen
 import com.example.ui.screens.HomeDashboardScreen
 import com.example.ui.screens.InteractiveLabsScreen
+import com.example.ui.screens.LearningPathScreen
 import com.example.ui.screens.MasterKonkoorRoadmapScreen
 import com.example.ui.screens.PracticeLeitnerAndQuizScreen
 import com.example.ui.screens.ProgressDashboardScreen
@@ -659,6 +660,7 @@ private fun MoreSectionScreen(
             Triple(0, themeController.tr("مشاوره و تجربیات", "Counseling & Guides"), "sub_section_counseling"),
             Triple(1, themeController.tr("آزمایشگاه یادگیری", "Learning Lab"), "nav_tab_lab"),
             Triple(2, themeController.tr("نقشه راه ۱۴۰۶", "1406 Roadmap"), "nav_tab_roadmap"),
+            Triple(9, "مسیر ۱ تا ۱۰۰", "path_1_to_100"),
             Triple(3, themeController.tr("کتابخانه و منابع", "Library & PDFs"), "sub_section_library"),
             // صفحه‌های تطبیقی (§۳ تا §۹ الحاقیه) — متن‌ها فقط فارسی‌اند.
             Triple(4, "تشخیص سطح", "adaptive_diagnostic"),
@@ -676,13 +678,13 @@ private fun MoreSectionScreen(
     // یک ضربه روی گروه + یک ضربه روی چیپ؛ مقصد اول هر گروه با یک ضربه).
     val groups = remember(themeController.appLanguage) {
         listOf(
-            Triple(0, themeController.tr("یادگیری", "Learning"), listOf(0, 1, 2)),
+            Triple(0, themeController.tr("یادگیری", "Learning"), listOf(0, 1, 2, 9)),
             Triple(1, themeController.tr("برنامه‌ریزی", "Planning"), listOf(4, 5, 6, 7)),
             Triple(2, themeController.tr("منابع", "Resources"), listOf(3, 8))
         )
     }
     val activeGroup = when (activeSection) {
-        0, 1, 2 -> 0
+        0, 1, 2, 9 -> 0
         4, 5, 6, 7 -> 1
         else -> 2
     }
@@ -845,6 +847,13 @@ private fun MoreSectionScreen(
                 )
                 7 -> ProgressDashboardScreen(viewModel = viewModel)
                 8 -> AddedLessonsScreen(
+                    uiState = uiState,
+                    onOpenLesson = { lessonId ->
+                        viewModel.selectTab(AppTab.LESSONS)
+                        viewModel.openLesson(lessonId)
+                    }
+                )
+                9 -> LearningPathScreen(
                     uiState = uiState,
                     onOpenLesson = { lessonId ->
                         viewModel.selectTab(AppTab.LESSONS)
