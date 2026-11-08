@@ -262,8 +262,12 @@ class AppThemeController(context: Context) {
     var selectedColorPalette by mutableStateOf(loadColorPalette())
         private set
 
-    // Default to false so the vibrant custom palette is immediately visible; user can toggle Dynamic Color anytime
-    var useDynamicColor by mutableStateOf(prefs.getBoolean(KEY_DYNAMIC_COLOR, false))
+    // پیش‌فرض: در اندروید ۱۲ به بالا رنگ پویا (Material You) روشن است تا رنگ
+    // برنامه با تصویر زمینه دستگاه هماهنگ شود؛ کاربر هر وقت بخواهد از
+    // تنظیمات می‌تواند آن را خاموش کند و پالت انتخابی برگردد.
+    var useDynamicColor by mutableStateOf(
+        prefs.getBoolean(KEY_DYNAMIC_COLOR, Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+    )
         private set
 
     var usePersianDigits by mutableStateOf(prefs.getBoolean(KEY_USE_PERSIAN_DIGITS, true))

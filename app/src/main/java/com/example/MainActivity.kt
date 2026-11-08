@@ -118,12 +118,6 @@ import com.example.ui.theme.AppThemeController
 import com.example.ui.theme.AppThemeMode
 import com.example.ui.theme.LocalAppThemeController
 import com.example.ui.theme.MyApplicationTheme
-import com.example.ui.theme.StudyBackground
-import com.example.ui.theme.StudyBorder
-import com.example.ui.theme.StudyMuted
-import com.example.ui.theme.StudyPrimary
-import com.example.ui.theme.StudySurface
-import com.example.ui.theme.StudyText
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.launch

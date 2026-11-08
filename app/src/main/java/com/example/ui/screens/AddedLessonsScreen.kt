@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -28,11 +29,6 @@ import com.example.data.curriculum.ZeroLesson
 import com.example.data.curriculum.normalizedSubjectId
 import com.example.ui.KonkoorUiState
 import com.example.ui.components.BidiFormatter
-import com.example.ui.theme.StudyBorder
-import com.example.ui.theme.StudyMuted
-import com.example.ui.theme.StudyPrimary
-import com.example.ui.theme.StudySurface
-import com.example.ui.theme.StudyText
 
 /**
  * فهرست همه درس‌های برنامه — برای اینکه کاربر خودش ببیند چه درس‌هایی
@@ -83,19 +79,19 @@ fun AddedLessonsScreen(
             text = "فهرست همه درس‌ها",
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
-            color = StudyText
+            color = MaterialTheme.colorScheme.onSurface
         )
         Text(
             text = "این‌ها دقیقاً همان درس‌هایی‌اند که در برنامه هست؛ روی هر درس بزن تا باز شود.",
             fontSize = 13.sp,
-            color = StudyMuted,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
         )
         Text(
             text = "مجموع: " + BidiFormatter.toPersianDigits(totalCount.toString()) + " درس",
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold,
-            color = StudyPrimary,
+            color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(bottom = 10.dp)
         )
 
@@ -114,7 +110,7 @@ fun AddedLessonsScreen(
             Text(
                 text = if (totalCount == 0) "هنوز درسی بارگذاری نشده است." else "درسی با این جستجو پیدا نشد.",
                 fontSize = 14.sp,
-                color = StudyMuted,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 16.dp)
             )
         } else {
@@ -131,7 +127,7 @@ fun AddedLessonsScreen(
                                 " درس)",
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
-                            color = StudyPrimary,
+                            color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.padding(top = 8.dp, bottom = 2.dp)
                         )
                     }
@@ -142,8 +138,8 @@ fun AddedLessonsScreen(
                                 .clickable { onOpenLesson(lesson.id) }
                                 .testTag("added_lesson_${lesson.id}"),
                             shape = RoundedCornerShape(12.dp),
-                            color = StudySurface,
-                            border = BorderStroke(1.dp, StudyBorder)
+                            color = MaterialTheme.colorScheme.surface,
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
                         ) {
                             Row(
                                 modifier = Modifier
@@ -154,7 +150,7 @@ fun AddedLessonsScreen(
                                 Text(
                                     text = lesson.title,
                                     fontSize = 14.sp,
-                                    color = StudyText,
+                                    color = MaterialTheme.colorScheme.onSurface,
                                     modifier = Modifier.weight(1f)
                                 )
                                 Text(
@@ -162,7 +158,7 @@ fun AddedLessonsScreen(
                                         lesson.estimatedMinutes.toString()
                                     ) + " دقیقه",
                                     fontSize = 12.sp,
-                                    color = StudyMuted,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.padding(start = 8.dp)
                                 )
                             }
