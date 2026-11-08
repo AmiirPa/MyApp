@@ -741,7 +741,13 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "found1406-ar-10-nominal-sentence",
     "found1406-ar-11-verbal-sentence",
     "found1406-ar-12-translation",
-    "found1406-ar-13-reading-text" -> 1 to "📘 پایه هفتم تا نهم (از زیرِ صفر به زبان خودمونی) — حرکات، اسم و فعل، ضمایر و ۱۴ صیغه"
+    "found1406-ar-13-reading-text",
+    "ar-zero-01",
+    "ar-zero-02",
+    "ar-zero-03",
+    "ar-zero-04",
+    "ar-zero-05",
+    "ar-zero-06" -> 1 to "📘 پایه هفتم تا نهم (از زیرِ صفر به زبان خودمونی) — حرکات، اسم و فعل، ضمایر و ۱۴ صیغه"
 
     "arabic_01b_numbers_time_nouns",
     "arabic_01_sigha_fingerprint",
@@ -845,7 +851,13 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "found1406-en-14-reading",
     "found1406-en-15-intonation",
     "found1406-en-16-vocab-8",
-    "found1406-en-17-future-compare" -> 1 to "📘 پایه هفتم تا نهم (از زیرِ صفر) — معنی کلمات گرامری (Verb، Subject...) و جمله‌سازی پایه"
+    "found1406-en-17-future-compare",
+    "eng-zero-01",
+    "eng-zero-02",
+    "eng-zero-03",
+    "eng-zero-04",
+    "eng-zero-05",
+    "eng-zero-06" -> 1 to "📘 پایه هفتم تا نهم (از زیرِ صفر) — معنی کلمات گرامری (Verb، Subject...) و جمله‌سازی پایه"
 
     "english_01_tenses_modals",
     "english_01b_nouns_comparatives_adjectives",
@@ -936,7 +948,13 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "arooz12-01-dowri",
     "arooz12-02-meters12",
     "arooz12-03-licenses",
-    "arooz12-04-ghafieh-advanced" -> 4 to "📕 پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶) — علوم و فنون ادبی ۳ (اوزان دوری، ۱۶ وزن و اختیارات شاعری)"
+    "arooz12-04-ghafieh-advanced",
+    "arooz-quick-01",
+    "arooz-quick-02",
+    "arooz-quick-03",
+    "arooz-quick-04",
+    "arooz-quick-05",
+    "arooz-quick-06" -> 4 to "📕 پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶) — علوم و فنون ادبی ۳ (اوزان دوری، ۱۶ وزن و اختیارات شاعری)"
 
     // 5. Fonoon (زیبایی‌شناسی، تاریخ ادبیات و سبک‌شناسی — علوم و فنون ۱، ۲ و ۳)
     "fonoon_00_zero_to_100_all_24_arrayeh_step_by_step" -> 1 to "📘 پیش‌نیاز از منفی صفر — آموزش پله‌به‌پله تمام ۲۴ آرایه ادبی از ساده‌ترین تا پیشرفته‌ترین"
@@ -1261,7 +1279,13 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "eco-new-11-roshd-pishraft",
     "eco-new-12-budjebandi",
     "eco-new-13-tasmimgiri-makharej",
-    "eco-new-14-pasandaz-sarmayegozari" -> 2 to "📗 پایه دهم انسانی (چاپ ۱۴۰۳ ویژه کنکور ۱۴۰۶) — صفحه ۰ تا آخر کتاب اقتصاد دهم (۴ فصل و ۱۴ درس — کد 110221)"
+    "eco-new-14-pasandaz-sarmayegozari",
+    "eco-quick-01",
+    "eco-quick-02",
+    "eco-quick-03",
+    "eco-quick-04",
+    "eco-quick-05",
+    "eco-quick-06" -> 2 to "📗 پایه دهم انسانی (چاپ ۱۴۰۳ ویژه کنکور ۱۴۰۶) — صفحه ۰ تا آخر کتاب اقتصاد دهم (۴ فصل و ۱۴ درس — کد 110221)"
 
     // 13. Din o Zendegi 1, 2, 3 (دین و زندگی ۱، ۲ و ۳)
     "dini_10_ch1_purpose_creation_theology",
