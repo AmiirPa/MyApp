@@ -34,6 +34,7 @@ import com.example.data.adaptive.QuestionAttempt
 import com.example.data.adaptive.buildDiagnosticBank
 import com.example.data.curriculum.SubjectCatalog
 import com.example.data.curriculum.ZeroLesson
+import com.example.data.curriculum.normalizedSubjectId
 import com.example.ui.KonkoorUiState
 import com.example.ui.KonkoorViewModel
 import com.example.ui.components.BidiFormatter
