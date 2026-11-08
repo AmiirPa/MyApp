@@ -750,11 +750,32 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "geo_01_grade10_1403",
     "geo_10_ch1_location_topography_climate_rivers",
     "geo_10_ch2_iran_population_settlements_economy",
-    "geo_10_ch3_economy_transport_borders" -> 2 to "📗 پایه دهم انسانی (چاپ ۱۴۰۳ ویژه کنکور ۱۴۰۶) — صفحه ۰ تا آخر کتاب جغرافیای ایران (دهم)"
+    "geo_10_ch3_economy_transport_borders",
+    "geo1-01-joghrafia-elmi-baraye-zendegi-behtar",
+    "geo1-02-ravesh-motalee-va-pazhuhesh",
+    "geo1-03-mogheiyat-joghrafiayi-iran",
+    "geo1-04-nahamvarihaye-iran",
+    "geo1-05-ab-va-havaye-iran",
+    "geo1-06-manabe-ab-iran",
+    "geo1-07-vizhegihaye-jamiyat-iran",
+    "geo1-08-taqsimat-keshvari-iran",
+    "geo1-09-sokonatgahhaye-iran",
+    "geo1-10-tavanhaye-eqtesadi-iran" -> 2 to "📗 پایه دهم انسانی (چاپ ۱۴۰۳ ویژه کنکور ۱۴۰۶) — صفحه ۰ تا آخر کتاب جغرافیای ایران (دهم)"
     "geo_02_grade11_1404",
     "geo_11_ch1_regions_biomes_culture",
     "geo_11_ch2_economic_political_regions_seas",
-    "geo_11_ch3_case_studies_sw_asia_europe" -> 3 to "📙 پایه یازدهم انسانی (چاپ ۱۴۰۴ ویژه کنکور ۱۴۰۶) — صفحه ۰ تا آخر کتاب جغرافیا ۲ (ناحیه‌ای جهان)"
+    "geo_11_ch3_case_studies_sw_asia_europe",
+    "geo2-01-mana-va-mafhum-nahiye",
+    "geo2-02-ensan-va-nahiye",
+    "geo2-03-navahi-ab-va-havayi",
+    "geo2-04-nahamvariha-va-ashkal-zamin",
+    "geo2-05-navahi-zisti",
+    "geo2-06-navahi-farhangi",
+    "geo2-07-navahi-eqtesadi-keshavarzi-va-sanati",
+    "geo2-08-navahi-eqtesadi-tejarat-va-eqtesad-jahani",
+    "geo2-09-mana-va-mafhum-nahiye-siyasi",
+    "geo2-10-keshvar-yek-nahiye-siyasi",
+    "geo2-11-geopolitik" -> 3 to "📙 پایه یازدهم انسانی (چاپ ۱۴۰۴ ویژه کنکور ۱۴۰۶) — صفحه ۰ تا آخر کتاب جغرافیا ۲ (ناحیه‌ای جهان)"
     "geo_03_grade12_1405",
     "geo_04_iran_climate_rivers_gis",
     "geo_12_ch1_applied_geography_hazards",
@@ -852,20 +873,54 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "dini1-02-qodrat-parvaz",
     "dini1-03-be-sooye-javedanegi",
     "dini1-04-ayandeye-rowshan",
-    "dini1-05-manzelgahe-baad" -> 2 to "📗 پایه دهم انسانی (چاپ دهم ۱۴۰۴ ویژه کنکور ۱۴۰۶) — صفحه ۰ تا آخر دین و زندگی ۱ (درس ۱ تا ۱۲)"
+    "dini1-05-manzelgahe-baad",
+    "dini1-06-vagheye-bozorg",
+    "dini1-07-farjam-kar",
+    "dini1-08-ahang-safar",
+    "dini1-09-etemad-bar-oo",
+    "dini1-10-yari-az-do-yar-aziz",
+    "dini1-11-fazilat-arastegi",
+    "dini1-12-payam-pooshidegi" -> 2 to "📗 پایه دهم انسانی (چاپ دهم ۱۴۰۴ ویژه کنکور ۱۴۰۶) — صفحه ۰ تا آخر دین و زندگی ۱ (درس ۱ تا ۱۲)"
+    "dini2-01-hedayat-elahi",
+    "dini2-02-tadavom-hedayat",
+    "dini2-03-akharin-payambar",
+    "dini2-04-mojeze-javidan",
+    "dini2-05-masouliyat-payambar",
+    "dini2-06-pishvaye-osve",
+    "dini2-07-emamat-tadavom-resalat",
+    "dini2-08-jan-va-janeshin-payambar",
+    "dini2-09-vaziyat-mosalamanan-pas-az-rehlat",
+    "dini2-10-ehyaye-arzeshhaye-rastin",
+    "dini2-11-jahad-dar-rastaye-velayat-zaheri",
+    "dini2-12-asr-gheybat-emam-zaman",
+    "dini2-13-dar-entezar-zohour",
+    "dini2-14-marjaeyat-va-velayat-faqih",
+    "dini2-15-rahbari-va-mardom",
+    "dini2-16-ezzat-nafs",
+    "dini2-17-zaminehaye-peyvand",
+    "dini2-18-peyvand-moqaddas",
+    "dini3-01-hasti-bakhsh",
+    "dini3-02-yegane-bi-hamta",
+    "dini3-03-towhid-va-sabk-zendegi",
+    "dini3-04-faghat-baraye-to",
+    "dini3-05-qodrat-parvaz",
+    "dini3-06-sonnathaye-khodavand-dar-zendegi",
+    "dini3-07-dar-gero-kar-khish",
+    "dini3-08-bazgasht",
+    "dini3-09-zendegi-dar-donyaye-emruz-va-amal-be-ahkam-elahi",
+    "dini3-10-payehaye-ostovar",
+    "dini3-11-asr-shokoufai",
+    "dini3-12-negahi-be-tamadon-jadid",
+    "dini3-13-masouliyat-bozorg-ma",
     "dini_11_ch1_divine_guidance_quran_prophet",
     "dini_11_ch2_imamate_ghadir_velayat",
     "dini_11_ch3_imams_life_ghaybat_velayat",
-    "dini_02_grade11_1404_complete" -> 3 to "📙 پایه یازدهم انسانی (چاپ ۱۴۰۴ ویژه کنکور ۱۴۰۶) — صفحه ۰ تا آخر دین و زندگی ۲ انسانی (درس ۱ تا ۱۴)"
+    "dini_02_grade11_1404_complete" -> 3 to "📙 پایه یازدهم انسانی (چاپ نهم ۱۴۰۴ ویژه کنکور ۱۴۰۶) — صفحه ۰ تا آخر دین و زندگی ۲ انسانی (درس ۱ تا ۱۸)"
     "dini_01_tawheed_degrees",
     "dini_03_grade12_1405_complete",
     "dini_04_divine_laws_sunan_barzakh",
     "far_05_dini_farhangian_ensani",
     "far_08_dini_complete_10_11_12_1406",
-    "dini3-01-qaza-qadar",
-    "dini3-02-sonnat-elahi",
-    "dini3-03-towbe",
-    "dini3-04-donyaye-emruz" -> 4 to "📕 پایه دوازدهم انسانی (چاپ ۱۴۰۵) و فرهنگیان — دین و زندگی ۳ + بانک جامع پیام آیات"
 
     // 14. Farsi 1, 2, 3 (فارسی ۱، ۲ و ۳)
     "far_09_farsi_grammar_1_to_12_1406",
@@ -917,7 +972,17 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "far1406-03-azadi",
     "far1406-05-damavandiyeh",
     "far1406-06-naynameh",
-    "far1406-07-haghighate-eshgh" -> 4 to "📕 پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور و نهایی) — فارسی ۳ و فنون زبانی پیشرفته"
+    "far1406-07-haghighate-eshgh",
+    "far3-08-az-pariz-ta-paris",
+    "far3-09-kavir",
+    "far3-10-fasl-shokufayi",
+    "far3-11-an-shab-aziz",
+    "far3-12-gozar-siyavash-az-atash",
+    "far3-13-khan-hashtom",
+    "far3-14-si-morgh-va-simorgh",
+    "far3-16-kabab-ghaz",
+    "far3-17-khande-to",
+    "far3-18-eshgh-javdani" -> 4 to "📕 پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور و نهایی) — فارسی ۳ و فنون زبانی پیشرفته"
 
     // 15. Negaresh 1, 2, 3 (نگارش ۱، ۲ و ۳)
     "negaresh_01_grade10_objective_subjective",
@@ -1195,11 +1260,11 @@ fun ZeroLesson.officialTextbookReference(): String = when (id) {
     "soc_10_ch2_culture_layers_values" -> "📚 مطابق درس ۵ تا ۹ جامعه‌شناسی ۱ — پایه دهم انسانی (چاپ ۱۴۰۳: جهان‌های اجتماعی، پیامدها و ارزیابی، هویت، بازتولید هویت اجتماعی)"
     "soc_11_ch1_cultural_world_globalization" -> "📚 مطابق درس ۱ تا ۷ جامعه‌شناسی ۲ — پایه یازدهم انسانی (چاپ ۱۴۰۴: جهان فرهنگی، فرهنگ جهانی، نمونه‌های فرهنگ جهانی، باورها و ارزش‌های بنیادین فرهنگ غرب، تکوین فرهنگ معاصر غرب، جامعه جهانی)"
     "soc_12_ch1_three_approaches_social_sciences" -> "📚 مطابق درس ۱ تا ۵ جامعه‌شناسی ۳ — پایه دوازدهم انسانی (چاپ ۱۴۰۵، کد ۱۱۲۲۲۲: ذخیره دانشی، علوم اجتماعی، نظم اجتماعی، کنش اجتماعی، معنای زندگی)"
-    "geo_10_ch1_location_topography_climate_rivers" -> "📚 مطابق درس ۱ تا ۵ جغرافیای ایران — پایه دهم (چاپ ۱۴۰۳، کد ۱۱۰۲۰۹: موقعیت، ناهمواری‌ها، آب‌وهوا و منابع آب ایران)"
-    "geo_10_ch3_economy_transport_borders" -> "📚 مطابق درس ۸ تا ۱۰ جغرافیای ایران — پایه دهم (چاپ ۱۴۰۳، کد ۱۱۰۲۰۹: اقتصاد، حمل‌ونقل، استان‌ها و مرزهای سیاسی ایران)"
-    "geo_11_ch1_regions_biomes_culture" -> "📚 مطابق درس ۱ تا ۵ جغرافیا ۲ (ناحیه‌ای) — پایه یازدهم انسانی (چاپ ۱۴۰۴، کد ۱۱۱۲۱۷: مفهوم ناحیه، زیست‌بوم‌ها و نواحی فرهنگی)"
-    "geo_11_ch3_case_studies_sw_asia_europe" -> "📚 مطابق درس ۸ تا ۱۰ جغرافیا ۲ (ناحیه‌ای) — پایه یازدهم انسانی (چاپ ۱۴۰۴، کد ۱۱۱۲۱۷: جنوب غربی آسیا، اروپا و ژئوپلیتیک)"
-    "geo_12_ch1_applied_geography_hazards" -> "📚 مطابق درس ۱ تا ۴ جغرافیا ۳ (کاربردی) — پایه دوازدهم انسانی (چاپ ۱۴۰۵، کد ۱۱۲۲۱۷: شهر و روستا، مخاطرات طبیعی و مدیریت بحران)"
+    "geo_10_ch1_location_topography_climate_rivers" -> "📚 مطابق درس ۳ تا ۶ جغرافیای ایران — پایه دهم (چاپ ۱۴۰۳، کد ۱۱۰۲۱۸: موقعیت، ناهمواری‌ها، آب‌وهوا و منابع آب ایران)"
+    "geo_10_ch3_economy_transport_borders" -> "📚 مطابق درس ۸ و ۱۰ جغرافیای ایران — پایه دهم (چاپ ۱۴۰۳، کد ۱۱۰۲۱۸: تقسیمات کشوری و توان‌های اقتصادی ایران)"
+    "geo_11_ch1_regions_biomes_culture" -> "📚 مطابق درس ۱ تا ۸ جغرافیا ۲ (ناحیه‌ای) — پایه یازدهم انسانی (چاپ ۱۴۰۴، کد ۱۱۱۲۱۸: مفهوم ناحیه، زیست‌بوم‌ها و نواحی فرهنگی)"
+    "geo_11_ch3_case_studies_sw_asia_europe" -> "📚 مطابق مطالعه‌های موردی جغرافیا ۲ (ناحیه‌ای) — پایه یازدهم انسانی (چاپ ۱۴۰۴، کد ۱۱۱۲۱۸: نپال، ناحیه فرهنگی جهان اسلام، خلیج فارس و اتحادیه اروپا)"
+    "geo_12_ch1_applied_geography_hazards" -> "📚 مطابق درس ۱ تا ۴ جغرافیا ۳ (کاربردی) — پایه دوازدهم انسانی (چاپ ۱۴۰۵، کد ۱۱۲۲۱۸: شهر و روستا، مخاطرات طبیعی و مدیریت بحران)"
     "dini_10_ch1_purpose_creation_theology" -> "📚 مطابق درس ۱ تا ۱۲ دین و زندگی ۱ — پایه دهم انسانی (چاپ دهم ۱۴۰۴، کد ۱۱۰۲۰۵)"
     "dini_10_ch3_friendship_ethics_society" -> "📚 مطابق درس ۷ تا ۱۲ دین و زندگی ۱ — پایه دهم انسانی (چاپ ۱۴۰۳، کد ۱۱۰۲۰۱: واقعه بزرگ قیامت، فرشتگان، دوستی و عفاف)"
     "dini_11_ch1_divine_guidance_quran_prophet" -> "📚 مطابق درس ۱ تا ۵ دین و زندگی ۲ — پایه یازدهم انسانی (چاپ ۱۴۰۴، کد ۱۱۱۲۱۴: هدایت الهی، اعجاز قرآن و ختم نبوت)"
