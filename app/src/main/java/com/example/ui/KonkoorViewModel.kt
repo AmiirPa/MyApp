@@ -3,6 +3,9 @@ package com.example.ui
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.data.achievements.AchievementEvaluation
+import com.example.data.achievements.AchievementEvaluator
+import com.example.data.achievements.AchievementEvidence
 import com.example.data.adaptive.AdaptiveEngine
 import com.example.data.adaptive.DiagnosticEngine
 import com.example.data.adaptive.AdaptivePlanner
@@ -260,6 +263,40 @@ class KonkoorViewModel(
         _focusInterruptionsToday.value = FocusSessionLogic.interruptionsForDay(sessions, today)
     }
 
+    // ---------- دستاوردها (§۱۰) ----------
+
+    private val _achievements =
+        MutableStateFlow(AchievementEvaluator.evaluate(AchievementEvidence()))
+
+    /**
+     * دستاوردها — همیشه از شواهد واقعی مشتق می‌شوند (درس کامل‌شده، روز
+     * مطالعه، آزمون، جلسه تشخیص، جلسه تمرکز، کارت مرور، برنامه روز) و
+     * جداگانه ذخیره نمی‌شوند؛ اگر شواهد پاک شوند، دستاورد هم می‌رود.
+     * بدون موتور تطبیقی هم کار می‌کند (شواهد درس و تمرکز همیشه موجود‌اند).
+     */
+    val achievements: StateFlow<AchievementEvaluation> = _achievements.asStateFlow()
+
+    /** بازخوانی دستاوردها از شواهد فعلی. */
+    private fun refreshAchievements() {
+        val state = uiState.value
+        val engine = adaptiveEngine
+        _achievements.value = AchievementEvaluator.evaluate(
+            AchievementEvidence(
+                completedLessonIds = state.lessonProgressMap.values
+                    .filter { it.isCompleted }
+                    .map { it.lessonId }
+                    .toSet(),
+                completedStudyDays = state.completedStudyDays,
+                examAttempts = engine?.examAttempts?.value ?: emptyList(),
+                diagnosticSessions = engine?.diagnosticSessions?.value ?: emptyList(),
+                focusSessions = focusStore?.sessions?.value ?: emptyList(),
+                reviewCards = engine?.reviewCards?.value ?: emptyList(),
+                dailyPlans = engine?.dailyPlans?.value ?: emptyList(),
+                todayEpochDay = StreakCalculator.todayEpochDay()
+            )
+        )
+    }
+
     /** شواهد درس از وضعیت فعلی (فقط خواندنی؛ موتور هرگز درصد تسلط نمی‌سازد). */
     private fun lessonEvidenceOf(progress: CloudLessonProgress): LessonEvidence =
         LessonEvidence(
@@ -342,6 +379,8 @@ class KonkoorViewModel(
     fun refreshAdaptiveState() {
         // تمرکز همیشه بازخوانی می‌شود، حتی وقتی موتور تطبیقی وصل نیست.
         refreshFocusState()
+        // دستاوردها هم از شواهد درس و تمرکز ساخته می‌شوند و به موتور وابسته نیستند.
+        refreshAchievements()
         val engine = adaptiveEngine ?: return
         val today = StreakCalculator.todayEpochDay()
         _adaptiveReviewQueue.value = engine.todaysReviewQueue(MAX_ADAPTIVE_QUEUE_ITEMS, today)
