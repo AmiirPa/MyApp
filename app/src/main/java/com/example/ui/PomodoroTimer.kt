@@ -1,5 +1,6 @@
 package com.example.ui
 
+import com.example.data.focus.FocusSessionRecorder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -60,13 +61,41 @@ class PomodoroTimer(
 
     private var tickerJob: Job? = null
 
+    /**
+     * قلاب اختیاری ثبت جلسه تمرکز (§۸ الحاقیه). پیش‌فرض null است — بدون اتصال،
+     * تایمر دقیقاً مثل قبل کار می‌کند. وقتی وصل باشد، فقط پایان یک بازه تمرکز
+     * ثبت می‌شود: بازه کامل (رسیدن به صفر) یا رها شده با reset (با همان
+     * ثانیه‌های واقعی انجام‌شده). مکث در طول بازه، یک وقفه شمرده می‌شود؛
+     * ثانیه‌های استراحت هرگز ثبت نمی‌شوند و تایمر هرگز ادعا نمی‌کند که می‌تواند
+     * اپ‌های دیگر را قفل کند.
+     */
+    var sessionRecorder: FocusSessionRecorder? = null
+
+    /** وقفه‌های بازه تمرکز جاری (هر مکث = یک وقفه، فقط وقتی تمرکز واقعی انجام شده باشد). */
+    private var focusInterruptions: Int = 0
+
+    /** شروع بازه تمرکز جاری (wall-clock)؛ null یعنی بازه‌ای باز نیست. */
+    private var focusStartedAtMillis: Long? = null
+
     /** Start/resume, or pause if already running. */
     fun toggle() {
         if (_state.value.isRunning) {
+            val before = _state.value
             _state.update { it.copy(isRunning = false) }
             tickerJob?.cancel()
             tickerJob = null
+            // مکث در طول یک بازه تمرکز که تمرکز واقعی در آن انجام شده = یک وقفه.
+            // مکث پیش از شروع تمرکز (همه ثانیه‌ها باقی‌اند) وقفه نیست.
+            if (!before.isBreak && before.secondsLeft < PomodoroState.FOCUS_SECONDS) {
+                focusInterruptions++
+            }
         } else {
+            val before = _state.value
+            // شروع یک بازه تمرکز تازه (نه ازسرگیری بعد از مکث).
+            if (!before.isBreak && focusStartedAtMillis == null) {
+                focusStartedAtMillis = System.currentTimeMillis()
+                focusInterruptions = 0
+            }
             _state.update { it.copy(isRunning = true) }
             tickerJob?.cancel()
             tickerJob = scope.launch {
@@ -74,7 +103,25 @@ class PomodoroTimer(
                     delay(1000L)
                     // tick() is a no-op when paused, so a delay that was already
                     // in flight when the user paused cannot decrement the timer.
+                    val beforeTick = _state.value
                     _state.update { it.tick() }
+                    val afterTick = _state.value
+                    // پایان بازه تمرکز: تیکِ صفر، تمرکز را به استراحت می‌چرخاند.
+                    if (beforeTick.isRunning && !beforeTick.isBreak &&
+                        beforeTick.secondsLeft == 0 && afterTick.isBreak
+                    ) {
+                        val endedAt = System.currentTimeMillis()
+                        sessionRecorder?.onFocusIntervalEnded(
+                            plannedFocusSeconds = PomodoroState.FOCUS_SECONDS,
+                            actualFocusSeconds = PomodoroState.FOCUS_SECONDS,
+                            completed = true,
+                            interruptions = focusInterruptions,
+                            startedAtEpochMillis = focusStartedAtMillis ?: endedAt,
+                            endedAtEpochMillis = endedAt
+                        )
+                        focusStartedAtMillis = null
+                        focusInterruptions = 0
+                    }
                 }
             }
         }
@@ -82,8 +129,27 @@ class PomodoroTimer(
 
     /** Stop and restore the initial 25-minute focus interval. */
     fun reset() {
+        val before = _state.value
         tickerJob?.cancel()
         tickerJob = null
+        // رها کردن بازه تمرکز: اگر تمرکز واقعی انجام شده، با همان ثانیه‌ها
+        // به‌عنوان جلسه نیمه‌کاره ثبت می‌شود؛ استراحت یا بازه صفرثانیه‌ای ثبت نمی‌شود.
+        if (!before.isBreak && focusStartedAtMillis != null) {
+            val elapsed = PomodoroState.FOCUS_SECONDS - before.secondsLeft
+            if (elapsed > 0) {
+                val endedAt = System.currentTimeMillis()
+                sessionRecorder?.onFocusIntervalEnded(
+                    plannedFocusSeconds = PomodoroState.FOCUS_SECONDS,
+                    actualFocusSeconds = elapsed,
+                    completed = false,
+                    interruptions = focusInterruptions,
+                    startedAtEpochMillis = focusStartedAtMillis ?: endedAt,
+                    endedAtEpochMillis = endedAt
+                )
+            }
+        }
+        focusStartedAtMillis = null
+        focusInterruptions = 0
         _state.value = PomodoroState()
     }
 }

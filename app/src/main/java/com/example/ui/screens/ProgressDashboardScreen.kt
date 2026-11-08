@@ -34,6 +34,9 @@ fun ProgressDashboardScreen(
     viewModel: KonkoorViewModel
 ) {
     val report by viewModel.adaptiveReport.collectAsStateWithLifecycle()
+    val focusMinutes by viewModel.focusMinutesToday.collectAsStateWithLifecycle()
+    val focusSessions by viewModel.focusSessionsToday.collectAsStateWithLifecycle()
+    val focusInterruptions by viewModel.focusInterruptionsToday.collectAsStateWithLifecycle()
 
     Column(
         modifier = Modifier
@@ -50,6 +53,52 @@ fun ProgressDashboardScreen(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // تمرکز امروز (§۸): دقیقه‌ها و جلسه‌های واقعی ثبت‌شده با تایمر؛
+        // اگر امروز جلسه‌ای ثبت نشده، «داده کافی نیست» نشان داده می‌شود.
+        Card(
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant
+            ),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(modifier = Modifier.padding(12.dp)) {
+                Text(
+                    text = "تمرکز امروز",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "فقط ثانیه‌های واقعی تمرکز با تایمر شمرده می‌شوند؛ استراحت و مکث حساب نمی‌شوند.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                if (focusSessions == 0) {
+                    Text(
+                        text = "داده کافی نیست",
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "هنوز امروز جلسه تمرکزی ثبت نشده است؛ وقتی تایمر یک بازه را کامل کند یا نیمه‌کاره رها شود، اینجا ثبت می‌شود.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                } else {
+                    Text(
+                        text = BidiFormatter.applyPreferredDigits(
+                            "$focusMinutes دقیقه تمرکز • $focusSessions جلسه • $focusInterruptions وقفه"
+                        ),
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+        }
         Spacer(modifier = Modifier.height(12.dp))
 
         if (report == null) {

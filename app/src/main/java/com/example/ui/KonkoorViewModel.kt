@@ -32,6 +32,8 @@ import com.example.data.firebase.CloudStudyTask
 import com.example.data.firebase.CloudSyncTransition
 import com.example.data.firebase.KonkoorCloudRepository
 import com.example.data.firebase.resolveCloudSyncTransition
+import com.example.data.focus.FocusSessionLogic
+import com.example.data.focus.FocusSessionStore
 import com.example.data.local.LocalKonkoorStore
 import com.example.ui.components.BidiFormatter
 import com.example.util.StreakCalculator
@@ -41,6 +43,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -122,7 +125,9 @@ class KonkoorViewModel(
     currentUserId: String?,
     private val localStore: LocalKonkoorStore? = null,
     /** موتور تطبیقی؛ `null` یعنی اتصال انجام نشده و صفحه‌های تطبیقی «داده کافی نیست» نشان می‌دهند. */
-    private val adaptiveEngine: AdaptiveEngine? = null
+    private val adaptiveEngine: AdaptiveEngine? = null,
+    /** فروشگاه جلسه‌های تمرکز (§۸)؛ `null` یعنی تایمر وصل نیست و دقیقه‌های تمرکز «داده کافی نیست» می‌مانند. */
+    private val focusStore: FocusSessionStore? = null
 ) : ViewModel() {
 
     private data class CloudSession(val repository: KonkoorCloudRepository, val userId: String)
@@ -232,6 +237,29 @@ class KonkoorViewModel(
     /** آزمون‌های ثبت‌شده (جدیدترین اول) — برای تشخیص «داده کافی» در گزارش. */
     val adaptiveExamAttempts: StateFlow<List<ExamAttempt>> = _adaptiveExamAttempts.asStateFlow()
 
+    // ---------- تمرکز امروز (§۸) ----------
+
+    private val _focusMinutesToday = MutableStateFlow(0)
+    /** دقیقه‌های خالص تمرکز ثبت‌شده امروز (فقط ثانیه‌های واقعی). */
+    val focusMinutesToday: StateFlow<Int> = _focusMinutesToday.asStateFlow()
+
+    private val _focusSessionsToday = MutableStateFlow(0)
+    /** تعداد جلسه‌های تمرکز ثبت‌شده امروز؛ صفر یعنی «داده کافی نیست». */
+    val focusSessionsToday: StateFlow<Int> = _focusSessionsToday.asStateFlow()
+
+    private val _focusInterruptionsToday = MutableStateFlow(0)
+    /** تعداد وقفه‌های (مکث‌های) ثبت‌شده در جلسه‌های امروز. */
+    val focusInterruptionsToday: StateFlow<Int> = _focusInterruptionsToday.asStateFlow()
+
+    /** بازخوانی دقیقه‌ها/جلسه‌ها/وقفه‌های تمرکز امروز از فروشگاه جلسه‌ها. */
+    private fun refreshFocusState() {
+        val sessions = focusStore?.sessions?.value ?: emptyList()
+        val today = StreakCalculator.todayEpochDay()
+        _focusMinutesToday.value = FocusSessionLogic.netFocusMinutes(sessions, today)
+        _focusSessionsToday.value = FocusSessionLogic.sessionsForDay(sessions, today).size
+        _focusInterruptionsToday.value = FocusSessionLogic.interruptionsForDay(sessions, today)
+    }
+
     /** شواهد درس از وضعیت فعلی (فقط خواندنی؛ موتور هرگز درصد تسلط نمی‌سازد). */
     private fun lessonEvidenceOf(progress: CloudLessonProgress): LessonEvidence =
         LessonEvidence(
@@ -303,15 +331,17 @@ class KonkoorViewModel(
             todayEpochDay = today,
             todaysPlan = adaptiveEngine?.todaysPlan(today),
             completedLessonIdsToday = completedToday,
-            // تایمر جلسه مطالعه هنوز به موتور وصل نیست؛ زمان خالص مطالعه
-            // «داده کافی نیست» می‌ماند (از تعداد درس حدس زده نمی‌شود).
-            recordedFocusMinutesToday = null,
+            // دقیقه‌های خالص تمرکز امروز از فروشگاه جلسه‌ها (§۸)؛
+            // `null` یعنی تایمر وصل نیست، صفر یعنی امروز هنوز جلسه‌ای ثبت نشده است.
+            recordedFocusMinutesToday = focusStore?.netFocusMinutes(today),
             previousTopicStatuses = emptyMap()
         )
     }
 
     /** بازخوانی صف مرور، برنامه و گزارش از شواهد فعلی. */
     fun refreshAdaptiveState() {
+        // تمرکز همیشه بازخوانی می‌شود، حتی وقتی موتور تطبیقی وصل نیست.
+        refreshFocusState()
         val engine = adaptiveEngine ?: return
         val today = StreakCalculator.todayEpochDay()
         _adaptiveReviewQueue.value = engine.todaysReviewQueue(MAX_ADAPTIVE_QUEUE_ITEMS, today)
@@ -469,6 +499,13 @@ class KonkoorViewModel(
             val quizzes = FlashcardAndQuizBank.quizQuestions
             _curriculumDataFlow.value = Triple(lessons, cards, quizzes)
             refreshAdaptiveState()
+        }
+        // جلسه‌های تمرکز (§۸): هر جلسه تازه ثبت‌شده، فلوهای تمرکز و گزارش را
+        // زنده به‌روز می‌کند؛ بدون فروشگاه، این اشتراک اصلاً ساخته نمی‌شود.
+        focusStore?.let { store ->
+            viewModelScope.launch(kotlinx.coroutines.Dispatchers.Default) {
+                store.sessions.collect { refreshAdaptiveState() }
+            }
         }
         _cloudSession.value?.let { seedCloudRoadmapIfNeeded(it) }
     }
