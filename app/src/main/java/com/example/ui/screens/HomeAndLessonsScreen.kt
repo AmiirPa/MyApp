@@ -851,9 +851,9 @@ fun StudyFirstHomeScreen(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(
                     horizontal = 18.dp,
-                    vertical = 20.dp
+                    vertical = 16.dp
                 ),
-                verticalArrangement = Arrangement.spacedBy(18.dp)
+                verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
                 // 1. Smart Expressive Header with Monogram and Goal Badge
                 item(key = "home_expressive_header") {
@@ -907,7 +907,7 @@ fun StudyFirstHomeScreen(
                 item(key = "home_my_subjects_section") {
                     Column(
                         modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -1096,68 +1096,42 @@ private fun ExpressiveHeroStudyCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
+                .padding(18.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            Surface(
+                shape = RoundedCornerShape(12.dp),
+                color = token.accentColor.copy(alpha = 0.15f)
             ) {
-                Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    color = token.accentColor.copy(alpha = 0.15f)
+                Row(
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        Icon(
-                            imageVector = token.icon,
-                            contentDescription = null,
-                            tint = token.onContainerColor,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Text(
-                            text = subjectTitle,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = token.onContainerColor
-                        )
-                    }
-                }
-
-                Surface(
-                    shape = RoundedCornerShape(10.dp),
-                    color = token.accentColor,
-                    contentColor = Color.White
-                ) {
+                    Icon(
+                        imageVector = token.icon,
+                        contentDescription = null,
+                        tint = token.onContainerColor,
+                        modifier = Modifier.size(16.dp)
+                    )
                     Text(
-                        text = "پیشنهاد مطالعه هوشمند",
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Medium,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        text = subjectTitle,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = token.onContainerColor
                     )
                 }
             }
 
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(
-                    text = lessonTitle,
-                    fontSize = 19.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = token.onContainerColor,
-                    lineHeight = 27.sp,
-                    maxLines = 3,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
-                    text = "بر اساس سرفصل رسمی کنکور و بودجه‌بندی امتحانات نهایی",
-                    fontSize = 12.sp,
-                    color = token.onContainerColor.copy(alpha = 0.75f)
-                )
-            }
+            Text(
+                text = lessonTitle,
+                fontSize = 19.sp,
+                fontWeight = FontWeight.Bold,
+                color = token.onContainerColor,
+                lineHeight = 27.sp,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
 
             Button(
                 onClick = onStart,
@@ -1290,6 +1264,8 @@ private fun ExpressiveAcademicProgressDashboard(
     totalLessons: Int,
     masteredCards: Int
 ) {
+    // پیش‌فرض جمع‌شده: خانه خلوت می‌ماند؛ جزئیات پشت یک ضربه است.
+    var expanded by remember { mutableStateOf(false) }
     val pctFa = BidiFormatter.applyPreferredDigits(dailyProgress.coerceIn(0, 100).toString())
     val completedFa = BidiFormatter.applyPreferredDigits(completedLessons.toString())
     val totalFa = BidiFormatter.applyPreferredDigits(totalLessons.toString())
@@ -1306,8 +1282,8 @@ private fun ExpressiveAcademicProgressDashboard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(18.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -1332,72 +1308,104 @@ private fun ExpressiveAcademicProgressDashboard(
                     )
                 }
 
-                Surface(
-                    shape = RoundedCornerShape(8.dp),
-                    color = MaterialTheme.colorScheme.primaryContainer
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text(
-                        text = "$pctFa٪ پیشرفت روزانه",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
-                    )
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = MaterialTheme.colorScheme.primaryContainer
+                    ) {
+                        Text(
+                            text = "$pctFa٪ پیشرفت روزانه",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                        )
+                    }
+
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = MaterialTheme.colorScheme.secondaryContainer,
+                        modifier = Modifier.clickable { expanded = !expanded }
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(2.dp)
+                        ) {
+                            Text(
+                                text = if (expanded) "نمایش کمتر" else "نمایش بیشتر",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer
+                            )
+                            Icon(
+                                imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    }
                 }
             }
 
-            val safeProgress = dailyProgress.coerceIn(0, 100) / 100f
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(8.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
-            ) {
+            if (expanded) {
+                val safeProgress = dailyProgress.coerceIn(0, 100) / 100f
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth(safeProgress)
-                        .fillMaxSize()
+                        .fillMaxWidth()
+                        .height(8.dp)
                         .clip(CircleShape)
-                        .background(
-                            Brush.horizontalGradient(
-                                listOf(
-                                    MaterialTheme.colorScheme.primary,
-                                    MaterialTheme.colorScheme.tertiary
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(safeProgress)
+                            .fillMaxSize()
+                            .clip(CircleShape)
+                            .background(
+                                Brush.horizontalGradient(
+                                    listOf(
+                                        MaterialTheme.colorScheme.primary,
+                                        MaterialTheme.colorScheme.tertiary
+                                    )
                                 )
                             )
-                        )
-                )
-            }
+                    )
+                }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                StatPillar(
-                    title = "مباحث تکمیل",
-                    value = "$completedFa از $totalFa"
-                )
-                Box(
-                    modifier = Modifier
-                        .width(1.dp)
-                        .height(34.dp)
-                        .background(MaterialTheme.colorScheme.outlineVariant)
-                )
-                StatPillar(
-                    title = "فلش‌کارت مسلط",
-                    value = "$masteredFa کارت"
-                )
-                Box(
-                    modifier = Modifier
-                        .width(1.dp)
-                        .height(34.dp)
-                        .background(MaterialTheme.colorScheme.outlineVariant)
-                )
-                StatPillar(
-                    title = "تراز هدف",
-                    value = "+۸۰۰۰"
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    StatPillar(
+                        title = "مباحث تکمیل",
+                        value = "$completedFa از $totalFa"
+                    )
+                    Box(
+                        modifier = Modifier
+                            .width(1.dp)
+                            .height(34.dp)
+                            .background(MaterialTheme.colorScheme.outlineVariant)
+                    )
+                    StatPillar(
+                        title = "فلش‌کارت مسلط",
+                        value = "$masteredFa کارت"
+                    )
+                    Box(
+                        modifier = Modifier
+                            .width(1.dp)
+                            .height(34.dp)
+                            .background(MaterialTheme.colorScheme.outlineVariant)
+                    )
+                    StatPillar(
+                        title = "تراز هدف",
+                        value = "+۸۰۰۰"
+                    )
+                }
             }
         }
     }
@@ -1430,59 +1438,94 @@ private fun ExpressiveQuickToolsGrid(
     onOpenLab: () -> Unit,
     onOpenRoadmap: () -> Unit
 ) {
+    // پیش‌فرض جمع‌شده: هر ۴ ابزار پشت یک ضربه می‌مانند، هیچ‌کدام حذف نمی‌شود.
+    var expanded by remember { mutableStateOf(false) }
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        Text(
-            text = "جعبه‌ابزار هوشمند داوطلب",
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onBackground
-        )
-
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            ExpressiveToolCard(
-                modifier = Modifier.weight(1f),
-                title = "برنامه‌ریزی",
-                subtitle = "تقویم و وظایف",
-                icon = Icons.Default.CalendarMonth,
-                tint = Color(0xFF006A60),
-                onClick = onOpenPlanner
+            Text(
+                text = "جعبه‌ابزار هوشمند داوطلب",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground
             )
-            ExpressiveToolCard(
-                modifier = Modifier.weight(1f),
-                title = "آزمون‌ساز",
-                subtitle = "تست و لایتنر",
-                icon = Icons.Default.Quiz,
-                tint = Color(0xFF886820),
-                onClick = onOpenTests
-            )
+
+            Surface(
+                shape = RoundedCornerShape(8.dp),
+                color = MaterialTheme.colorScheme.secondaryContainer,
+                modifier = Modifier.clickable { expanded = !expanded }
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(2.dp)
+                ) {
+                    Text(
+                        text = if (expanded) "نمایش کمتر" else "نمایش بیشتر",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                    Icon(
+                        imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+            }
         }
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            ExpressiveToolCard(
-                modifier = Modifier.weight(1f),
-                title = "آزمایشگاه",
-                subtitle = "تقطیع عروضی",
-                icon = Icons.Default.Science,
-                tint = Color(0xFF7250A1),
-                onClick = onOpenLab
-            )
-            ExpressiveToolCard(
-                modifier = Modifier.weight(1f),
-                title = "نقشه راه",
-                subtitle = "مسیر تا کنکور",
-                icon = Icons.Default.AltRoute,
-                tint = Color(0xFF243B63),
-                onClick = onOpenRoadmap
-            )
+        if (expanded) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                ExpressiveToolCard(
+                    modifier = Modifier.weight(1f),
+                    title = "برنامه‌ریزی",
+                    subtitle = "تقویم و وظایف",
+                    icon = Icons.Default.CalendarMonth,
+                    tint = Color(0xFF006A60),
+                    onClick = onOpenPlanner
+                )
+                ExpressiveToolCard(
+                    modifier = Modifier.weight(1f),
+                    title = "آزمون‌ساز",
+                    subtitle = "تست و لایتنر",
+                    icon = Icons.Default.Quiz,
+                    tint = Color(0xFF886820),
+                    onClick = onOpenTests
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                ExpressiveToolCard(
+                    modifier = Modifier.weight(1f),
+                    title = "آزمایشگاه",
+                    subtitle = "تقطیع عروضی",
+                    icon = Icons.Default.Science,
+                    tint = Color(0xFF7250A1),
+                    onClick = onOpenLab
+                )
+                ExpressiveToolCard(
+                    modifier = Modifier.weight(1f),
+                    title = "نقشه راه",
+                    subtitle = "مسیر تا کنکور",
+                    icon = Icons.Default.AltRoute,
+                    tint = Color(0xFF243B63),
+                    onClick = onOpenRoadmap
+                )
+            }
         }
     }
 }
@@ -1572,8 +1615,8 @@ private fun ExpressiveSubjectCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+                .padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -1628,23 +1671,6 @@ private fun ExpressiveSubjectCard(
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                     )
                 }
-            }
-
-            val safeProgress = subject.progress.coerceIn(0, 100) / 100f
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(6.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(safeProgress)
-                        .fillMaxSize()
-                        .clip(CircleShape)
-                        .background(token.accentColor)
-                )
             }
         }
     }
@@ -2175,6 +2201,8 @@ private fun LessonDetailView(
     var isClozePracticeActive by remember(enrichedLesson.id) { mutableStateOf(false) }
     val revealedClozeKeys = remember(enrichedLesson.id) { androidx.compose.runtime.mutableStateMapOf<String, Boolean>() }
     var showQuickStyleBar by remember { mutableStateOf(false) }
+    // کارت‌های تکمیلی پایین درس پیش‌فرض جمع‌شده‌اند تا متن درس بدون مزاحم خوانده شود
+    var showMoreLessonCards by remember(enrichedLesson.id) { mutableStateOf(false) }
 
     val gradeNum = remember(enrichedLesson.id) { enrichedLesson.subcategoryFolder().first }
     val officialBook = remember(enrichedLesson.id) {
@@ -2932,7 +2960,7 @@ private fun LessonDetailView(
                             .testTag("minus_zero_assistant_card")
                     ) {
                         Column(
-                            modifier = Modifier.padding(16.dp),
+                            modifier = Modifier.padding(18.dp),
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             Row(
@@ -3009,11 +3037,7 @@ private fun LessonDetailView(
                                 }
                             }
 
-                            AnimatedVisibility(
-                                visible = activeAssistAction != -1,
-                                enter = expandVertically() + fadeIn(),
-                                exit = shrinkVertically() + fadeOut()
-                            ) {
+                            if (activeAssistAction != -1) {
                                 Surface(
                                     shape = RoundedCornerShape(14.dp),
                                     color = HomeBackground,
@@ -3410,11 +3434,7 @@ private fun LessonDetailView(
                                                 fontWeight = FontWeight.SemiBold,
                                                 color = HomeText
                                             )
-                                            AnimatedVisibility(
-                                                visible = showInlineSolution,
-                                                enter = expandVertically() + fadeIn(),
-                                                exit = shrinkVertically() + fadeOut()
-                                            ) {
+                                            if (showInlineSolution) {
                                                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                                     HorizontalDivider(thickness = 1.dp, color = HomeBorder)
                                                     SmartDiagramAndFormulaBlock(
@@ -3481,11 +3501,7 @@ private fun LessonDetailView(
                                             )
                                         }
                                     }
-                                    AnimatedVisibility(
-                                        visible = showInlineInteractive,
-                                        enter = expandVertically() + fadeIn(),
-                                        exit = shrinkVertically() + fadeOut()
-                                    ) {
+                                    if (showInlineInteractive) {
                                         LessonInteractiveVisualCard(
                                             lesson = enrichedLesson,
                                             subjectColor = lessonAccent
@@ -3588,11 +3604,7 @@ private fun LessonDetailView(
                                 fontWeight = FontWeight.Bold
                             )
 
-                            androidx.compose.animation.AnimatedVisibility(
-                                visible = isDiagramExpanded,
-                                enter = androidx.compose.animation.fadeIn() + androidx.compose.animation.expandVertically(),
-                                exit = androidx.compose.animation.fadeOut() + androidx.compose.animation.shrinkVertically()
-                            ) {
+                            if (isDiagramExpanded) {
                                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                                     WorkedExampleVisualDiagram(
                                         lesson = enrichedLesson,
@@ -3803,6 +3815,46 @@ private fun LessonDetailView(
                 }
             }
 
+            // کارت‌های تکمیلی پایین درس — پیش‌فرض جمع‌شده تا متن درس بدون مزاحم خوانده شود؛ هیچ کارتی حذف نشده است
+            if (studySectionFilter in listOf(2, 3, 4)) {
+                item(key = "${lesson.id}_more_lesson_cards_toggle") {
+                    Surface(
+                        onClick = { showMoreLessonCards = !showMoreLessonCards },
+                        shape = RoundedCornerShape(14.dp),
+                        color = HomeSurface(),
+                        border = BorderStroke(1.dp, HomeBorder),
+                        modifier = Modifier.fillMaxWidth().testTag("more_lesson_cards_toggle")
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = if (showMoreLessonCards) "بستن کارت‌های تکمیلی" else "نمایش بیشتر",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = lessonAccent
+                                )
+                                Text(
+                                    text = "کارگاه تصویری، نکات تستی و رمزهای ۵ ثانیه‌ای، روش مطالعه علمی",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = HomeMuted
+                                )
+                            }
+                            Text(
+                                text = if (showMoreLessonCards) "▲" else "▼",
+                                style = MaterialTheme.typography.labelLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = lessonAccent
+                            )
+                        }
+                    }
+                }
+            }
+
+            if (showMoreLessonCards) {
             // ۴. کارگاه تصویری تعاملی و نمودارها (منحصراً در تب اختصاصی ۲ کارگاه — استفاده از enrichedLesson)
             if (studySectionFilter == 2) {
                 item(key = "${enrichedLesson.id}_interactive_visual_card") {
@@ -3828,7 +3880,7 @@ private fun LessonDetailView(
                             border = BorderStroke(1.dp, HomeBorder)
                         ) {
                             Column(
-                                modifier = Modifier.padding(16.dp),
+                                modifier = Modifier.padding(18.dp),
                                 verticalArrangement = Arrangement.spacedBy(10.dp)
                             ) {
                                 Text(
@@ -4006,6 +4058,7 @@ private fun LessonDetailView(
                         accentColor = lessonAccent
                     )
                 }
+            }
             }
 
             // ۶. یادداشت شخصی و دکمه تکمیل درس
