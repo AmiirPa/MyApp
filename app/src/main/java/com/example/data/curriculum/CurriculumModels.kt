@@ -747,9 +747,9 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "ar-zero-03",
     "ar-zero-04",
     "ar-zero-05",
-    "ar-zero-06" -> 1 to "📘 پایه هفتم تا نهم (از زیرِ صفر به زبان خودمونی) — حرکات، اسم و فعل، ضمایر و ۱۴ صیغه"
+    "ar-zero-06",
+    "arabic_01b_numbers_time_nouns" -> 1 to "📘 پایه هفتم تا نهم (از زیرِ صفر به زبان خودمونی) — حرکات، اسم و فعل، ضمایر و ۱۴ صیغه"
 
-    "arabic_01b_numbers_time_nouns",
     "arabic_01_sigha_fingerprint",
     "arabic_step06_all_8_abwab_master_table",
     "arabic_02_verbs_abwab",
@@ -1257,15 +1257,25 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "econ_02_math_problems_shortcuts_100",
     "econ_full_math_mastery",
     "economics_speed_shortcuts_master",
-    "found1406-soc-11-economy-basics" -> 1 to "📘 شگردهای ۵ ثانیه‌ای و بدون فرمول برای حل تمام ۱۰ تیپ مسائل ریاضی اقتصاد کنکور"
+    "econ_05_tax_gini_distribution",
+    "eco-quick-01",
+    "eco-quick-02",
+    "eco-quick-03",
+    "eco-quick-04",
+    "eco-quick-05",
+    "eco-quick-06" -> 1 to "📘 شگردهای ۵ ثانیه‌ای و بدون فرمول برای حل تمام ۱۰ تیپ مسائل ریاضی اقتصاد کنکور"
     "econ_01_grade10_1403_complete",
     "econ_04_market_equilibrium_curves",
     "econ_10_ch2_market_supply_demand",
-    "econ_05_tax_gini_distribution",
     "econ_03_gdp_inflation_unemployment_budget",
     "econ_10_ch4_trade_exchange_resilience",
     "gdp1406-01-what-is-gdp",
     "gdp1406-02-gdp-calculation-nominal-real",
+    "eco1406-01-what-is-economics",
+    "eco1406-02-opportunity-cost-ppf-deciles",
+    "eco1406-03-money-functions-types",
+    "eco1406-04-banking-inflation-unemployment",
+    "found1406-soc-11-economy-basics",
     "eco-new-01-kasbokar-karafarini",
     "eco-new-02-entekhab-noe-kasbokar",
     "eco-new-03-osul-entekhab-dorost",
@@ -1279,13 +1289,7 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "eco-new-11-roshd-pishraft",
     "eco-new-12-budjebandi",
     "eco-new-13-tasmimgiri-makharej",
-    "eco-new-14-pasandaz-sarmayegozari",
-    "eco-quick-01",
-    "eco-quick-02",
-    "eco-quick-03",
-    "eco-quick-04",
-    "eco-quick-05",
-    "eco-quick-06" -> 2 to "📗 پایه دهم انسانی (چاپ ۱۴۰۳ ویژه کنکور ۱۴۰۶) — صفحه ۰ تا آخر کتاب اقتصاد دهم (۴ فصل و ۱۴ درس — کد 110221)"
+    "eco-new-14-pasandaz-sarmayegozari" -> 2 to "📗 پایه دهم انسانی (چاپ ۱۴۰۳ ویژه کنکور ۱۴۰۶) — صفحه ۰ تا آخر کتاب اقتصاد دهم (۴ فصل و ۱۴ درس — کد 110221)"
 
     // 13. Din o Zendegi 1, 2, 3 (دین و زندگی ۱، ۲ و ۳)
     "dini_10_ch1_purpose_creation_theology",

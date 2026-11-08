@@ -3,6 +3,9 @@ package com.example.ui.screens
 import androidx.activity.compose.BackHandler
 import kotlinx.coroutines.launch
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.fadeIn
@@ -33,6 +36,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -97,11 +102,13 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -110,6 +117,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.example.data.curriculum.SubjectCatalog
 import com.example.data.curriculum.SubjectMeta
@@ -665,6 +673,13 @@ fun HomeDashboardScreen(
     /** نتیجه مینی‌چک انتهای درس (فقط اولین پاسخ)؛ null یعنی ثبت نمی‌شود. */
     onMiniCheckAnswered: ((ZeroLesson, Boolean) -> Unit)? = null
 ) {
+    // صفحه مسیر ۱ تا ۱۰۰ با وضعیت محلی باز می‌شود: همان صفحه‌ای که در
+    // «بیشتر» با چیپ مسیر باز می‌شود، ولی از خانه با یک ضربه.
+    // وضعیت محلی است چون AppTab در KonkoorViewModel تعریف شده و آن فایل
+    // نباید دست بخورد، پس تب تازه برای لینک مستقیم ساخته نشد.
+    var showLearningPath by remember { mutableStateOf(false) }
+    BackHandler(enabled = showLearningPath) { showLearningPath = false }
+
     // 1. If a lesson is open, render LessonDetailView directly
     val activeLesson = remember(uiState.allLessons, uiState.activeLessonId) {
         uiState.allLessons.find { it.id == uiState.activeLessonId }
@@ -680,6 +695,16 @@ fun HomeDashboardScreen(
                 onSaveLessonState(activeLesson, isCompleted, isBookmarked, note, mastery)
             },
             onMiniCheckAnswered = onMiniCheckAnswered
+        )
+        return
+    }
+
+    // 1b. If the learning path is open, render it directly (same screen as
+    // the More tab chip; opening a lesson from here shows the lesson above).
+    if (showLearningPath) {
+        LearningPathScreen(
+            uiState = uiState,
+            onOpenLesson = { lessonId -> onOpenLesson(lessonId) }
         )
         return
     }
@@ -758,6 +783,24 @@ fun HomeDashboardScreen(
         nextLesson?.normalizedSubjectId() ?: "fonoon"
     }
 
+    // قدم فعلی مسیر ۱ تا ۱۰۰ برای کارت hero خانه.
+    val pathCurrentStep = remember(uiState.lessonProgressMap) {
+        currentLearningPathStep(uiState)
+    }
+    val pathNextLessonId = remember(
+        uiState.allLessons,
+        uiState.lessonProgressMap,
+        pathCurrentStep
+    ) {
+        nextUnfinishedPathLessonId(pathCurrentStep, uiState)
+    }
+    val pathNextLessonTitle = remember(uiState.allLessons, pathNextLessonId) {
+        uiState.allLessons.find { it.id == pathNextLessonId }?.title
+    }
+    val pathCompletedSteps = remember(uiState.lessonProgressMap) {
+        countCompletedPathSteps(uiState)
+    }
+
     StudyFirstHomeScreen(
         dateText = BidiFormatter.applyPreferredDigits("برنامه مطالعاتی کنکور انسانی و فرهنگیان ۱۴۰۶"),
         studentName = cleanStudentName,
@@ -804,6 +847,18 @@ fun HomeDashboardScreen(
         },
         onOpenRoadmap = {
             onNavigateTab(AppTab.ROADMAP)
+        },
+        pathStepNumber = pathCurrentStep.stepNumber,
+        pathStepTitle = pathCurrentStep.title,
+        pathNextLessonTitle = pathNextLessonTitle,
+        pathCompletedSteps = pathCompletedSteps,
+        onOpenLearningPath = {
+            showLearningPath = true
+        },
+        onOpenNextPathLesson = {
+            if (pathNextLessonId != null) {
+                onOpenLesson(pathNextLessonId)
+            }
         }
     )
 }
@@ -829,7 +884,13 @@ fun StudyFirstHomeScreen(
     onOpenTests: () -> Unit,
     onOpenMore: () -> Unit,
     onOpenLab: () -> Unit = onOpenMore,
-    onOpenRoadmap: () -> Unit = onOpenMore
+    onOpenRoadmap: () -> Unit = onOpenMore,
+    pathStepNumber: Int = 1,
+    pathStepTitle: String = "",
+    pathNextLessonTitle: String? = null,
+    pathCompletedSteps: Int = 0,
+    onOpenLearningPath: () -> Unit = {},
+    onOpenNextPathLesson: () -> Unit = {}
 ) {
     val isDark = androidx.compose.foundation.isSystemInDarkTheme()
     val themeController = LocalAppThemeController.current
@@ -870,6 +931,18 @@ fun StudyFirstHomeScreen(
                         subjectTitle = currentSubject,
                         lessonTitle = currentLesson,
                         onStart = onStartStudy
+                    )
+                }
+
+                // 2b. Hero مسیر یادگیری ۱ تا ۱۰۰ (بالای «ادامه مطالعه»)
+                item(key = "home_learning_path_hero") {
+                    LearningPathHeroCard(
+                        stepNumber = pathStepNumber,
+                        stepTitle = pathStepTitle,
+                        nextLessonTitle = pathNextLessonTitle,
+                        completedSteps = pathCompletedSteps,
+                        onOpenPath = onOpenLearningPath,
+                        onOpenNextLesson = onOpenNextPathLesson
                     )
                 }
 
@@ -1166,6 +1239,130 @@ private fun ExpressiveHeroStudyCard(
 }
 
 @Composable
+private fun LearningPathHeroCard(
+    stepNumber: Int,
+    stepTitle: String,
+    nextLessonTitle: String?,
+    completedSteps: Int,
+    onOpenPath: () -> Unit,
+    onOpenNextLesson: () -> Unit
+) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(20.dp))
+            .clickable(onClick = onOpenPath)
+            .testTag("home_learning_path_hero_card"),
+        shape = RoundedCornerShape(20.dp),
+        color = MaterialTheme.colorScheme.primaryContainer,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.35f))
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(44.dp)
+                        .clip(RoundedCornerShape(14.dp))
+                        .background(MaterialTheme.colorScheme.primary),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.AltRoute,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(22.dp)
+                    )
+                }
+
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(2.dp)
+                ) {
+                    Text(
+                        text = "مسیر یادگیری ۱ تا ۱۰۰",
+                        fontSize = 11.sp,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Text(
+                        text = "قدم " + BidiFormatter.toPersianDigits(stepNumber.toString()) +
+                            " از ۱۰۰: " + stepTitle,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Text(
+                        text = BidiFormatter.toPersianDigits(completedSteps.toString()) +
+                            " قدم کامل شد",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+
+                Surface(
+                    shape = RoundedCornerShape(10.dp),
+                    color = MaterialTheme.colorScheme.primary
+                ) {
+                    Text(
+                        text = "دیدن مسیر",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                    )
+                }
+            }
+
+            if (nextLessonTitle != null) {
+                Button(
+                    onClick = onOpenNextLesson,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp)
+                        .testTag("home_learning_path_next_lesson_btn"),
+                    shape = RoundedCornerShape(14.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.PlayArrow,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Text(
+                        text = "درس بعدی: " + nextLessonTitle,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.padding(start = 6.dp)
+                    )
+                }
+            } else {
+                Text(
+                    text = "این قدم هنوز درس آماده ندارد؛ مسیر را باز کن تا ببینی چه مانده است.",
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
+        }
+    }
+}
+
+@Composable
 private fun ExpressiveContinueStudyCard(
     subject: String,
     lesson: String,
@@ -1282,6 +1479,7 @@ private fun ExpressiveAcademicProgressDashboard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .animateContentSize(animationSpec = JellyContentSizeSpring)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
@@ -1441,7 +1639,9 @@ private fun ExpressiveQuickToolsGrid(
     // پیش‌فرض جمع‌شده: هر ۴ ابزار پشت یک ضربه می‌مانند، هیچ‌کدام حذف نمی‌شود.
     var expanded by remember { mutableStateOf(false) }
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .animateContentSize(animationSpec = JellyContentSizeSpring),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         Row(
@@ -1722,6 +1922,12 @@ fun SimpleProgressBar(
 
 @Composable
 private fun HomeSurface(): Color = MaterialTheme.colorScheme.surface
+
+/** فنر ژله‌ای مشترک برای باز/بسته شدن نرم کارت‌ها: نرم و روغنی، نه خشک. */
+private val JellyContentSizeSpring = spring<IntSize>(
+    stiffness = Spring.StiffnessLow,
+    dampingRatio = 0.7f
+)
 
 object LessonSpacing {
     val paragraph = 12.dp
@@ -2176,6 +2382,65 @@ private fun LessonDetailView(
     /** نتیجه مینی‌چک انتهای درس (فقط اولین پاسخ هر بار باز شدن درس)؛ null یعنی ثبت نمی‌شود. */
     onMiniCheckAnswered: ((ZeroLesson, Boolean) -> Unit)? = null
 ) {
+    // ورق زدن چپ/راست بین درس‌های همان subject با HorizontalPager؛ دکمه‌های
+    // «مبحث قبلی / مبحث بعدی» داخل صفحه هم هست و همان onNavigateToLesson را صدا می‌زند.
+    // در چیدمان راست‌به‌چپ، ورق به سمت چپ = درس بعدی (شماره صفحه بالاتر) است.
+    val subjectOrderedLessons = remember(lesson.id, allLessons) {
+        allLessons.filter { it.normalizedSubjectId() == lesson.normalizedSubjectId() }
+            .sortedBy { it.orderIndex }
+    }
+    val currentLessonIdx = remember(lesson.id, subjectOrderedLessons) {
+        subjectOrderedLessons.indexOfFirst { it.id == lesson.id }.coerceAtLeast(0)
+    }
+    val pagerState = rememberPagerState(
+        initialPage = currentLessonIdx,
+        pageCount = { subjectOrderedLessons.size.coerceAtLeast(1) }
+    )
+    // همگام‌سازی پیجر وقتی درس از بیرون عوض شد (دکمه‌های قبلی/بعدی یا لینک پیش‌نیاز):
+    // با انیمیشن به صفحه درس تازه می‌لغزد.
+    LaunchedEffect(currentLessonIdx) {
+        if (pagerState.currentPage != currentLessonIdx) {
+            pagerState.animateScrollToPage(currentLessonIdx)
+        }
+    }
+    // وقتی کاربر با سوایپ ورق زد، درس فعال را عوض کن تا ذخیره وضعیت/نشان درست بماند.
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.currentPage }.collect { page ->
+            if (page != currentLessonIdx) {
+                subjectOrderedLessons.getOrNull(page)?.let { onNavigateToLesson(it.id) }
+            }
+        }
+    }
+    HorizontalPager(
+        state = pagerState,
+        modifier = Modifier.fillMaxSize()
+    ) { page ->
+        val pageLesson = subjectOrderedLessons.getOrNull(page) ?: lesson
+        LessonDetailPageContent(
+            lesson = pageLesson,
+            allLessons = allLessons,
+            // صفحه همسایه هنگام ورق خوردن هنوز progress درس تازه را ندارد؛
+            // بعد از ناوبری، والد progress درست را می‌دهد و state داخلی با کلید id تازه می‌شود.
+            progress = if (pageLesson.id == lesson.id) progress else null,
+            onBack = onBack,
+            onNavigateToLesson = onNavigateToLesson,
+            onSaveState = onSaveState,
+            onMiniCheckAnswered = onMiniCheckAnswered
+        )
+    }
+}
+
+@Composable
+private fun LessonDetailPageContent(
+    lesson: ZeroLesson,
+    allLessons: List<ZeroLesson>,
+    progress: com.example.data.firebase.CloudLessonProgress?,
+    onBack: () -> Unit,
+    onNavigateToLesson: (String) -> Unit = {},
+    onSaveState: (isCompleted: Boolean, isBookmarked: Boolean, userNote: String, masteryPercent: Int) -> Unit,
+    /** نتیجه مینی‌چک انتهای درس (فقط اولین پاسخ هر بار باز شدن درس)؛ null یعنی ثبت نمی‌شود. */
+    onMiniCheckAnswered: ((ZeroLesson, Boolean) -> Unit)? = null
+) {
     BackHandler { onBack() }
 
     val enrichedLesson = remember(lesson.id) {
@@ -2389,8 +2654,8 @@ private fun LessonDetailView(
                 // Collapsible Reading Tools Drawer (hidden by default for distraction-free reading)
                 AnimatedVisibility(
                     visible = showQuickStyleBar,
-                    enter = expandVertically() + fadeIn(),
-                    exit = shrinkVertically() + fadeOut()
+                    enter = expandVertically(animationSpec = JellyContentSizeSpring) + fadeIn(),
+                    exit = shrinkVertically(animationSpec = JellyContentSizeSpring) + fadeOut()
                 ) {
                     Surface(
                         color = HomeBackground,
@@ -2720,7 +2985,9 @@ private fun LessonDetailView(
                         border = BorderStroke(1.dp, HomeBorder)
                     ) {
                         Column(
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                            modifier = Modifier
+                                .padding(horizontal = 12.dp, vertical = 8.dp)
+                                .animateContentSize(animationSpec = JellyContentSizeSpring),
                             verticalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
                             Row(
@@ -2758,7 +3025,8 @@ private fun LessonDetailView(
                                 )
                             }
 
-                            AnimatedVisibility(visible = prereqExpanded) {
+                            // داخل LazyColumn: به‌جای AnimatedVisibility با expandVertically که فضای خالی می‌ساخت، if ساده + animateContentSize فنری
+                            if (prereqExpanded) {
                                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                                     prerequisiteLinks.forEach { link ->
                                         Surface(
@@ -2960,7 +3228,9 @@ private fun LessonDetailView(
                             .testTag("minus_zero_assistant_card")
                     ) {
                         Column(
-                            modifier = Modifier.padding(18.dp),
+                            modifier = Modifier
+                                .padding(18.dp)
+                                .animateContentSize(animationSpec = JellyContentSizeSpring),
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             Row(
