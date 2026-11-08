@@ -74,9 +74,12 @@ class PomodoroTimerTest {
     fun ticker_stopsAtZeroAndLoadsBreakInterval() = runTest {
         val timer = PomodoroTimer(this)
         timer.toggle()
-        // Fast-forward the whole 25-minute focus interval plus the one extra
-        // second in which the 0-second tick flips to the break interval.
-        advanceTimeBy(25 * 60 * 1000L + 1_000L)
+        // Fast-forward the whole 25-minute focus interval plus two extra
+        // seconds: one in which the 0-second tick flips to the break interval,
+        // and one more because advanceTimeBy does not run the task scheduled
+        // at exactly the target time — the flip tick at 25:01 only fires
+        // once time advances past it.
+        advanceTimeBy(25 * 60 * 1000L + 2_000L)
         val state = timer.state.value
         assertTrue(state.isBreak)
         assertFalse(state.isRunning)
