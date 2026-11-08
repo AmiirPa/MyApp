@@ -95,9 +95,11 @@ import com.example.data.firebase.authStateFlow
 import com.example.data.local.LocalKonkoorStore
 import com.example.ui.AppTab
 import com.example.ui.KonkoorViewModel
+import com.example.ui.sharedPomodoroTimer
 import com.example.ui.components.BidiFormatter
 import com.example.ui.components.SavedItemsModalSheet
 import com.example.data.adaptive.AdaptiveEngine
+import com.example.data.focus.FocusSessionStore
 import com.example.ui.screens.CounselingAndMentorshipScreen
 import com.example.ui.screens.DailyPlanScreen
 import com.example.ui.screens.DiagnosticFlowScreen
@@ -156,7 +158,16 @@ class MainActivity : ComponentActivity() {
                 val adaptiveEngine = try {
                     AdaptiveEngine.create(context.applicationContext)
                 } catch (_: Exception) { null }
-                KonkoorViewModel(repo, user?.uid, store, adaptiveEngine)
+                // جلسه‌های تمرکز (§۸): اگر ساخته نشد، تایمر بدون ثبت کار می‌کند.
+                val focusStore = try {
+                    FocusSessionStore(context.applicationContext)
+                } catch (_: Exception) { null }
+                // قلاب ثبت پومودورو: فقط ثانیه‌های واقعی تمرکز ثبت می‌شوند؛
+                // استراحت و مکث هرگز ثبت نمی‌شوند.
+                if (focusStore != null) {
+                    sharedPomodoroTimer.sessionRecorder = focusStore
+                }
+                KonkoorViewModel(repo, user?.uid, store, adaptiveEngine, focusStore)
             }
 
             // authFlow is the Firebase AuthStateListener (see authStateFlow() in
