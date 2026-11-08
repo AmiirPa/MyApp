@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
@@ -1466,6 +1467,8 @@ private fun KonkoorPastExamsArchiveView(
     // the yearly papers' questions — lives in KonkoorPastExamsArchive.kt.)
     val revealedSolutionsMap = remember(activePaper?.id) { mutableStateMapOf<String, Boolean>() }
     val answeredOptionsMap = remember(activePaper?.id) { mutableStateMapOf<String, Int>() }
+    // فهرست کتاب: کدام دفترچه در فهرست باز شده تا جزئیاتش دیده شود (ردیف بسته فقط تیتر است).
+    val expandedPaperMap = remember { mutableStateMapOf<String, Boolean>() }
 
     // Live countdown timer effect for exam simulation mode
     LaunchedEffect(isTimerRunning, remainingSeconds, activeExamMode) {
@@ -2357,7 +2360,7 @@ private fun KonkoorPastExamsArchiveView(
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(start = 12.dp, top = 8.dp, end = 12.dp, bottom = 84.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Official Minute-by-Minute Timetable Card (سازمان سنجش) - Calm solid surface in both Light and Dark mode
             item {
@@ -2556,18 +2559,10 @@ private fun KonkoorPastExamsArchiveView(
                                         verticalArrangement = Arrangement.spacedBy(4.dp)
                                     ) {
                                         Text(
-                                            text = "کنکور $persianYr",
+                                            text = "کنکور $persianYr • $qCount سوال",
                                             style = MaterialTheme.typography.labelLarge,
                                             fontWeight = FontWeight.Bold,
                                             color = PlannerPrimary,
-                                            maxLines = 1,
-                                            softWrap = false
-                                        )
-                                        Text(
-                                            text = "$qCount سوال",
-                                            style = MaterialTheme.typography.labelSmall,
-                                            fontWeight = FontWeight.Medium,
-                                            color = PlannerMuted,
                                             maxLines = 1,
                                             softWrap = false
                                         )
@@ -2617,7 +2612,10 @@ private fun KonkoorPastExamsArchiveView(
             }
 
             // Exam Cards List (مدل گرافیکی ویژه و متمایز برای دفترچه اختصاصی فرهنگیان + مدل استاندارد Pixel UI برای کنکور سراسری)
-            items(filteredPapers, key = { it.id }) { paper ->
+            itemsIndexed(filteredPapers, key = { _, p -> p.id }) { paperIndex, paper ->
+                // فهرست کتاب: ردیف بسته فقط تیتر تک‌خطی؛ جزئیات پشت ضربه روی ⌄
+                val isPaperExpanded = expandedPaperMap[paper.id] == true
+                val paperNumber = BidiFormatter.toPersianDigits((paperIndex + 1).toString())
                 if (paper.isFarhangianSpecial) {
                     // طراحی کاملاً جدید، گرافیکی و متمایز ویژه دفترچه اختصاصی دانشگاه فرهنگیان
                     val emeraldDark = Color(0xFF064E3B)
@@ -2738,30 +2736,42 @@ private fun KonkoorPastExamsArchiveView(
                                                 modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
                                             )
                                         }
+                                        IconButton(
+                                            onClick = { expandedPaperMap[paper.id] = !isPaperExpanded },
+                                            modifier = Modifier.size(28.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = if (isPaperExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                                                contentDescription = if (isPaperExpanded) "بستن جزئیات" else "مشاهده جزئیات",
+                                                tint = Color.White
+                                            )
+                                        }
                                     }
 
                                     Text(
-                                        text = paper.title,
+                                        text = "$paperNumber. ${paper.title}",
                                         style = MaterialTheme.typography.titleMedium,
                                         fontWeight = FontWeight.Black,
-                                        color = Color.White
-                                    )
-
-                                    Text(
-                                        text = paper.description,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = Color.White.copy(alpha = 0.9f)
+                                        color = Color.White,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
                                     )
                                 }
                             }
 
-                            // ۲. ویجت گرافیکی دو-ستونی دروس اختصاصی فرهنگیان (به‌جای لیست متنی ساده)
+                            // ۲. جزئیات کارت فرهنگیان — فقط بعد از ضربه روی ⌄ (در بنر فقط تیتر تک‌خطی می‌ماند)
+                            if (isPaperExpanded) {
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(14.dp),
                                 verticalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
+                                Text(
+                                    text = paper.description,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
                                 if (paper.subjectTimings.isNotEmpty()) {
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
@@ -2893,12 +2903,15 @@ private fun KonkoorPastExamsArchiveView(
                                     }
                                 }
                             }
+                            }
                         }
                     }
                 } else {
                     // کارت استاندارد دفترچه‌های کنکور سراسری (Pixel UI Android 17)
                     Card(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { expandedPaperMap[paper.id] = !isPaperExpanded },
                         shape = RoundedCornerShape(20.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                         border = androidx.compose.foundation.BorderStroke(
@@ -2913,6 +2926,70 @@ private fun KonkoorPastExamsArchiveView(
                                 .padding(14.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
+                            // ردیف بسته: فقط شماره + تیتر تک‌خطی؛ بج، سال، توضیح و بودجه‌بندی فقط در نمای بازشده
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Surface(
+                                    shape = CircleShape,
+                                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+                                    modifier = Modifier.size(30.dp)
+                                ) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Text(
+                                            text = paperNumber,
+                                            style = MaterialTheme.typography.labelMedium,
+                                            fontWeight = FontWeight.Black,
+                                            color = MaterialTheme.colorScheme.primary
+                                        )
+                                    }
+                                }
+                                Text(
+                                    text = paper.title,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Black,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                IconButton(
+                                    onClick = { expandedPaperMap[paper.id] = !isPaperExpanded },
+                                    modifier = Modifier.size(28.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = if (isPaperExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                                        contentDescription = if (isPaperExpanded) "بستن جزئیات" else "مشاهده جزئیات",
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                                Button(
+                                    onClick = {
+                                        activePaper = paper
+                                        currentQuestionIdx = 0
+                                        selectedOptionIdx = -1
+                                        correctAnswersCount = 0
+                                        isExamFinished = false
+                                    },
+                                    shape = RoundedCornerShape(50),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.primary,
+                                        contentColor = MaterialTheme.colorScheme.onPrimary
+                                    )
+                                ) {
+                                    Text(
+                                        text = "ورود به دفترچه ⟵",
+                                        style = MaterialTheme.typography.labelMedium,
+                                        fontWeight = FontWeight.Bold,
+                                        maxLines = 1,
+                                        softWrap = false
+                                    )
+                                }
+                            }
+
+                            if (isPaperExpanded) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -2941,13 +3018,6 @@ private fun KonkoorPastExamsArchiveView(
                                     softWrap = false
                                 )
                             }
-
-                            Text(
-                                text = paper.title,
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Black,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
 
                             Text(
                                 text = paper.description,
@@ -2995,29 +3065,7 @@ private fun KonkoorPastExamsArchiveView(
                                     color = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.weight(1f)
                                 )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Button(
-                                    onClick = {
-                                        activePaper = paper
-                                        currentQuestionIdx = 0
-                                        selectedOptionIdx = -1
-                                        correctAnswersCount = 0
-                                        isExamFinished = false
-                                    },
-                                    shape = RoundedCornerShape(50),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = MaterialTheme.colorScheme.primary,
-                                        contentColor = MaterialTheme.colorScheme.onPrimary
-                                    )
-                                ) {
-                                    Text(
-                                        text = "ورود به دفترچه ⟵",
-                                        style = MaterialTheme.typography.labelMedium,
-                                        fontWeight = FontWeight.Bold,
-                                        maxLines = 1,
-                                        softWrap = false
-                                    )
-                                }
+                            }
                             }
                         }
                     }
@@ -3035,6 +3083,9 @@ private fun NahaeeExamsAndTarmimView() {
     var selectedSessionFilter by remember { mutableStateOf("all") } // "all", "خرداد", "شهریور", "دی"
     var examSelfGradingMode by remember { mutableStateOf(false) } // حالت شبیه‌ساز برگه امتحانی (مخفی کردن کلید مصحح تا کلیک کاربر)
     val revealedQuestionIds = remember { androidx.compose.runtime.mutableStateMapOf<String, Boolean>() }
+    // فهرست کتاب: دفترچه‌ها و سوال‌ها در فهرست فقط تیتر تک‌خطی‌اند؛ جزئیات پشت ضربه روی ردیف باز می‌شود.
+    val expandedBookletMap = remember { mutableStateMapOf<String, Boolean>() }
+    val expandedNahaeeQuestionMap = remember { mutableStateMapOf<String, Boolean>() }
     // ثبت وضعیت خودسنجی هر سوال: 2 = نمره کامل, 1 = نصف نمره, 0 = نیاز به مرور
     val selfGradeMap = remember { androidx.compose.runtime.mutableStateMapOf<String, Int>() }
 
@@ -3060,7 +3111,7 @@ private fun NahaeeExamsAndTarmimView() {
             .fillMaxSize()
             .testTag("nahaee_tarmim_view_list"),
         contentPadding = PaddingValues(start = 14.dp, top = 8.dp, end = 14.dp, bottom = 96.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         // 1. Calm High-Contrast Header Card for Final Exams
         item(key = "nahaee_hero_header") {
@@ -3225,22 +3276,49 @@ private fun NahaeeExamsAndTarmimView() {
                     }
                 }
 
-                items(matchingBooklets, key = { "full_booklet_${it.id}" }) { booklet ->
+                itemsIndexed(matchingBooklets, key = { _, b -> "full_booklet_${b.id}" }) { bookletIndex, booklet ->
+                    val isBookletExpanded = expandedBookletMap[booklet.id] == true
                     Card(
                         shape = RoundedCornerShape(26.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                         border = BorderStroke(1.2.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.45f)),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { expandedBookletMap[booklet.id] = !isBookletExpanded }
                     ) {
                         Column(
                             modifier = Modifier.padding(16.dp),
                             verticalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
+                            // ردیف بسته: فقط شماره + تیتر تک‌خطی؛ ضریب و سوال‌ها فقط در نمای بازشده
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
+                                Surface(
+                                    shape = CircleShape,
+                                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+                                    modifier = Modifier.size(30.dp)
+                                ) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Text(
+                                            text = BidiFormatter.toPersianDigits((bookletIndex + 1).toString()),
+                                            style = MaterialTheme.typography.labelMedium,
+                                            fontWeight = FontWeight.Black,
+                                            color = MaterialTheme.colorScheme.primary
+                                        )
+                                    }
+                                }
+                                Text(
+                                    text = booklet.subjectTitle,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Black,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    modifier = Modifier.weight(1f)
+                                )
                                 Surface(
                                     shape = RoundedCornerShape(50),
                                     color = MaterialTheme.colorScheme.primaryContainer
@@ -3250,9 +3328,24 @@ private fun NahaeeExamsAndTarmimView() {
                                         style = MaterialTheme.typography.labelSmall,
                                         fontWeight = FontWeight.Black,
                                         color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                        maxLines = 1,
+                                        softWrap = false,
                                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
                                     )
                                 }
+                                IconButton(
+                                    onClick = { expandedBookletMap[booklet.id] = !isBookletExpanded },
+                                    modifier = Modifier.size(28.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = if (isBookletExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                                        contentDescription = if (isBookletExpanded) "بستن جزئیات" else "مشاهده جزئیات",
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+
+                            if (isBookletExpanded) {
                                 Surface(
                                     shape = RoundedCornerShape(50),
                                     color = MaterialTheme.colorScheme.tertiaryContainer
@@ -3265,14 +3358,6 @@ private fun NahaeeExamsAndTarmimView() {
                                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
                                     )
                                 }
-                            }
-
-                            Text(
-                                text = booklet.subjectTitle,
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Black,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
 
                             booklet.sheetRows.forEach { rowItem ->
                                 Surface(
@@ -3332,6 +3417,7 @@ private fun NahaeeExamsAndTarmimView() {
                                         )
                                     }
                                 }
+                            }
                             }
                         }
                     }
@@ -3551,7 +3637,9 @@ private fun NahaeeExamsAndTarmimView() {
                     }
                 }
 
-                items(filteredQuestions, key = { "nah_q_${it.id}" }) { q ->
+                itemsIndexed(filteredQuestions, key = { _, qq -> "nah_q_${qq.id}" }) { questionIndex, q ->
+                    // فهرست کتاب: ردیف بسته فقط تیتر تک‌خطی است.
+                    val isQuestionExpanded = expandedNahaeeQuestionMap[q.id] == true
                     val isAnswerVisible = !examSelfGradingMode || (revealedQuestionIds[q.id] == true)
                     val currentSelfGrade = selfGradeMap[q.id]
 
@@ -3559,33 +3647,43 @@ private fun NahaeeExamsAndTarmimView() {
                         shape = RoundedCornerShape(24.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f)),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { expandedNahaeeQuestionMap[q.id] = !isQuestionExpanded }
                     ) {
                         Column(
                             modifier = Modifier.padding(16.dp),
                             verticalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
+                            // ردیف بسته: فقط شماره + تیتر تک‌خطی؛ متن سوال و کلید فقط در نمای بازشده
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 Surface(
-                                    shape = RoundedCornerShape(50),
-                                    color = MaterialTheme.colorScheme.primaryContainer,
-                                    modifier = Modifier.weight(1f, fill = false)
+                                    shape = CircleShape,
+                                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+                                    modifier = Modifier.size(30.dp)
                                 ) {
-                                    Text(
-                                        text = "${q.subjectTitle} • ${q.sessionYear}",
-                                        style = MaterialTheme.typography.labelSmall,
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
-                                    )
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Text(
+                                            text = BidiFormatter.toPersianDigits((questionIndex + 1).toString()),
+                                            style = MaterialTheme.typography.labelMedium,
+                                            fontWeight = FontWeight.Black,
+                                            color = MaterialTheme.colorScheme.primary
+                                        )
+                                    }
                                 }
-                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "${q.subjectTitle} • ${q.sessionYear}",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    modifier = Modifier.weight(1f)
+                                )
                                 Surface(
                                     shape = RoundedCornerShape(50),
                                     color = MaterialTheme.colorScheme.tertiaryContainer
@@ -3595,10 +3693,24 @@ private fun NahaeeExamsAndTarmimView() {
                                         style = MaterialTheme.typography.labelSmall,
                                         fontWeight = FontWeight.Black,
                                         color = MaterialTheme.colorScheme.onTertiaryContainer,
+                                        maxLines = 1,
+                                        softWrap = false,
                                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
                                     )
                                 }
+                                IconButton(
+                                    onClick = { expandedNahaeeQuestionMap[q.id] = !isQuestionExpanded },
+                                    modifier = Modifier.size(28.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = if (isQuestionExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                                        contentDescription = if (isQuestionExpanded) "بستن جزئیات" else "مشاهده جزئیات",
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
                             }
+
+                            if (isQuestionExpanded) {
 
                             Text(
                                 text = "❓ سوال رسمی امتحان نهایی:",
@@ -3705,6 +3817,7 @@ private fun NahaeeExamsAndTarmimView() {
                                         }
                                     }
                                 }
+                            }
                             }
                         }
                     }

@@ -13,7 +13,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,7 +31,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -673,9 +671,10 @@ private fun MoreSectionScreen(
         )
     }
 
-    // گروه‌بندی تب‌های فرعی برای خلوت‌کردن ردیف بالا: سه گروه جمع‌وجور،
-    // و فقط چیپ‌های گروه فعال نشان داده می‌شود (حداکثر دو ضربه تا هر مقصد:
-    // یک ضربه روی گروه + یک ضربه روی چیپ؛ مقصد اول هر گروه با یک ضربه).
+    // گروه‌بندی تب‌های فرعی برای خلوت‌کردن بخش بالا: سه گروه جمع‌وجور،
+    // و مقصدهای گروه فعال در یک فهرست ساده زیر آن می‌آید (حداکثر دو ضربه
+    // تا هر مقصد: یک ضربه روی گروه + یک ضربه روی نام مقصد؛
+    // مقصد اول هر گروه با یک ضربه).
     val groups = remember(themeController.appLanguage) {
         listOf(
             Triple(0, themeController.tr("یادگیری", "Learning"), listOf(0, 1, 2, 9)),
@@ -754,36 +753,32 @@ private fun MoreSectionScreen(
                         }
                     }
                 }
-                // ردیف چیپ‌های گروه فعال: فقط ۳ یا ۴ چیپ، با همان testTagهای قبلی.
-                Row(
+            }
+        }
+
+        // فهرست ساده مقصدهای گروه فعال: فقط نام مقصد، بدون آیکون و توضیح؛
+        // با همان testTagهای قبلی، پس هر مقصد با یک ضربه از همین‌جا در دسترس است.
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 2.dp)
+        ) {
+            activeGroupItems.forEach { (idx, label, tag) ->
+                val isSelected = activeSection == idx
+                Text(
+                    text = BidiFormatter.applyPreferredDigits(label),
+                    fontSize = 15.sp,
+                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                    color = if (isSelected) primaryColor else mutedColor,
+                    maxLines = 1,
+                    softWrap = false,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    activeGroupItems.forEach { (idx, label, tag) ->
-                        val isSelected = activeSection == idx
-                        Surface(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(10.dp))
-                                .clickable { activeSection = idx }
-                                .testTag(tag),
-                            color = if (isSelected) primaryColor else Color.Transparent,
-                            shape = RoundedCornerShape(10.dp)
-                        ) {
-                            Text(
-                                text = BidiFormatter.applyPreferredDigits(label),
-                                fontSize = 13.sp,
-                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                color = if (isSelected) onPrimaryColor else mutedColor,
-                                maxLines = 1,
-                                softWrap = false,
-                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 9.dp)
-                            )
-                        }
-                    }
-                }
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable { activeSection = idx }
+                        .testTag(tag)
+                        .padding(horizontal = 4.dp, vertical = 11.dp)
+                )
             }
         }
 

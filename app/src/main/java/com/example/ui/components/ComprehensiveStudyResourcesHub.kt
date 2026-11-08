@@ -71,6 +71,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ui.AppTab
@@ -105,6 +106,7 @@ fun ComprehensiveStudyResourcesHubCard(
 ) {
     var selectedCategoryTab by remember { mutableIntStateOf(0) }
     var searchQuery by remember { mutableStateOf("") }
+    var tabNoticeExpanded by remember { mutableStateOf(false) }
     val expandedItemMap = remember { mutableStateMapOf<String, Boolean>() }
     val userOwnedResourceMap = remember { mutableStateMapOf<String, Boolean>() }
 
@@ -242,20 +244,24 @@ fun ComprehensiveStudyResourcesHubCard(
             Surface(
                 color = MaterialTheme.colorScheme.surfaceContainer,
                 shape = RoundedCornerShape(10.dp),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { tabNoticeExpanded = !tabNoticeExpanded }
             ) {
                 Text(
                     text = tabNotice,
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(10.dp),
-                    lineHeight = 18.sp
+                    lineHeight = 18.sp,
+                    maxLines = if (tabNoticeExpanded) Int.MAX_VALUE else 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
 
-            // لیست کارت‌های منابع
+            // لیست کارت‌های منابع (فهرست کتاب: فاصله یکدست و بزرگ‌تر)
             Column(
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
                 if (filteredResources.isEmpty()) {
                     Box(
@@ -271,12 +277,13 @@ fun ComprehensiveStudyResourcesHubCard(
                         )
                     }
                 } else {
-                    filteredResources.forEach { item ->
+                    filteredResources.forEachIndexed { index, item ->
                         val isExpanded = expandedItemMap[item.id] == true
                         val isOwned = userOwnedResourceMap[item.id] == true
 
                         ResourceItemCard(
                             item = item,
+                            listIndex = index,
                             isExpanded = isExpanded,
                             isOwned = isOwned,
                             onToggleExpand = { expandedItemMap[item.id] = !isExpanded },
@@ -293,6 +300,7 @@ fun ComprehensiveStudyResourcesHubCard(
 @Composable
 private fun ResourceItemCard(
     item: ComprehensiveResourceItem,
+    listIndex: Int,
     isExpanded: Boolean,
     isOwned: Boolean,
     onToggleExpand: () -> Unit,
@@ -332,52 +340,31 @@ private fun ResourceItemCard(
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Text(
-                                text = when (item.categoryTab) {
-                                    0 -> "🎓"
-                                    1 -> "📖"
-                                    2 -> "🏆"
-                                    3 -> "📝"
-                                    else -> "🏛️"
-                                },
-                                fontSize = 16.sp
+                                text = BidiFormatter.toPersianDigits((listIndex + 1).toString()),
+                                style = MaterialTheme.typography.labelLarge,
+                                fontWeight = FontWeight.Black,
+                                color = item.badgeColor
                             )
                         }
                     }
 
-                    Column {
-                        Text(
-                            text = item.title,
-                            style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = "${item.authorOrPublisher} • ${item.gradeOrTarget}",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+                    // فهرست کتاب: ردیف بسته فقط تیتر تک‌خطی؛ نویسنده/ناشر فقط در نمای بازشده
+                    Text(
+                        text = item.title,
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
+                    )
                 }
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    // نشان ضریب
-                    Surface(
-                        shape = RoundedCornerShape(8.dp),
-                        color = item.badgeColor.copy(alpha = 0.12f)
-                    ) {
-                        Text(
-                            text = item.coefficientOrWeight,
-                            style = MaterialTheme.typography.labelSmall,
-                            fontWeight = FontWeight.Bold,
-                            color = item.badgeColor,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
-                        )
-                    }
-
-                    // دکمه باز و بسته کردن
+                    // دکمه باز و بسته کردن (بج ضریب فقط در نمای بازشده دیده می‌شود)
                     IconButton(
                         onClick = onToggleExpand,
                         modifier = Modifier.size(28.dp)
@@ -391,15 +378,7 @@ private fun ResourceItemCard(
                 }
             }
 
-            // خلاصه کوتاه
-            Text(
-                text = item.summary,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f),
-                lineHeight = 19.sp
-            )
-
-            // جزئیات آکاردئونی باز شده
+            // جزئیات آکاردئونی باز شده (خلاصه، نویسنده/ناشر و ضریب فقط اینجاست)
             // (بدون AnimatedVisibility: انیمیشن expandVertically داخل LazyColumn
             //  گاهی ارتفاع کارت را اشتباه اندازه می‌گرفت و فضای خالی بزرگ می‌ساخت.)
             if (isExpanded) {
@@ -408,6 +387,31 @@ private fun ResourceItemCard(
                     modifier = Modifier.padding(top = 4.dp)
                 ) {
                     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
+
+                    // نویسنده/ناشر، ضریب و خلاصه — فقط در نمای بازشده
+                    Text(
+                        text = "${item.authorOrPublisher} • ${item.gradeOrTarget}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = item.badgeColor.copy(alpha = 0.12f)
+                    ) {
+                        Text(
+                            text = item.coefficientOrWeight,
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = item.badgeColor,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                        )
+                    }
+                    Text(
+                        text = item.summary,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f),
+                        lineHeight = 19.sp
+                    )
 
                     // سال چاپ و مرجع
                     // (متن weight دارد تا دکمه «علامت‌گذاری تهیه کتاب» جای طبیعی خودش را
