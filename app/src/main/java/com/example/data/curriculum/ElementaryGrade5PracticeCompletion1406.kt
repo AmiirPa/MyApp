@@ -289,7 +289,7 @@ object ElementaryGrade5PracticeCompletion1406 {
                 question = "مربع چند محور تقارن دارد؟",
                 options = listOf(
                     "۲ محور",
-                    "۳ محور"
+                    "۳ محور",
                     "۱ محور",
                     "۴ محور",
                 ),
@@ -561,7 +561,7 @@ object ElementaryGrade5PracticeCompletion1406 {
                 question = "قدم سوم روش علمی چیست؟",
                 options = listOf(
                     "مشاهده",
-                    "نتیجه‌گیری"
+                    "نتیجه‌گیری",
                     "آزمایش",
                     "حدس",
                 ),
@@ -833,7 +833,7 @@ object ElementaryGrade5PracticeCompletion1406 {
                 question = "کدام‌یک کار ماهیچه است؟",
                 options = listOf(
                     "بدن را نگه می‌دارد",
-                    "بدن را راست نگه می‌دارد"
+                    "بدن را راست نگه می‌دارد",
                     "خم می‌شود",
                     "استخوان را می‌کشد",
                 ),
@@ -1377,7 +1377,7 @@ object ElementaryGrade5PracticeCompletion1406 {
                 question = "در شعر تماشاخانه، جهان به چه چیزی تشبیه شده است؟",
                 options = listOf(
                     "به باغ",
-                    "به آسمان"
+                    "به آسمان",
                     "به دریا",
                     "به تماشاخانه",
                 ),
@@ -1649,7 +1649,7 @@ object ElementaryGrade5PracticeCompletion1406 {
                 question = "پیام شعر چنار و کدوبن چیست؟",
                 options = listOf(
                     "زود بلند شو تا دیده شوی",
-                    "تابستان بهترین فصل است"
+                    "تابستان بهترین فصل است",
                     "درخت بهتر از بوته است",
                     "رشد سریع و بی‌ریشه ماندگار نیست",
                 ),
@@ -1921,7 +1921,7 @@ object ElementaryGrade5PracticeCompletion1406 {
                 question = "کدام‌یک نام‌آور است؟",
                 options = listOf(
                     "کسی که پول زیادی دارد",
-                    "کسی که خانه بزرگی دارد"
+                    "کسی که خانه بزرگی دارد",
                     "کسی که معروف است",
                     "کسی که کار بزرگ کرده و نامش مانده است",
                 ),
@@ -2193,7 +2193,7 @@ object ElementaryGrade5PracticeCompletion1406 {
                 question = "پیام داستان روزی که باران می‌بارید چیست؟",
                 options = listOf(
                     "باران زیباست",
-                    "قاب‌فروشی کار خوبی است"
+                    "قاب‌فروشی کار خوبی است",
                     "دکان باید بزرگ باشد",
                     "زیبایی با یاد معنوی کامل می‌شود",
                 ),
@@ -2465,7 +2465,7 @@ object ElementaryGrade5PracticeCompletion1406 {
                 question = "پیام درس کار و تلاش چیست؟",
                 options = listOf(
                     "مورچه حشره کوچکی است",
-                    "بار گران سنگین است"
+                    "بار گران سنگین است",
                     "ملخ پای بلندی دارد",
                     "با تلاش، کار بزرگ انجام می‌شود",
                 ),
@@ -3010,7 +3010,7 @@ object ElementaryGrade5PracticeCompletion1406 {
                 options = listOf(
                     "هواپیما",
                     "ماشین",
-                    "دوچرخه"
+                    "دوچرخه",
                     "کشتی",
                 ),
                 correctIndex = 3,
@@ -3282,7 +3282,7 @@ object ElementaryGrade5PracticeCompletion1406 {
                 options = listOf(
                     "افغانستان",
                     "ترکمنستان",
-                    "پاکستان"
+                    "پاکستان",
                     "ترکیه",
                 ),
                 correctIndex = 3,
