@@ -11,11 +11,6 @@
 // WIRING: addAll(Farsi1Part5Completion1406.lessons)
 package com.example.data.curriculum
 
-import com.example.data.CurriculumModels.MiniCheckQuestion
-import com.example.data.CurriculumModels.WorkedExample
-import com.example.data.CurriculumModels.ZeroLesson
-import com.example.data.CurriculumModels.ZeroStep
-
 object Farsi1Part5Completion1406 {
     val lessons: List<ZeroLesson> = listOf(
         ZeroLesson(
