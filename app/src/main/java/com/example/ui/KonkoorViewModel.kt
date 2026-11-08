@@ -3,6 +3,21 @@ package com.example.ui
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.data.adaptive.AdaptiveEngine
+import com.example.data.adaptive.DiagnosticEngine
+import com.example.data.adaptive.AdaptivePlanner
+import com.example.data.adaptive.DiagnosticSession
+import com.example.data.adaptive.EvidenceLevel
+import com.example.data.adaptive.ExamAttempt
+import com.example.data.adaptive.LessonEvidence
+import com.example.data.adaptive.ProgressReport
+import com.example.data.adaptive.QuestionAttempt
+import com.example.data.adaptive.QuestionLevel
+import com.example.data.adaptive.ReviewCardState
+import com.example.data.adaptive.TopicStatus
+import com.example.data.adaptive.TopicStatusResult
+import com.example.data.adaptive.DailyPlan
+import com.example.data.adaptive.DailyPlanItem
 import com.example.data.curriculum.FlashcardAndQuizBank
 import com.example.data.curriculum.FlashcardItem
 import com.example.data.curriculum.QuizQuestionItem
@@ -105,7 +120,9 @@ data class KonkoorUiState(
 class KonkoorViewModel(
     repository: KonkoorCloudRepository?,
     currentUserId: String?,
-    private val localStore: LocalKonkoorStore? = null
+    private val localStore: LocalKonkoorStore? = null,
+    /** موتور تطبیقی؛ `null` یعنی اتصال انجام نشده و صفحه‌های تطبیقی «داده کافی نیست» نشان می‌دهند. */
+    private val adaptiveEngine: AdaptiveEngine? = null
 ) : ViewModel() {
 
     private data class CloudSession(val repository: KonkoorCloudRepository, val userId: String)
@@ -186,12 +203,272 @@ class KonkoorViewModel(
     )
     val statusMessage: StateFlow<String?> = _statusMessage.asStateFlow()
 
+    // ---------- موتور تطبیقی (AdaptiveEngine) ----------
+    // وضعیت تطبیقی جدا از KonkoorUiState نگه داشته می‌شود تا ترکیب سنگین
+    // uiState دست نخورده بماند؛ صفحه‌های تطبیقی همین فلوها را جمع می‌کنند.
+    // همه مقادیر از شواهد واقعی ساخته می‌شوند؛ نبود داده یعنی «داده کافی نیست»،
+    // نه عدد ساختگی. زمان هر سؤال فعلاً در هیچ‌جای اپ اندازه‌گیری نمی‌شود، پس
+    // همه تلاش‌های ثبت‌شده timeSpentSeconds = 0 دارند (یعنی «اندازه‌گیری نشده»؛
+    // موتور اولین جواب درست هر مبحث را محتاطانه «شانسی» می‌شمارد — تسلط با
+    // تکرار درستِ بیشتر همچنان به دست می‌آید).
+
+    private val _adaptiveReviewQueue = MutableStateFlow<List<ReviewCardState>>(emptyList())
+    /** صف مرور امروز (درهم‌آمیخته، اشتباه‌های پرتکرار اول). */
+    val adaptiveReviewQueue: StateFlow<List<ReviewCardState>> = _adaptiveReviewQueue.asStateFlow()
+
+    private val _adaptiveReviewCards = MutableStateFlow<List<ReviewCardState>>(emptyList())
+    /** همه کارت‌های مرور (برای تشخیص «انجام‌شده امروز» در برنامه روز). */
+    val adaptiveReviewCards: StateFlow<List<ReviewCardState>> = _adaptiveReviewCards.asStateFlow()
+
+    private val _adaptiveDailyPlan = MutableStateFlow<DailyPlan?>(null)
+    /** برنامه ذخیره‌شده امروز؛ `null` یعنی هنوز برای امروز برنامه‌ای ساخته نشده است. */
+    val adaptiveDailyPlan: StateFlow<DailyPlan?> = _adaptiveDailyPlan.asStateFlow()
+
+    private val _adaptiveReport = MutableStateFlow<ProgressReport.Report?>(null)
+    /** گزارش پیشرفت؛ `null` یعنی هنوز محاسبه نشده است. */
+    val adaptiveReport: StateFlow<ProgressReport.Report?> = _adaptiveReport.asStateFlow()
+
+    private val _adaptiveExamAttempts = MutableStateFlow<List<ExamAttempt>>(emptyList())
+    /** آزمون‌های ثبت‌شده (جدیدترین اول) — برای تشخیص «داده کافی» در گزارش. */
+    val adaptiveExamAttempts: StateFlow<List<ExamAttempt>> = _adaptiveExamAttempts.asStateFlow()
+
+    /** شواهد درس از وضعیت فعلی (فقط خواندنی؛ موتور هرگز درصد تسلط نمی‌سازد). */
+    private fun lessonEvidenceOf(progress: CloudLessonProgress): LessonEvidence =
+        LessonEvidence(
+            lessonId = progress.lessonId,
+            subjectId = progress.subjectId,
+            isCompleted = progress.isCompleted,
+            masteryPercent = progress.masteryPercent,
+            updatedAtEpochDay = progress.updatedAt
+                ?.let { StreakCalculator.epochDayFromMillis(it.seconds * 1000L) } ?: 0L
+        )
+
+    /**
+     * وضعیت یک درس از همه شواهد موجود.
+     * مینی‌چک: فقط تلاش‌های واقعی مینی‌چک همان درس (questionId با پیشوند
+     * `minicheck:`) شمرده می‌شوند؛ اگر هیچ تلاشی نباشد، attempted=false است.
+     * پیش‌نیاز مستقیم مدل نشده است (null) — زنجیره پیش‌نیاز درس‌ها هنوز در
+     * موتور وارد نشده و حدس زده نمی‌شود.
+     */
+    fun adaptiveTopicStatus(lesson: ZeroLesson): TopicStatusResult {
+        val engine = adaptiveEngine ?: return TopicStatusResult(
+            TopicStatus.NOT_STARTED,
+            EvidenceLevel.INSUFFICIENT,
+            "موتور تطبیقی وصل نیست."
+        )
+        val progress = uiState.value.lessonProgressMap[lesson.id]
+        val miniAttempts = engine.examAttempts.value
+            .flatMap { it.questions }
+            .filter { it.topicId == lesson.id && it.questionId == "minicheck:${lesson.id}" }
+        return engine.topicStatus(
+            topicId = lesson.id,
+            lesson = progress?.let { lessonEvidenceOf(it) },
+            prerequisiteStatus = null,
+            miniCheckCorrect = miniAttempts.lastOrNull()?.isCorrect ?: false,
+            miniCheckAttempted = miniAttempts.isNotEmpty()
+        )
+    }
+
+    /** وضعیت مباحثی که شواهدی دارند (برای برنامه روز و گزارش). */
+    private fun adaptiveTopicStatuses(): Map<String, TopicStatusResult> {
+        val engine = adaptiveEngine ?: return emptyMap()
+        val state = uiState.value
+        val topicsWithEvidence = HashSet<String>()
+        state.lessonProgressMap.keys.forEach { topicsWithEvidence.add(it) }
+        engine.examAttempts.value.flatMap { it.questions }.forEach { topicsWithEvidence.add(it.topicId) }
+        engine.diagnosticSessions.value.forEach { topicsWithEvidence.add(it.topicId) }
+        val lessonsById = state.allLessons.associateBy { it.id }
+        val result = HashMap<String, TopicStatusResult>()
+        for (topicId in topicsWithEvidence) {
+            val lesson = lessonsById[topicId] ?: continue
+            result[topicId] = adaptiveTopicStatus(lesson)
+        }
+        return result
+    }
+
+    private fun buildReportInput(today: Long): ProgressReport.ReportInput {
+        val state = uiState.value
+        val evidenceList = state.lessonProgressMap.values.map { lessonEvidenceOf(it) }
+        val completedToday = state.lessonProgressMap.values
+            .filter { it.isCompleted }
+            .filter { it.updatedAt?.let { ts -> StreakCalculator.epochDayFromMillis(ts.seconds * 1000L) } == today }
+            .map { it.lessonId }
+            .toSet()
+        return ProgressReport.ReportInput(
+            completedDays = state.completedStudyDays,
+            lessonEvidence = evidenceList,
+            topicStatuses = adaptiveTopicStatuses(),
+            examAttempts = (adaptiveEngine?.examAttempts?.value ?: emptyList()).reversed(),
+            reviewCards = adaptiveEngine?.reviewCards?.value ?: emptyList(),
+            todayEpochDay = today,
+            todaysPlan = adaptiveEngine?.todaysPlan(today),
+            completedLessonIdsToday = completedToday,
+            // تایمر جلسه مطالعه هنوز به موتور وصل نیست؛ زمان خالص مطالعه
+            // «داده کافی نیست» می‌ماند (از تعداد درس حدس زده نمی‌شود).
+            recordedFocusMinutesToday = null,
+            previousTopicStatuses = emptyMap()
+        )
+    }
+
+    /** بازخوانی صف مرور، برنامه و گزارش از شواهد فعلی. */
+    fun refreshAdaptiveState() {
+        val engine = adaptiveEngine ?: return
+        val today = StreakCalculator.todayEpochDay()
+        _adaptiveReviewQueue.value = engine.todaysReviewQueue(MAX_ADAPTIVE_QUEUE_ITEMS, today)
+        _adaptiveReviewCards.value = engine.reviewCards.value
+        _adaptiveDailyPlan.value = engine.todaysPlan(today)
+        _adaptiveExamAttempts.value = engine.examAttempts.value
+        _adaptiveReport.value = engine.progressReport(buildReportInput(today))
+    }
+
+    /**
+     * ساخت و ذخیره برنامه امروز با دقیقه‌های در دسترس کاربر.
+     * اگر برای امروز برنامه‌ای ساخته شده باشد، همان برگردانده می‌شود (برنامه
+     * دوبار ساخته نمی‌شود).
+     */
+    fun buildAdaptiveDailyPlan(availableMinutes: Int): DailyPlan? {
+        val engine = adaptiveEngine ?: return null
+        val today = StreakCalculator.todayEpochDay()
+        engine.todaysPlan(today)?.let { return it }
+        val state = uiState.value
+        val plan = engine.buildDailyPlan(
+            AdaptivePlanner.PlanInput(
+                lessons = state.allLessons,
+                lessonEvidence = state.lessonProgressMap.values.associate { it.lessonId to lessonEvidenceOf(it) },
+                topicStatuses = adaptiveTopicStatuses(),
+                dueReviews = engine.reviewCards.value.filter {
+                    it.nextReviewEpochDay <= today
+                },
+                availableMinutes = availableMinutes.coerceIn(0, 600),
+                todayEpochDay = today
+            )
+        )
+        engine.saveDailyPlan(plan)
+        refreshAdaptiveState()
+        return plan
+    }
+
+    /**
+     * بازسازی برنامه بعد از روزهای ازدست‌رفته — بدون سرزنش.
+     * آیتم‌های انجام‌نشده برنامه‌های گذشته به ابتدای صف امروز می‌آیند؛
+     * آیتم‌های امروز که هنوز انجام نشده‌اند هم حفظ می‌شوند (وگرنه بازسازی،
+     * برنامه امروز را با فقط آیتم‌های جاافتاده جایگزین می‌کرد)؛ آیتم‌هایی
+     * که در سقف امروز جا نمی‌شوند، برگردانده می‌شوند (حذف نمی‌شوند).
+     */
+    fun replanAdaptiveAfterMissedDays(availableMinutes: Int): AdaptivePlanner.ReplannedDay? {
+        val engine = adaptiveEngine ?: return null
+        val today = StreakCalculator.todayEpochDay()
+        fun isDone(item: DailyPlanItem): Boolean =
+            uiState.value.lessonProgressMap[item.lessonId]?.isCompleted == true
+        val missed = engine.dailyPlans.value
+            .filter { it.dateEpochDay < today }
+            .flatMap { it.items }
+            .filterNot { isDone(it) }
+        val todaysRemaining = engine.todaysPlan(today)?.items.orEmpty().filterNot { isDone(it) }
+        val merged = (missed + todaysRemaining).distinctBy { it.lessonId + it.kind.name }
+        val replanned = engine.replanAfterMissedDays(merged, availableMinutes.coerceIn(0, 600), today)
+        engine.saveDailyPlan(replanned.plan)
+        refreshAdaptiveState()
+        return replanned
+    }
+
+    /** ثبت نتیجه مینی‌چک انتهای درس — فقط اولین پاسخ هر بار باز شدن درس. */
+    fun recordMiniCheckAttempt(lesson: ZeroLesson, isCorrect: Boolean) {
+        val engine = adaptiveEngine ?: return
+        engine.recordQuestionAttempt(
+            QuestionAttempt(
+                questionId = "minicheck:${lesson.id}",
+                topicId = lesson.id,
+                subjectId = lesson.normalizedSubjectId(),
+                level = QuestionLevel.CONCEPT,
+                isCorrect = isCorrect,
+                wasSkipped = false,
+                timeSpentSeconds = 0,
+                answeredAtEpochDay = StreakCalculator.todayEpochDay()
+            )
+        )
+        refreshAdaptiveState()
+    }
+
+    /** ثبت نتیجه یک مرور (کارت صف مرور) — بلد بود / بلد نبود. */
+    fun recordReviewAttempt(card: ReviewCardState, knewIt: Boolean) {
+        val engine = adaptiveEngine ?: return
+        engine.recordQuestionAttempt(
+            QuestionAttempt(
+                questionId = "review:${card.itemId}",
+                topicId = card.topicId,
+                subjectId = card.subjectId,
+                level = QuestionLevel.CONCEPT,
+                isCorrect = knewIt,
+                wasSkipped = false,
+                timeSpentSeconds = 0,
+                answeredAtEpochDay = StreakCalculator.todayEpochDay()
+            )
+        )
+        refreshAdaptiveState()
+    }
+
+    /** ثبت یک آزمون کامل با داده هر سؤال + مسیر تجمیعی موجود (بدون تغییر رفتار قبلی). */
+    fun submitExamAttempt(attempt: ExamAttempt) {
+        val correct = attempt.questions.count { it.isCorrect }
+        // مسیر تجمیعی موجود دقیقاً مثل قبل حفظ می‌شود.
+        localStore?.recordExamResult(
+            subjectId = attempt.subjectId,
+            subjectTitle = attempt.title,
+            correctCount = correct,
+            totalCount = attempt.questions.size
+        )
+        launchCloudWrite {
+            recordExamResult(
+                subjectId = attempt.subjectId,
+                subjectTitle = attempt.title,
+                correctCount = correct,
+                totalCount = attempt.questions.size
+            )
+        }
+        adaptiveEngine?.recordExamResult(attempt)
+        refreshAdaptiveState()
+    }
+
+    /** ثبت نتیجه یک جلسه تشخیصی. */
+    fun recordDiagnosticSession(session: DiagnosticSession) {
+        adaptiveEngine?.recordDiagnosticSession(session)
+        refreshAdaptiveState()
+    }
+
+    /** سؤال تشخیصی بعدی برای یک مبحث (از روی پاسخ‌های تا اینجا). */
+    fun adaptiveNextDiagnosticQuestion(
+        bank: List<DiagnosticEngine.DiagnosticQuestionItem>,
+        answersSoFar: List<QuestionAttempt>
+    ): DiagnosticEngine.DiagnosticQuestionItem? =
+        adaptiveEngine?.nextDiagnosticQuestion(bank, answersSoFar)
+
+    /** نتیجه یک جلسه تشخیصی (null یعنی موتور وصل نیست). */
+    fun adaptiveConcludeDiagnostic(
+        topicId: String,
+        subjectId: String,
+        answers: List<QuestionAttempt>,
+        bank: List<DiagnosticEngine.DiagnosticQuestionItem>,
+        lessonId: String
+    ): DiagnosticEngine.DiagnosticResult? =
+        adaptiveEngine?.concludeDiagnostic(topicId, subjectId, answers, bank, lessonId)
+
+    /**
+     * ثبت یک پاسخ تشخیصی به‌عنوان تلاش واقعی — تا شواهدش در وضعیت مبحث
+     * و کارت مرور همان مبحث دیده شود (جلسه کامل جداگانه ذخیره می‌شود).
+     */
+    fun recordDiagnosticAnswer(attempt: QuestionAttempt) {
+        adaptiveEngine?.recordQuestionAttempt(attempt)
+        refreshAdaptiveState()
+    }
+
     init {
         viewModelScope.launch(kotlinx.coroutines.Dispatchers.Default) {
             val lessons = FlashcardAndQuizBank.allLessons
             val cards = FlashcardAndQuizBank.flashcards
             val quizzes = FlashcardAndQuizBank.quizQuestions
             _curriculumDataFlow.value = Triple(lessons, cards, quizzes)
+            refreshAdaptiveState()
         }
         _cloudSession.value?.let { seedCloudRoadmapIfNeeded(it) }
     }
@@ -407,6 +684,9 @@ class KonkoorViewModel(
                 masteryPercent = masteryPercent
             )
         }
+        // تکمیل درس به‌تنهایی «تلاش سؤال» نیست؛ هیچ تلاشی ساخته نمی‌شود،
+        // فقط وضعیت تطبیقی با شواهد تازه بازخوانی می‌شود.
+        refreshAdaptiveState()
         _statusMessage.value = if (isCompleted) "درس با موفقیت تکمیل و ذخیره شد!" else "یادداشت و وضعیت درس ذخیره شد."
     }
 
@@ -458,6 +738,21 @@ class KonkoorViewModel(
                 currentReviews = currentReviews
             )
         }
+        // ثبت تلاش واقعی فلش‌کارت در موتور تطبیقی (مبحث = درس فلش‌کارت؛
+        // زمان اندازه‌گیری نشده است، پس 0 می‌ماند).
+        adaptiveEngine?.recordQuestionAttempt(
+            QuestionAttempt(
+                questionId = "flashcard:${card.id}",
+                topicId = card.subjectId,
+                subjectId = card.subjectId,
+                level = QuestionLevel.CONCEPT,
+                isCorrect = knewIt,
+                wasSkipped = false,
+                timeSpentSeconds = 0,
+                answeredAtEpochDay = StreakCalculator.todayEpochDay()
+            )
+        )
+        refreshAdaptiveState()
     }
 
     fun addStudyTask(title: String, subjectId: String, stageTag: String, durationMinutes: Int) {
@@ -505,11 +800,17 @@ class KonkoorViewModel(
                 totalCount = totalCount
             )
         }
+        // نتیجه تجمیعی، داده هر سؤال ندارد؛ در موتور ثبت نمی‌شود (ثبت آن
+        // با سؤال‌های ساختگی، تحلیل را آلوده می‌کرد). فقط گزارش بازخوانی می‌شود.
+        refreshAdaptiveState()
     }
 
     private data class Quadruple<A, B, C, D>(val first: A, val second: B, val third: C, val fourth: D)
 
     private companion object {
         const val TAG = "KonkoorVM"
+
+        /** سقف نمایش صف مرور امروز در ViewModel. */
+        const val MAX_ADAPTIVE_QUEUE_ITEMS = 50
     }
 }

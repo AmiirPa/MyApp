@@ -1,6 +1,7 @@
 package com.example.data.adaptive
 
 import com.example.util.StreakCalculator
+import kotlinx.coroutines.flow.StateFlow
 
 /**
  * نمای واحد موتور تطبیقی — یک نقطه ورود برای لایه UI (ViewModel).
@@ -127,6 +128,26 @@ class AdaptiveEngine(private val store: AdaptiveLocalStore) {
     fun saveDailyPlan(plan: DailyPlan) {
         store.saveDailyPlan(plan)
     }
+
+    // ---------- دسترسی فقط‌خواندنی به شواهد ذخیره‌شده (برای ViewModel) ----------
+    // موتور هیچ منطق تازه‌ای اینجا ندارد؛ این‌ها فقط همان StateFlowهای
+    // AdaptiveLocalStore هستند تا گزارش و برنامه روز از شواهد واقعی ساخته شوند.
+
+    /** همه آزمون‌های ثبت‌شده (جدید به قدیم). */
+    val examAttempts: StateFlow<List<ExamAttempt>> get() = store.examAttempts
+
+    /** کارت‌های مرور همه مباحث. */
+    val reviewCards: StateFlow<List<ReviewCardState>> get() = store.reviewCards
+
+    /** جلسه‌های تشخیصی ثبت‌شده. */
+    val diagnosticSessions: StateFlow<List<DiagnosticSession>> get() = store.diagnosticSessions
+
+    /** برنامه‌های روز ذخیره‌شده. */
+    val dailyPlans: StateFlow<List<DailyPlan>> get() = store.dailyPlans
+
+    /** برنامه ذخیره‌شده امروز، اگر ساخته شده باشد؛ در غیر این صورت null. */
+    fun todaysPlan(todayEpochDay: Long = StreakCalculator.todayEpochDay()): DailyPlan? =
+        store.dailyPlans.value.firstOrNull { it.dateEpochDay == todayEpochDay }
 
     companion object {
         /** ساخت موتور از Context — فقط همین‌جا Context لازم است. */

@@ -97,11 +97,16 @@ import com.example.ui.AppTab
 import com.example.ui.KonkoorViewModel
 import com.example.ui.components.BidiFormatter
 import com.example.ui.components.SavedItemsModalSheet
+import com.example.data.adaptive.AdaptiveEngine
 import com.example.ui.screens.CounselingAndMentorshipScreen
+import com.example.ui.screens.DailyPlanScreen
+import com.example.ui.screens.DiagnosticFlowScreen
 import com.example.ui.screens.HomeDashboardScreen
 import com.example.ui.screens.InteractiveLabsScreen
 import com.example.ui.screens.MasterKonkoorRoadmapScreen
 import com.example.ui.screens.PracticeLeitnerAndQuizScreen
+import com.example.ui.screens.ProgressDashboardScreen
+import com.example.ui.screens.ReviewQueueScreen
 import com.example.ui.screens.SettingsScreen
 import com.example.ui.screens.StudyPlannerAndFarhangianScreen
 import com.example.ui.screens.ZeroLessonsScreen
@@ -146,7 +151,12 @@ class MainActivity : ComponentActivity() {
                 val repo = if (user != null) {
                     try { KonkoorCloudRepository(context.applicationContext) } catch (_: Exception) { null }
                 } else null
-                KonkoorViewModel(repo, user?.uid, store)
+                // موتور تطبیقی: اگر ساخته نشد، ViewModel با engine=null کار می‌کند
+                // و صفحه‌های تطبیقی «داده کافی نیست» نشان می‌دهند (اپ خراب نمی‌شود).
+                val adaptiveEngine = try {
+                    AdaptiveEngine.create(context.applicationContext)
+                } catch (_: Exception) { null }
+                KonkoorViewModel(repo, user?.uid, store, adaptiveEngine)
             }
 
             // authFlow is the Firebase AuthStateListener (see authStateFlow() in
@@ -540,6 +550,9 @@ private fun AppScaffold(
                                     onNavigateTab = { viewModel.selectTab(it) },
                                     onSaveLessonState = { lesson, isCompleted, isBookmarked, note, mastery ->
                                         viewModel.saveLessonState(lesson, isCompleted, isBookmarked, note, mastery)
+                                    },
+                                    onMiniCheckAnswered = { lesson, correct ->
+                                        viewModel.recordMiniCheckAttempt(lesson, correct)
                                     }
                                 )
 
@@ -549,6 +562,9 @@ private fun AppScaffold(
                                     onOpenLesson = { viewModel.openLesson(it) },
                                     onSaveLessonState = { lesson, isCompleted, isBookmarked, note, mastery ->
                                         viewModel.saveLessonState(lesson, isCompleted, isBookmarked, note, mastery)
+                                    },
+                                    onMiniCheckAnswered = { lesson, correct ->
+                                        viewModel.recordMiniCheckAttempt(lesson, correct)
                                     }
                                 )
 
@@ -572,6 +588,9 @@ private fun AppScaffold(
                                     onAnswerFlashcard = { card, knew -> viewModel.answerFlashcard(card, knew) },
                                     onSubmitExamResult = { id, title, correct, total ->
                                         viewModel.submitExamResult(id, title, correct, total)
+                                    },
+                                    onSubmitExamAttempt = { attempt ->
+                                        viewModel.submitExamAttempt(attempt)
                                     }
                                 )
 
@@ -626,7 +645,12 @@ private fun MoreSectionScreen(
             Triple(0, themeController.tr("مشاوره و تجربیات", "Counseling & Guides"), "sub_section_counseling"),
             Triple(1, themeController.tr("آزمایشگاه یادگیری", "Learning Lab"), "nav_tab_lab"),
             Triple(2, themeController.tr("نقشه راه ۱۴۰۶", "1406 Roadmap"), "nav_tab_roadmap"),
-            Triple(3, themeController.tr("کتابخانه و منابع", "Library & PDFs"), "sub_section_library")
+            Triple(3, themeController.tr("کتابخانه و منابع", "Library & PDFs"), "sub_section_library"),
+            // صفحه‌های تطبیقی (§۳ تا §۹ الحاقیه) — متن‌ها فقط فارسی‌اند.
+            Triple(4, "تشخیص سطح", "adaptive_diagnostic"),
+            Triple(5, "مرور امروز", "adaptive_review_queue"),
+            Triple(6, "برنامه امروز", "adaptive_daily_plan"),
+            Triple(7, "گزارش پیشرفت", "adaptive_progress_report")
         )
     }
 
@@ -703,6 +727,38 @@ private fun MoreSectionScreen(
                     onNavigateTab = { tab -> viewModel.selectTab(tab) },
                     onToggleStep = { stepId -> viewModel.toggleRoadmapStep(stepId) }
                 )
+                3 -> com.example.ui.components.LibraryAndResourcesCatalogView(
+                    allLessons = uiState.allLessons,
+                    onOpenLesson = { lessonId ->
+                        viewModel.selectTab(AppTab.LESSONS)
+                        viewModel.openLesson(lessonId)
+                    }
+                )
+                4 -> DiagnosticFlowScreen(
+                    viewModel = viewModel,
+                    uiState = uiState,
+                    onOpenLesson = { lessonId ->
+                        viewModel.selectTab(AppTab.LESSONS)
+                        viewModel.openLesson(lessonId)
+                    }
+                )
+                5 -> ReviewQueueScreen(
+                    viewModel = viewModel,
+                    uiState = uiState,
+                    onOpenLesson = { lessonId ->
+                        viewModel.selectTab(AppTab.LESSONS)
+                        viewModel.openLesson(lessonId)
+                    }
+                )
+                6 -> DailyPlanScreen(
+                    viewModel = viewModel,
+                    uiState = uiState,
+                    onOpenLesson = { lessonId ->
+                        viewModel.selectTab(AppTab.LESSONS)
+                        viewModel.openLesson(lessonId)
+                    }
+                )
+                7 -> ProgressDashboardScreen(viewModel = viewModel)
                 else -> com.example.ui.components.LibraryAndResourcesCatalogView(
                     allLessons = uiState.allLessons,
                     onOpenLesson = { lessonId ->
