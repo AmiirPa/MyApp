@@ -101,6 +101,7 @@ import com.example.ui.components.SavedItemsModalSheet
 import com.example.data.adaptive.AdaptiveEngine
 import com.example.data.focus.FocusSessionStore
 import com.example.util.CrashReporter
+import com.example.ui.screens.AddedLessonsScreen
 import com.example.ui.screens.CounselingAndMentorshipScreen
 import com.example.ui.screens.DailyPlanScreen
 import com.example.ui.screens.DiagnosticFlowScreen
@@ -669,7 +670,10 @@ private fun MoreSectionScreen(
             Triple(4, "تشخیص سطح", "adaptive_diagnostic"),
             Triple(5, "مرور امروز", "adaptive_review_queue"),
             Triple(6, "برنامه امروز", "adaptive_daily_plan"),
-            Triple(7, "گزارش پیشرفت", "adaptive_progress_report")
+            Triple(7, "گزارش پیشرفت", "adaptive_progress_report"),
+            // فهرست همه درس‌ها — برای اینکه کاربر خودش ببیند چه درس‌هایی
+            // اضافه شده و با زدن روی هر درس، همان درس باز شود.
+            Triple(8, "فهرست همه درس‌ها", "all_added_lessons")
         )
     }
 
@@ -778,6 +782,13 @@ private fun MoreSectionScreen(
                     }
                 )
                 7 -> ProgressDashboardScreen(viewModel = viewModel)
+                8 -> AddedLessonsScreen(
+                    uiState = uiState,
+                    onOpenLesson = { lessonId ->
+                        viewModel.selectTab(AppTab.LESSONS)
+                        viewModel.openLesson(lessonId)
+                    }
+                )
                 else -> com.example.ui.components.LibraryAndResourcesCatalogView(
                     allLessons = uiState.allLessons,
                     onOpenLesson = { lessonId ->
