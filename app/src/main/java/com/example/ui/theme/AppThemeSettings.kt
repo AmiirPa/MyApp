@@ -435,8 +435,11 @@ class AppThemeController(context: Context) {
     }
 
     private fun loadFontPreset(): BuiltInFontPreset {
-        val saved = prefs.getString(KEY_FONT_PRESET, BuiltInFontPreset.VAZIRMATN.name)
-        return BuiltInFontPreset.entries.find { it.name == saved } ?: BuiltInFontPreset.VAZIRMATN
+        val saved = prefs.getString(KEY_FONT_PRESET, BuiltInFontPreset.IRANSANSX.name)
+        // مهاجرت پیش‌فرض: هر کس قبلاً وزیرمتن (پیش‌فرض قدیمی) را داشته،
+        // حالا ایران‌سنس ایکس (پیش‌فرض جدید) می‌گیرد؛ انتخاب‌های دیگر دست نمی‌خورد.
+        if (saved == BuiltInFontPreset.VAZIRMATN.name) return BuiltInFontPreset.IRANSANSX
+        return BuiltInFontPreset.entries.find { it.name == saved } ?: BuiltInFontPreset.IRANSANSX
     }
 
     private fun loadDiacriticsPalette(): DiacriticsColorPalette {
@@ -700,8 +703,8 @@ class AppThemeController(context: Context) {
     fun resetAllAppearanceToStandard() {
         themeMode = AppThemeMode.SYSTEM
         selectedColorPalette = AppColorPalette.EMERALD_PERSIAN_ROYAL
-        useDynamicColor = false
-        selectedFontPreset = BuiltInFontPreset.VAZIRMATN
+        useDynamicColor = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+        selectedFontPreset = BuiltInFontPreset.IRANSANSX
         customFontFamily = null
         customFontPath = null
         customFontName = null
@@ -723,8 +726,8 @@ class AppThemeController(context: Context) {
         prefs.edit()
             .putString(KEY_THEME_MODE, AppThemeMode.SYSTEM.name)
             .putString(KEY_COLOR_PALETTE, AppColorPalette.PIXEL_EXPRESSIVE_17.name)
-            .putBoolean(KEY_DYNAMIC_COLOR, false)
-            .putString(KEY_FONT_PRESET, BuiltInFontPreset.VAZIRMATN.name)
+            .putBoolean(KEY_DYNAMIC_COLOR, Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+            .putString(KEY_FONT_PRESET, BuiltInFontPreset.IRANSANSX.name)
             .remove(KEY_CUSTOM_FONT_PATH)
             .remove(KEY_CUSTOM_FONT_NAME)
             .putFloat(KEY_FONT_SCALE, 0.94f)
@@ -802,7 +805,7 @@ class AppThemeController(context: Context) {
     }
 
     fun resetToDefaultFont() {
-        selectBuiltInFontPreset(BuiltInFontPreset.VAZIRMATN)
+        selectBuiltInFontPreset(BuiltInFontPreset.IRANSANSX)
     }
 
     private fun queryDisplayName(uri: Uri): String? {
@@ -1021,7 +1024,7 @@ enum class ArabicFontPreset(
         EL_MESSIRI -> BuiltInFontPreset.EL_MESSIRI_ARABIC
         IBM_PLEX_ARABIC -> BuiltInFontPreset.IBM_PLEX_ARABIC
         READEX_PRO -> BuiltInFontPreset.READEX_PRO_ARABIC
-        MATCH_APP -> BuiltInFontPreset.VAZIRMATN
+        MATCH_APP -> BuiltInFontPreset.IRANSANSX
     }
 }
 
