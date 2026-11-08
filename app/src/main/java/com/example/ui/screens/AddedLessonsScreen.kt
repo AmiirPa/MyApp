@@ -1,6 +1,5 @@
 package com.example.ui.screens
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,19 +9,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.curriculum.ZeroLesson
@@ -37,6 +37,9 @@ import com.example.ui.components.BidiFormatter
  * فهرست از `uiState.allLessons` ساخته می‌شود، یعنی دقیقاً همان درس‌هایی که
  * در برنامه وصل‌اند (نه یک فهرست جدا که بتواند با واقعیت فرق کند). درس‌ها
  * بر اساس درس (موضوع) گروه‌بندی می‌شوند و تعداد هر گروه هم نشان داده می‌شود.
+ *
+ * مینیمال: در نگاه اول هر ردیف فقط تیتر درس است — بدون چیپ، بدون بج،
+ * بدون نوار پیشرفت و بدون توضیح اضافه.
  */
 @Composable
 fun AddedLessonsScreen(
@@ -75,25 +78,27 @@ fun AddedLessonsScreen(
             .padding(horizontal = 20.dp, vertical = 12.dp)
             .testTag("added_lessons_root")
     ) {
-        Text(
-            text = "فهرست همه درس‌ها",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        Text(
-            text = "این‌ها دقیقاً همان درس‌هایی‌اند که در برنامه هست؛ روی هر درس بزن تا باز شود.",
-            fontSize = 13.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
-        )
-        Text(
-            text = "مجموع: " + BidiFormatter.toPersianDigits(totalCount.toString()) + " درس",
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(bottom = 10.dp)
-        )
+        // سربرگ جمع‌وجور: تیتر + شمارش کل در یک ردیف.
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "فهرست همه درس‌ها",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text = BidiFormatter.toPersianDigits(totalCount.toString()) + " درس",
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
 
         OutlinedTextField(
             value = query,
@@ -102,7 +107,7 @@ fun AddedLessonsScreen(
             singleLine = true,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 10.dp)
+                .padding(bottom = 12.dp)
                 .testTag("added_lessons_search")
         )
 
@@ -115,8 +120,7 @@ fun AddedLessonsScreen(
             )
         } else {
             LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                modifier = Modifier.fillMaxSize()
             ) {
                 grouped.forEach { (subjectId, lessons) ->
                     val subjectTitle = subjectTitleById[subjectId] ?: subjectId
@@ -125,43 +129,33 @@ fun AddedLessonsScreen(
                             text = subjectTitle + " (" +
                                 BidiFormatter.toPersianDigits(lessons.size.toString()) +
                                 " درس)",
-                            fontSize = 15.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(top = 8.dp, bottom = 2.dp)
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
                         )
                     }
                     items(lessons, key = { it.id }) { lesson ->
-                        Surface(
+                        Column(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable { onOpenLesson(lesson.id) }
-                                .testTag("added_lesson_${lesson.id}"),
-                            shape = RoundedCornerShape(12.dp),
-                            color = MaterialTheme.colorScheme.surface,
-                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+                                .testTag("added_lesson_${lesson.id}")
                         ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 14.dp, vertical = 10.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(
-                                    text = lesson.title,
-                                    fontSize = 14.sp,
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    modifier = Modifier.weight(1f)
-                                )
-                                Text(
-                                    text = BidiFormatter.toPersianDigits(
-                                        lesson.estimatedMinutes.toString()
-                                    ) + " دقیقه",
-                                    fontSize = 12.sp,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    modifier = Modifier.padding(start = 8.dp)
-                                )
-                            }
+                            Text(
+                                text = lesson.title,
+                                fontSize = 15.sp,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.padding(vertical = 12.dp)
+                            )
+                            HorizontalDivider(
+                                color = MaterialTheme.colorScheme.outlineVariant,
+                                thickness = 0.5.dp
+                            )
                         }
                     }
                 }

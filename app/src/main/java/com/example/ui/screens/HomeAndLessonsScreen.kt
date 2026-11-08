@@ -802,7 +802,7 @@ fun HomeDashboardScreen(
     }
 
     StudyFirstHomeScreen(
-        dateText = BidiFormatter.applyPreferredDigits("برنامه مطالعاتی کنکور انسانی و فرهنگیان ۱۴۰۶"),
+        dateText = BidiFormatter.applyPreferredDigits("کنکور انسانی و فرهنگیان ۱۴۰۶"),
         studentName = cleanStudentName,
         currentSubject = BidiFormatter.applyPreferredDigits(currentSubjectTitle),
         currentLesson = BidiFormatter.applyPreferredDigits(currentLessonTitle),
@@ -912,9 +912,9 @@ fun StudyFirstHomeScreen(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(
                     horizontal = 18.dp,
-                    vertical = 16.dp
+                    vertical = 20.dp
                 ),
-                verticalArrangement = Arrangement.spacedBy(14.dp)
+                verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 // 1. Smart Expressive Header with Monogram and Goal Badge
                 item(key = "home_expressive_header") {
@@ -924,17 +924,7 @@ fun StudyFirstHomeScreen(
                     )
                 }
 
-                // 2. Hero Study Card (کارت ویژه هوشمند مطالعه امروز)
-                item(key = "home_hero_study_card") {
-                    ExpressiveHeroStudyCard(
-                        token = subjectToken,
-                        subjectTitle = currentSubject,
-                        lessonTitle = currentLesson,
-                        onStart = onStartStudy
-                    )
-                }
-
-                // 2b. Hero مسیر یادگیری ۱ تا ۱۰۰ (بالای «ادامه مطالعه»)
+                // 2. Hero مسیر یادگیری ۱ تا ۱۰۰ — قلب خانه (دست نخورد)
                 item(key = "home_learning_path_hero") {
                     LearningPathHeroCard(
                         stepNumber = pathStepNumber,
@@ -956,97 +946,6 @@ fun StudyFirstHomeScreen(
                     )
                 }
 
-                // 4. Academic Progress Dashboard (رادار پیشرفت تحصیلی)
-                item(key = "home_academic_progress") {
-                    ExpressiveAcademicProgressDashboard(
-                        dailyProgress = dailyProgress,
-                        completedLessons = completedLessonsCount,
-                        totalLessons = totalLessonsCount,
-                        masteredCards = masteredCardsCount
-                    )
-                }
-
-                // 5. Expressive Quick Actions (میانبرهای سریع آموزشی)
-                item(key = "home_quick_actions") {
-                    ExpressiveQuickToolsGrid(
-                        onOpenPlanner = onOpenPlanner,
-                        onOpenTests = onOpenTests,
-                        onOpenLab = onOpenLab,
-                        onOpenRoadmap = onOpenRoadmap
-                    )
-                }
-
-                // 6. Expressive Subject Cards (کارت‌های دروس با رنگ و هویت اختصاصی)
-                item(key = "home_my_subjects_section") {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(4.dp, 18.dp)
-                                        .clip(RoundedCornerShape(2.dp))
-                                        .background(MaterialTheme.colorScheme.primary)
-                                )
-                                Text(
-                                    text = "درس‌های من (۲۳ کتاب کنکور و نهایی)",
-                                    fontSize = 17.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onBackground
-                                )
-                            }
-
-                            Surface(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(10.dp))
-                                    .clickable(onClick = onOpenAllSubjects),
-                                color = MaterialTheme.colorScheme.primaryContainer,
-                                shape = RoundedCornerShape(10.dp)
-                            ) {
-                                Text(
-                                    text = "مشاهده همه دروس ←",
-                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 12.sp,
-                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
-                                )
-                            }
-                        }
-
-                        if (subjects.isEmpty()) {
-                            Surface(
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(18.dp),
-                                color = MaterialTheme.colorScheme.surface,
-                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
-                            ) {
-                                Text(
-                                    text = "در حال بارگذاری هوشمند سرفصل‌های درسی...",
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    fontSize = 13.sp,
-                                    modifier = Modifier.padding(20.dp)
-                                )
-                            }
-                        } else {
-                            subjects.forEach { subject ->
-                                ExpressiveSubjectCard(
-                                    subject = subject,
-                                    isDark = effectiveDark,
-                                    onClick = { onOpenSubject(subject) }
-                                )
-                            }
-                        }
-                    }
-                }
             }
         }
     }
@@ -1078,14 +977,7 @@ private fun ExpressiveSmartHeader(
                 modifier = Modifier
                     .size(48.dp)
                     .clip(CircleShape)
-                    .background(
-                        Brush.linearGradient(
-                            listOf(
-                                MaterialTheme.colorScheme.primary,
-                                MaterialTheme.colorScheme.tertiary
-                            )
-                        )
-                    ),
+                    .background(MaterialTheme.colorScheme.primary),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -1100,42 +992,14 @@ private fun ExpressiveSmartHeader(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(3.dp)
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    Text(
-                        text = "سلام، $studentName",
-                        fontSize = 19.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    Surface(
-                        shape = RoundedCornerShape(8.dp),
-                        color = MaterialTheme.colorScheme.secondaryContainer
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(3.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Bolt,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                                modifier = Modifier.size(13.dp)
-                            )
-                            Text(
-                                text = "آماده قبولی",
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSecondaryContainer
-                            )
-                        }
-                    }
-                }
+                Text(
+                    text = "سلام، $studentName",
+                    fontSize = 19.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
                 Text(
                     text = dateText,
                     fontSize = 12.sp,
@@ -1298,7 +1162,7 @@ private fun LearningPathHeroCard(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        maxLines = 2,
+                        maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                     Text(
@@ -1390,13 +1254,13 @@ private fun ExpressiveContinueStudyCard(
                 modifier = Modifier
                     .size(44.dp)
                     .clip(RoundedCornerShape(14.dp))
-                    .background(token.containerColor),
+                    .background(MaterialTheme.colorScheme.primaryContainer),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = token.icon,
                     contentDescription = null,
-                    tint = token.onContainerColor,
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
                     modifier = Modifier.size(22.dp)
                 )
             }
@@ -1422,7 +1286,7 @@ private fun ExpressiveContinueStudyCard(
                 Text(
                     text = subject,
                     fontSize = 12.sp,
-                    color = token.accentColor,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = FontWeight.SemiBold
                 )
             }
@@ -1797,81 +1661,41 @@ private fun ExpressiveSubjectCard(
     isDark: Boolean,
     onClick: () -> Unit
 ) {
-    val token = remember(subject.id, isDark) {
-        SubjectDesignSystem.getToken(subject.id, isDark)
-    }
-    val pctFa = BidiFormatter.applyPreferredDigits("${subject.progress.coerceIn(0, 100)}٪")
-
+    // فهرست تک‌خطی (قانون کاربر): فقط تیتر، یک خط؛ بدون آیکون رنگی،
+    // بدون زیرتیتر، بدون چیپ درصد و بدون نوار پیشرفت. شمارش و درصد
+    // داخل صفحه درس و «گزارش پیشرفت» دیده می‌شوند، نه در ردیف فهرست.
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(20.dp))
+            .clip(RoundedCornerShape(16.dp))
             .clickable(onClick = onClick)
             .testTag("home_subject_card_${subject.id}"),
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(16.dp),
         color = MaterialTheme.colorScheme.surface,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
     ) {
-        Column(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(14.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+                .padding(horizontal = 16.dp, vertical = 14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(44.dp)
-                        .clip(RoundedCornerShape(14.dp))
-                        .background(token.containerColor),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = token.icon,
-                        contentDescription = null,
-                        tint = token.onContainerColor,
-                        modifier = Modifier.size(22.dp)
-                    )
-                }
-
-                Column(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(2.dp)
-                ) {
-                    Text(
-                        text = subject.title,
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    Text(
-                        text = subject.subtitle,
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-
-                Surface(
-                    shape = RoundedCornerShape(8.dp),
-                    color = token.containerColor
-                ) {
-                    Text(
-                        text = pctFa,
-                        color = token.onContainerColor,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                    )
-                }
-            }
+            Text(
+                text = subject.title,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f)
+            )
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(18.dp)
+            )
         }
     }
 }
@@ -1917,6 +1741,109 @@ fun SimpleProgressBar(
                     )
                 )
         )
+    }
+}
+
+/**
+ * فهرست کتابی تک‌خطی (قانون کاربر): هر فصل یک کارت جمع‌وجور، هر درس
+ * فقط «شماره + تیتر» در یک خط (maxLines=1)؛ بدون زیرتیتر، بدون چیپ،
+ * بدون بج و بدون نوار پیشرفت. نشان‌کردن و وضعیت تکمیل داخل صفحه درس
+ * باقی است (دکمه نشان در سربرگ درس و بنر نشان در معرفی درس).
+ * جایگزین سبک CleanTextbookTableOfContentsCard در همین فایل؛ آن
+ * کامپوننت در فایل خودش دست نخورد و فقط فراخوانی‌اش عوض شد.
+ */
+@Composable
+private fun MinimalBookTocCard(
+    chapterTitle: String,
+    lessons: List<ZeroLesson>,
+    onSelectLesson: (ZeroLesson) -> Unit
+) {
+    var isExpanded by remember { mutableStateOf(true) }
+    val countFa = BidiFormatter.toPersianDigits(lessons.size.toString())
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("textbook_toc_card"),
+        shape = RoundedCornerShape(16.dp),
+        color = HomeSurface(),
+        border = BorderStroke(1.dp, HomeBorder)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(10.dp))
+                    .clickable { isExpanded = !isExpanded }
+                    .padding(vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = BidiFormatter.formatMixedPersianText(chapterTitle),
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = HomePrimary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
+                )
+                Text(
+                    text = "$countFa درس",
+                    fontSize = 12.sp,
+                    color = HomeMuted,
+                    maxLines = 1
+                )
+                Icon(
+                    imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                    contentDescription = null,
+                    tint = HomePrimary,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+            if (isExpanded) {
+                lessons.forEachIndexed { idx, lesson ->
+                    val itemNumFa = BidiFormatter.toPersianDigits((idx + 1).toString())
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(8.dp))
+                            .clickable { onSelectLesson(lesson) }
+                            .testTag("lesson_card_${lesson.id}")
+                            .padding(vertical = 9.dp, horizontal = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Text(
+                            text = itemNumFa,
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = HomePrimary,
+                            maxLines = 1
+                        )
+                        Text(
+                            text = BidiFormatter.formatMixedPersianText(lesson.title),
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = HomeText,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                    if (idx < lessons.lastIndex) {
+                        HorizontalDivider(
+                            thickness = 0.5.dp,
+                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -2044,7 +1971,7 @@ fun ZeroLessonsScreen(
                     horizontal = 20.dp,
                     vertical = 20.dp
                 ),
-                verticalArrangement = Arrangement.spacedBy(14.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 item(key = "lessons_catalog_header") {
                     Column(
@@ -2058,9 +1985,11 @@ fun ZeroLessonsScreen(
                             color = HomeText
                         )
                         Text(
-                            text = "برای مشاهده فصل‌ها، درس‌نامه، مثال‌ها و سوالات تمرینی روی درس مورد نظر بزنید.",
-                            fontSize = 13.sp,
-                            color = HomeMuted
+                            text = BidiFormatter.applyPreferredDigits("${uiState.subjects.size} درس • ${uiState.totalLessonsCount} مبحث — روی یک درس بزنید."),
+                            fontSize = 12.sp,
+                            color = HomeMuted,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }
@@ -2071,7 +2000,7 @@ fun ZeroLessonsScreen(
                         onValueChange = { subjectSearchQuery = it },
                         placeholder = {
                             Text(
-                                text = "جستجوی درس (ادبیات، عربی، ریاضی، اقتصاد، تاریخ، فلسفه، روانشناسی...)",
+                                text = "جستجوی درس…",
                                 fontSize = 13.sp,
                                 color = HomeMuted
                             )
@@ -2110,7 +2039,6 @@ fun ZeroLessonsScreen(
                 currentSubject.title.substringBefore(" (").substringAfter(". ").trim()
             }
             val countFa = BidiFormatter.toPersianDigits(displayedLessons.size.toString())
-            val subjectProgressPct = (uiState.subjectProgressFraction(currentSubject.id) * 100).toInt().coerceIn(0, 100)
             val subjectBooks = remember(currentSubject.id) {
                 TextbookPdfCatalog.getBooksForSubject(currentSubject.id)
             }
@@ -2164,7 +2092,7 @@ fun ZeroLessonsScreen(
                                         color = HomeText
                                     )
                                     Text(
-                                        text = BidiFormatter.applyPreferredDigits("$countFa مبحث آموزشی • ${currentSubject.konkoorCoefficient}"),
+                                        text = BidiFormatter.applyPreferredDigits("$countFa مبحث آموزشی"),
                                         fontSize = 12.sp,
                                         color = HomeMuted
                                     )
@@ -2201,8 +2129,6 @@ fun ZeroLessonsScreen(
                                 }
                             }
                         }
-
-                        SimpleProgressBar(subjectProgressPct)
                     }
                 }
 
@@ -2224,7 +2150,7 @@ fun ZeroLessonsScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         listOf(
-                            0 to "فصل‌ها و مباحث ($countFa)",
+                            0 to "فصل‌ها و مباحث",
                             2 to "سوالات تمرینی",
                             3 to "فلش‌کارت‌ها",
                             1 to "امتحان نهایی",
@@ -2317,7 +2243,7 @@ fun ZeroLessonsScreen(
                                 end = 20.dp,
                                 bottom = 88.dp
                             ),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
                             item(key = "subject_topic_search") {
                                 OutlinedTextField(
@@ -2339,27 +2265,11 @@ fun ZeroLessonsScreen(
                                 )
                             }
 
-                            val bookmarkedSet = uiState.lessonProgressMap.filterValues { it.isBookmarked }.keys
-                            val completedSet = uiState.lessonProgressMap.filterValues { it.isCompleted }.keys
-
                             items(lessonsByChapter.keys.toList(), key = { it }) { chapterTitle ->
                                 val chapterLessons = lessonsByChapter[chapterTitle] ?: emptyList()
-                                CleanTextbookTableOfContentsCard(
+                                MinimalBookTocCard(
                                     chapterTitle = chapterTitle,
                                     lessons = chapterLessons,
-                                    accentColor = HomePrimary,
-                                    bookmarkedLessonIds = bookmarkedSet,
-                                    completedLessonIds = completedSet,
-                                    onToggleBookmark = { targetLesson ->
-                                        val prev = uiState.lessonProgressMap[targetLesson.id]
-                                        onSaveLessonState(
-                                            targetLesson,
-                                            prev?.isCompleted ?: false,
-                                            !(prev?.isBookmarked ?: false),
-                                            prev?.userNote ?: "",
-                                            prev?.masteryPercent ?: 0
-                                        )
-                                    },
                                     onSelectLesson = { lesson -> onOpenLesson(lesson.id) }
                                 )
                             }
@@ -2863,9 +2773,9 @@ private fun LessonDetailPageContent(
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(
-                start = 20.dp,
-                top = 16.dp,
-                end = 20.dp,
+                start = 24.dp,
+                top = 20.dp,
+                end = 24.dp,
                 bottom = 96.dp
             ),
             verticalArrangement = Arrangement.spacedBy(LessonSpacing.table)
@@ -3229,9 +3139,9 @@ private fun LessonDetailPageContent(
                     ) {
                         Column(
                             modifier = Modifier
-                                .padding(18.dp)
+                                .padding(16.dp)
                                 .animateContentSize(animationSpec = JellyContentSizeSpring),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
@@ -3246,7 +3156,7 @@ private fun LessonDetailPageContent(
                                         color = HomeText
                                     )
                                     Text(
-                                        text = "هر جا ابهامی داری، یکی از دکمه‌های زیر را بزن تا همان لحظه ساده‌تر یا با شکل توضیح دهم:",
+                                        text = "یکی را بزن تا همان‌جا ساده‌تر توضیح دهم:",
                                         style = MaterialTheme.typography.labelSmall,
                                         color = HomeMuted
                                     )
@@ -3637,7 +3547,7 @@ private fun LessonDetailPageContent(
 
                                 BiDiText(
                                     text = displayedStepExplanation,
-                                    style = MaterialTheme.typography.bodyLarge,
+                                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 17.sp, lineHeight = 29.sp),
                                     isUnderlineEnabled = themeController.isUnderlineKeyPointsEnabled,
                                     isHighlighterEnabled = themeController.isHighlighterEnabled
                                 )
@@ -4085,41 +3995,39 @@ private fun LessonDetailPageContent(
                 }
             }
 
-            // کارت‌های تکمیلی پایین درس — پیش‌فرض جمع‌شده تا متن درس بدون مزاحم خوانده شود؛ هیچ کارتی حذف نشده است
-            if (studySectionFilter in listOf(2, 3, 4)) {
-                item(key = "${lesson.id}_more_lesson_cards_toggle") {
-                    Surface(
-                        onClick = { showMoreLessonCards = !showMoreLessonCards },
-                        shape = RoundedCornerShape(14.dp),
-                        color = HomeSurface(),
-                        border = BorderStroke(1.dp, HomeBorder),
-                        modifier = Modifier.fillMaxWidth().testTag("more_lesson_cards_toggle")
+            // منوی واحد «ابزارها» — پیش‌فرض جمع‌شده تا متن درس بدون مزاحم خوانده شود؛ هیچ کارتی حذف نشده است
+            item(key = "${lesson.id}_more_lesson_cards_toggle") {
+                Surface(
+                    onClick = { showMoreLessonCards = !showMoreLessonCards },
+                    shape = RoundedCornerShape(14.dp),
+                    color = HomeSurface(),
+                    border = BorderStroke(1.dp, HomeBorder),
+                    modifier = Modifier.fillMaxWidth().testTag("more_lesson_cards_toggle")
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = if (showMoreLessonCards) "بستن کارت‌های تکمیلی" else "نمایش بیشتر",
-                                    style = MaterialTheme.typography.titleSmall,
-                                    fontWeight = FontWeight.Bold,
-                                    color = lessonAccent
-                                )
-                                Text(
-                                    text = "کارگاه تصویری، نکات تستی و رمزهای ۵ ثانیه‌ای، روش مطالعه علمی",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = HomeMuted
-                                )
-                            }
+                        Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = if (showMoreLessonCards) "▲" else "▼",
-                                style = MaterialTheme.typography.labelLarge,
+                                text = if (showMoreLessonCards) "بستن ابزارها" else "ابزارها",
+                                style = MaterialTheme.typography.titleSmall,
                                 fontWeight = FontWeight.Bold,
                                 color = lessonAccent
                             )
+                            Text(
+                                text = "یادداشت، کارگاه، نکات تستی، روش مطالعه",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = HomeMuted
+                            )
                         }
+                        Text(
+                            text = if (showMoreLessonCards) "▲" else "▼",
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = lessonAccent
+                        )
                     }
                 }
             }
@@ -4220,8 +4128,7 @@ private fun LessonDetailPageContent(
                 }
             }
 
-            // ۵. نکات تستی و رمزهای ۵ ثانیه‌ای (در تب ۲ کارگاه و نکات)
-            if (studySectionFilter in listOf(2, 3, 4)) {
+            // ۵. نکات تستی و رمزهای ۵ ثانیه‌ای — در منوی «ابزارها»، در همه تب‌ها
                 item(key = "${lesson.id}_slow_learner_super_method") {
                     SlowLearnerSuperMethodCard(
                         lesson = lesson,
@@ -4328,10 +4235,8 @@ private fun LessonDetailPageContent(
                         accentColor = lessonAccent
                     )
                 }
-            }
-            }
 
-            // ۶. یادداشت شخصی و دکمه تکمیل درس
+            // ۶. یادداشت شخصی و دکمه تکمیل درس — در منوی «ابزارها»
             item(key = "${lesson.id}_personal_notes") {
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
@@ -4394,6 +4299,7 @@ private fun LessonDetailPageContent(
                         }
                     }
                 }
+            }
             }
         }
     }
