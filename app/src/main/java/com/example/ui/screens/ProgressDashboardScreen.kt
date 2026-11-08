@@ -37,6 +37,7 @@ fun ProgressDashboardScreen(
     val focusMinutes by viewModel.focusMinutesToday.collectAsStateWithLifecycle()
     val focusSessions by viewModel.focusSessionsToday.collectAsStateWithLifecycle()
     val focusInterruptions by viewModel.focusInterruptionsToday.collectAsStateWithLifecycle()
+    val achievements by viewModel.achievements.collectAsStateWithLifecycle()
 
     Column(
         modifier = Modifier
@@ -93,6 +94,89 @@ fun ProgressDashboardScreen(
                             "$focusMinutes دقیقه تمرکز • $focusSessions جلسه • $focusInterruptions وقفه"
                         ),
                         style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // دستاوردها (§۱۰): فقط از کار واقعی به دست می‌آیند و هر بار از شواهد
+        // محاسبه می‌شوند؛ امتیاز و مقایسه با دیگران اینجا نیست و هیچ متنی
+        // بابت عقب‌افتادگی سرزنش نمی‌کند.
+        Card(
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant
+            ),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(modifier = Modifier.padding(12.dp)) {
+                Text(
+                    text = "دستاوردها",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "این‌ها فقط از کار واقعی تو به دست می‌آیند؛ با باز کردن برنامه یا عدد ساختگی به دست نمی‌آیند.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                if (achievements.earned.isEmpty()) {
+                    Text(
+                        text = "هنوز دستاوردی نگرفتی",
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "اولین قدم ساده است: یک درس را کامل کن.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                } else {
+                    achievements.earned.forEach { result ->
+                        Text(
+                            text = "✓ ${result.definition.title}",
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Text(
+                            text = result.definition.description,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                    }
+                }
+                val next = achievements.nearestUnearned
+                if (next != null) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "دستاورد بعدی: ${next.definition.title}",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = next.definition.description,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = BidiFormatter.applyPreferredDigits(
+                            "پیشرفت: ${next.progressText()}"
+                        ),
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                } else if (achievements.earned.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "همه دستاوردهای این فهرست را گرفتی؛ همین‌طور ادامه بده.",
+                        style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
                     )
