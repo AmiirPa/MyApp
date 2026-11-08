@@ -661,7 +661,9 @@ fun HomeDashboardScreen(
     onSelectSubjectForLessons: (String) -> Unit,
     onOpenLesson: (String?) -> Unit,
     onNavigateTab: (AppTab) -> Unit,
-    onSaveLessonState: (ZeroLesson, Boolean, Boolean, String, Int) -> Unit = { _, _, _, _, _ -> }
+    onSaveLessonState: (ZeroLesson, Boolean, Boolean, String, Int) -> Unit = { _, _, _, _, _ -> },
+    /** نتیجه مینی‌چک انتهای درس (فقط اولین پاسخ)؛ null یعنی ثبت نمی‌شود. */
+    onMiniCheckAnswered: ((ZeroLesson, Boolean) -> Unit)? = null
 ) {
     // 1. If a lesson is open, render LessonDetailView directly
     val activeLesson = remember(uiState.allLessons, uiState.activeLessonId) {
@@ -676,7 +678,8 @@ fun HomeDashboardScreen(
             onNavigateToLesson = { targetId -> onOpenLesson(targetId) },
             onSaveState = { isCompleted, isBookmarked, note, mastery ->
                 onSaveLessonState(activeLesson, isCompleted, isBookmarked, note, mastery)
-            }
+            },
+            onMiniCheckAnswered = onMiniCheckAnswered
         )
         return
     }
@@ -687,7 +690,8 @@ fun HomeDashboardScreen(
             uiState = uiState,
             onSelectSubject = { onSelectSubjectForLessons(it) },
             onOpenLesson = { onOpenLesson(it) },
-            onSaveLessonState = onSaveLessonState
+            onSaveLessonState = onSaveLessonState,
+            onMiniCheckAnswered = onMiniCheckAnswered
         )
         return
     }
@@ -1708,7 +1712,9 @@ fun ZeroLessonsScreen(
     uiState: KonkoorUiState,
     onSelectSubject: (String) -> Unit,
     onOpenLesson: (String?) -> Unit,
-    onSaveLessonState: (ZeroLesson, Boolean, Boolean, String, Int) -> Unit
+    onSaveLessonState: (ZeroLesson, Boolean, Boolean, String, Int) -> Unit,
+    /** نتیجه مینی‌چک انتهای درس (فقط اولین پاسخ)؛ null یعنی ثبت نمی‌شود. */
+    onMiniCheckAnswered: ((ZeroLesson, Boolean) -> Unit)? = null
 ) {
     val activeLesson = uiState.allLessons.find { it.id == uiState.activeLessonId }
     var activePdfBook by remember { mutableStateOf<Pair<OfficialTextbookPdf, List<ZeroLesson>>?>(null) }
@@ -1736,7 +1742,8 @@ fun ZeroLessonsScreen(
             onNavigateToLesson = { targetId -> onOpenLesson(targetId) },
             onSaveState = { isCompleted, isBookmarked, note, mastery ->
                 onSaveLessonState(activeLesson, isCompleted, isBookmarked, note, mastery)
-            }
+            },
+            onMiniCheckAnswered = onMiniCheckAnswered
         )
         return
     }
@@ -2139,7 +2146,9 @@ private fun LessonDetailView(
     progress: com.example.data.firebase.CloudLessonProgress?,
     onBack: () -> Unit,
     onNavigateToLesson: (String) -> Unit = {},
-    onSaveState: (isCompleted: Boolean, isBookmarked: Boolean, userNote: String, masteryPercent: Int) -> Unit
+    onSaveState: (isCompleted: Boolean, isBookmarked: Boolean, userNote: String, masteryPercent: Int) -> Unit,
+    /** نتیجه مینی‌چک انتهای درس (فقط اولین پاسخ هر بار باز شدن درس)؛ null یعنی ثبت نمی‌شود. */
+    onMiniCheckAnswered: ((ZeroLesson, Boolean) -> Unit)? = null
 ) {
     BackHandler { onBack() }
 
@@ -3711,8 +3720,17 @@ private fun LessonDetailView(
                                                 .fillMaxWidth()
                                                 .clip(RoundedCornerShape(10.dp))
                                                 .clickable {
+                                                    // فقط اولین پاسخ ثبت می‌شود؛ تغییر جواب بعد از
+                                                    // دیدن پاسخ درست، «تلاش» تازه نیست.
+                                                    val firstTap = selectedMiniOption == -1
                                                     selectedMiniOption = optIdx
                                                     showMiniAnswer = true
+                                                    if (firstTap) {
+                                                        onMiniCheckAnswered?.invoke(
+                                                            enrichedLesson,
+                                                            optIdx == mini.correctIndex
+                                                        )
+                                                    }
                                                 },
                                             color = bgColor,
                                             shape = RoundedCornerShape(10.dp),

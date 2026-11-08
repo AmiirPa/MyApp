@@ -115,6 +115,10 @@ import com.example.data.curriculum.NahaeeExamsAndTarmimArchive
 import com.example.data.curriculum.NahaeeDescriptiveQuestion
 import com.example.data.curriculum.TarmimMoadelGuideRule
 import com.example.data.curriculum.MinusZeroLearningEngine
+import com.example.data.adaptive.ExamAttempt
+import com.example.data.adaptive.QuestionAttempt
+import com.example.data.adaptive.QuestionLevel
+import com.example.util.StreakCalculator
 
 private val PlannerBg: Color
     @Composable get() = MaterialTheme.colorScheme.background
@@ -145,6 +149,8 @@ fun PracticeLeitnerAndQuizScreen(
     uiState: KonkoorUiState,
     onAnswerFlashcard: (FlashcardItem, Boolean) -> Unit,
     onSubmitExamResult: (String, String, Int, Int) -> Unit,
+    /** داده هر سؤال آزمون (برای موتور تطبیقی)؛ null یعنی فقط نتیجه تجمیعی ثبت می‌شود. */
+    onSubmitExamAttempt: ((ExamAttempt) -> Unit)? = null,
     initialModeIndex: Int = 2
 ) {
     var modeIndex by remember(initialModeIndex) { mutableIntStateOf(initialModeIndex) }
@@ -218,8 +224,16 @@ fun PracticeLeitnerAndQuizScreen(
                 5 -> ContentCoverageMatrixView(uiState = uiState)
                 4 -> MinusZeroDiagnosticView()
                 3 -> NahaeeExamsAndTarmimView()
-                2 -> KonkoorPastExamsArchiveView(uiState = uiState, onSubmitExamResult = onSubmitExamResult)
-                1 -> KonkoorQuizEngineView(uiState = uiState, onSubmitExamResult = onSubmitExamResult)
+                2 -> KonkoorPastExamsArchiveView(
+                    uiState = uiState,
+                    onSubmitExamResult = onSubmitExamResult,
+                    onSubmitExamAttempt = onSubmitExamAttempt
+                )
+                1 -> KonkoorQuizEngineView(
+                    uiState = uiState,
+                    onSubmitExamResult = onSubmitExamResult,
+                    onSubmitExamAttempt = onSubmitExamAttempt
+                )
                 else -> LeitnerDeckView(uiState = uiState, onAnswerFlashcard = onAnswerFlashcard)
             }
         }
@@ -481,9 +495,13 @@ private fun LeitnerDeckView(
 @Composable
 private fun KonkoorQuizEngineView(
     uiState: KonkoorUiState,
-    onSubmitExamResult: (String, String, Int, Int) -> Unit
+    onSubmitExamResult: (String, String, Int, Int) -> Unit,
+    onSubmitExamAttempt: ((ExamAttempt) -> Unit)? = null
 ) {
     var selectedSubjectFilter by remember { mutableStateOf("all") }
+    // پاسخ‌های واقعی هر سؤال (برای ساخت ExamAttempt در پایان آزمون)؛
+    // فقط گزینه‌ای که کاربر واقعاً زده ثبت می‌شود، سؤال بی‌پاسخ «نزده» است.
+    val answeredOptionsMap = remember(selectedSubjectFilter) { mutableStateMapOf<String, Int>() }
     val questions = remember(selectedSubjectFilter, uiState.allQuizQuestions) {
         if (selectedSubjectFilter == "all") uiState.allQuizQuestions
         else uiState.allQuizQuestions.filter { it.subjectId == selectedSubjectFilter }
@@ -540,6 +558,7 @@ private fun KonkoorQuizEngineView(
                                 currentIndex = 0
                                 selectedOption = -1
                                 correctCount = 0
+                                answeredOptionsMap.clear()
                                 quizFinished = false
                             },
                             shape = RoundedCornerShape(10.dp)
@@ -610,6 +629,7 @@ private fun KonkoorQuizEngineView(
                                     .fillMaxWidth()
                                     .clickable(enabled = !answered) {
                                         selectedOption = idx
+                                        answeredOptionsMap[q.id] = idx
                                         if (idx == q.correctOptionIndex) {
                                             correctCount++
                                         }
@@ -673,6 +693,15 @@ private fun KonkoorQuizEngineView(
                                                 title,
                                                 correctCount,
                                                 questions.size
+                                            )
+                                            // داده هر سؤال برای موتور تطبیقی (فقط پاسخ‌های واقعی).
+                                            onSubmitExamAttempt?.invoke(
+                                                buildQuizExamAttempt(
+                                                    questions = questions,
+                                                    answeredOptions = answeredOptionsMap,
+                                                    subjectId = selectedSubjectFilter,
+                                                    title = title
+                                                )
                                             )
                                             quizFinished = true
                                         }
@@ -1349,6 +1378,44 @@ internal fun initialArchiveExamRemainingSeconds(totalTimeMinutes: Int?): Int =
  * stored result always matches the report the user sees. Unanswered questions
  * (absent from the map) and wrong answers both count as not correct.
  */
+/**
+ * ساخت ExamAttempt از پاسخ‌های واقعی یک آزمون (کوییز یا بایگانی).
+ *
+ * - زمان هر سؤال در اپ اندازه‌گیری نشده است، پس timeSpentSeconds = 0
+ *   می‌ماند (یعنی «اندازه‌گیری نشده») و علت خطا حدس زده نمی‌شود.
+ * - سؤال بی‌پاسخ، wasSkipped = true است؛ سؤال پاسخ‌داده‌شده فقط با گزینه
+ *   واقعی کاربر سنجیده می‌شود.
+ * - topicId = شناسه درس سؤال (QuizQuestionItem درس ندارد؛ subjectId همان
+ *   مبحث است — موتور آن را به‌عنوان مبحث درسی ثبت می‌کند).
+ */
+internal fun buildQuizExamAttempt(
+    questions: List<QuizQuestionItem>,
+    answeredOptions: Map<String, Int>,
+    subjectId: String,
+    title: String,
+    totalSeconds: Int = 0,
+    todayEpochDay: Long = StreakCalculator.todayEpochDay()
+): ExamAttempt = ExamAttempt(
+    id = "quiz-$subjectId-$todayEpochDay-${System.currentTimeMillis()}",
+    subjectId = subjectId,
+    title = title,
+    startedAtEpochDay = todayEpochDay,
+    totalSeconds = totalSeconds,
+    questions = questions.map { q ->
+        val chosen = answeredOptions[q.id]
+        QuestionAttempt(
+            questionId = q.id,
+            topicId = q.subjectId,
+            subjectId = q.subjectId,
+            level = QuestionLevel.CONCEPT,
+            isCorrect = chosen != null && chosen == q.correctOptionIndex,
+            wasSkipped = chosen == null,
+            timeSpentSeconds = 0,
+            answeredAtEpochDay = todayEpochDay
+        )
+    }
+)
+
 internal fun countArchiveExamCorrect(
     questions: List<QuizQuestionItem>,
     answeredOptions: Map<String, Int>
@@ -1365,7 +1432,8 @@ internal fun isArchiveAnswerRevealAllowed(examMode: Int, isExamFinished: Boolean
 @Composable
 private fun KonkoorPastExamsArchiveView(
     uiState: KonkoorUiState,
-    onSubmitExamResult: (String, String, Int, Int) -> Unit
+    onSubmitExamResult: (String, String, Int, Int) -> Unit,
+    onSubmitExamAttempt: ((ExamAttempt) -> Unit)? = null
 ) {
     var selectedYearFilter by remember { mutableIntStateOf(0) } // 0 = All, 1405, 1404, 1403, 1402, 1401, -1 = Farhangian Special
     var activePaper by remember { mutableStateOf<PastKonkoorExamPaper?>(null) }
@@ -1456,6 +1524,22 @@ private fun KonkoorPastExamsArchiveView(
                     paper.title,
                     countArchiveExamCorrect(questions, answeredOptionsMap),
                     questions.size
+                )
+                // داده هر سؤال برای موتور تطبیقی (فقط پاسخ‌های واقعی).
+                // زمان خالص: فقط در حالت شبیه‌سازی تایمر کم می‌شود؛ در
+                // حالت‌های دیگر زمان باقی‌مانده دست نخورده می‌ماند، پس
+                // زمان سپری‌شده ۰ یعنی «اندازه‌گیری نشده».
+                val elapsedSeconds = if (activeExamMode == 1) {
+                    (paper.totalTimeMinutes * 60 - remainingSeconds).coerceAtLeast(0)
+                } else 0
+                onSubmitExamAttempt?.invoke(
+                    buildQuizExamAttempt(
+                        questions = questions,
+                        answeredOptions = answeredOptionsMap,
+                        subjectId = paper.id,
+                        title = paper.title,
+                        totalSeconds = elapsedSeconds
+                    )
                 )
             }
         }
