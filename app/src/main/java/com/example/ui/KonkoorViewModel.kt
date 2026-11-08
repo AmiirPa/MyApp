@@ -377,6 +377,12 @@ class KonkoorViewModel(
 
     /** بازخوانی صف مرور، برنامه و گزارش از شواهد فعلی. */
     fun refreshAdaptiveState() {
+        // یک گزارش خراب هرگز نباید برنامه را بکشد؛ خطا فقط ثبت می‌شود.
+        runCatching { refreshAdaptiveStateUnsafe() }
+            .onFailure { Log.w(TAG, "refreshAdaptiveState failed", it) }
+    }
+
+    private fun refreshAdaptiveStateUnsafe() {
         // تمرکز همیشه بازخوانی می‌شود، حتی وقتی موتور تطبیقی وصل نیست.
         refreshFocusState()
         // دستاوردها هم از شواهد درس و تمرکز ساخته می‌شوند و به موتور وابسته نیستند.
@@ -533,10 +539,14 @@ class KonkoorViewModel(
 
     init {
         viewModelScope.launch(kotlinx.coroutines.Dispatchers.Default) {
-            val lessons = FlashcardAndQuizBank.allLessons
-            val cards = FlashcardAndQuizBank.flashcards
-            val quizzes = FlashcardAndQuizBank.quizQuestions
-            _curriculumDataFlow.value = Triple(lessons, cards, quizzes)
+            // بارگذاری برنامه درسی هرگز نباید برنامه را بکشد؛ اگر درسی خراب
+            // باشد، برنامه با فهرست خالی بالا می‌آید و خطا ثبت می‌شود.
+            runCatching {
+                val lessons = FlashcardAndQuizBank.allLessons
+                val cards = FlashcardAndQuizBank.flashcards
+                val quizzes = FlashcardAndQuizBank.quizQuestions
+                _curriculumDataFlow.value = Triple(lessons, cards, quizzes)
+            }.onFailure { Log.w(TAG, "Curriculum load failed", it) }
             refreshAdaptiveState()
         }
         // جلسه‌های تمرکز (§۸): هر جلسه تازه ثبت‌شده، فلوهای تمرکز و گزارش را
