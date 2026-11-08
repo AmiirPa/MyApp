@@ -475,7 +475,9 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "math_00_elementary_school",
     "math_01_signs_fractions",
     "math_01b_powers_radicals_identities",
-    "math_02b_sets_venn_intervals" -> 1 to "📘 پایه اول ابتدایی تا نهم — مبانی محاسبات، مجموعه اعداد و کسرها"
+    "math_02b_sets_venn_intervals",
+    "found1406-math-01-add-subtract",
+    "found1406-math-02-multiplication-fractions" -> 1 to "📘 پایه اول ابتدایی تا نهم — مبانی محاسبات، مجموعه اعداد و کسرها"
 
     "math_02_equations",
     "math_03_radicals_powers",
@@ -507,13 +509,21 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "arabic_step03_complete_14_sigha_tables",
     "arabic_00_sigha_hand_code",
     "arabic_00_seventh_grade_sigha",
-    "arabic_000_bismillah_mastery" -> 1 to "📘 پایه هفتم تا نهم (از زیرِ صفر به زبان خودمونی) — حرکات، اسم و فعل، ضمایر و ۱۴ صیغه"
+    "arabic_000_bismillah_mastery",
+    "found1406-ar-01-alphabet-reading",
+    "found1406-ar-02-sigha-what-is" -> 1 to "📘 پایه هفتم تا نهم (از زیرِ صفر به زبان خودمونی) — حرکات، اسم و فعل، ضمایر و ۱۴ صیغه"
 
     "arabic_01b_numbers_time_nouns",
     "arabic_01_sigha_fingerprint",
     "arabic_step06_all_8_abwab_master_table",
     "arabic_02_verbs_abwab",
-    "arabic_02_feal_bab_majhool" -> 2 to "📗 پایه دهم انسانی (چاپ ۱۴۰۳ ویژه کنکور ۱۴۰۶) — کتاب عربی، زبان قرآن ۱"
+    "arabic_02_feal_bab_majhool",
+    "ar1406-01-word-types-sigha",
+    "ar1406-02-past-present-tenses",
+    "ar1406-03-mujarrad-mazeed-1",
+    "ar1406-04-mazeed-2",
+    "ar1406-05-lesson5-nominal-sentence",
+    "ar1406-06-lesson5-verbal-sentence" -> 2 to "📗 پایه دهم انسانی (چاپ ۱۴۰۳ ویژه کنکور ۱۴۰۶) — کتاب عربی، زبان قرآن ۱"
 
     "arabic_02b_derived_nouns_qaleb",
     "arabic_11_ch1_tafzeel_makan_zaman",
@@ -529,7 +539,11 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "arabic_06_konkoor_100_tables_and_traps",
     "arabic_04_mnemonics_final20",
     "arabic_ultra_fast_techniques",
-    "arabic_visual_persian_mastery" -> 4 to "📕 پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶) — کتاب عربی، زبان قرآن ۳ و جمع‌بندی ۱۰۰٪"
+    "arabic_visual_persian_mastery",
+    "ar12-01-lesson1-la-nafy-jins",
+    "ar12-02-lesson2-hal",
+    "ar12-03-lesson3-istithna-tamyiz",
+    "ar12-04-lesson4-5-monada-mafoul-ialal" -> 4 to "📕 پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶) — کتاب عربی، زبان قرآن ۳ و جمع‌بندی ۱۰۰٪"
 
     // 3. English (Prospect 1-3 & Vision 1, 2, 3)
     "english_000_zero_dictionary_grammar_words",
@@ -538,13 +552,16 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "english_step03_all_tenses_step_by_step_table",
     "english_00_seventh_grade_train",
     "english_00_seventh_grade_abc",
-    "english_000_bismillah_mastery" -> 1 to "📘 پایه هفتم تا نهم (از زیرِ صفر) — معنی کلمات گرامری (Verb، Subject...) و جمله‌سازی پایه"
+    "english_000_bismillah_mastery",
+    "found1406-en-01-alphabet-sounds",
+    "found1406-en-02-first-words" -> 1 to "📘 پایه هفتم تا نهم (از زیرِ صفر) — معنی کلمات گرامری (Verb، Subject...) و جمله‌سازی پایه"
 
     "english_01_tenses_modals",
     "english_01b_nouns_comparatives_adjectives",
     "english_10_vision1_lesson1_saving_nature",
     "english_10_vision1_lesson2_wonders_creation",
-    "english_10_vision1_lesson3_value_knowledge" -> 2 to "📗 پایه دهم (چاپ ۱۴۰۳ ویژه کنکور ۱۴۰۶) — کتاب Vision 1 کامل"
+    "english_10_vision1_lesson3_value_knowledge",
+    "eng1406-04-vision1-traveling" -> 2 to "📗 پایه دهم (چاپ ۱۴۰۳ ویژه کنکور ۱۴۰۶) — کتاب Vision 1 کامل"
 
     "english_01c_gerund_infinitive_conjunctions",
     "english_11_vision2_lesson1_healthy_lifestyle",
@@ -558,12 +575,18 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "english_05_konkoor_100_master_tables",
     "english_06_full_vocab_7_to_12_konkoor",
     "english_full_nahaee_konkoor",
-    "english_full_persian_mastery" -> 4 to "📕 پایه دوازدهم (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶) — کتاب Vision 3 + بانک کامل لغات هفتم تا دوازدهم"
+    "english_full_persian_mastery",
+    "eng1406-01-vision3-appreciation",
+    "eng1406-02-vision3-look-it-up",
+    "eng1406-03-vision3-renewable-energy" -> 4 to "📕 پایه دوازدهم (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶) — کتاب Vision 3 + بانک کامل لغات هفتم تا دوازدهم"
 
     // 4. Arooz & Prosody (موسیقی شعر و قافیه — علوم و فنون ۱، ۲ و ۳)
     "arooz_00_clapping_zero",
     "arooz_01_syllables_zero",
-    "arooz_02_cutting_u_dash" -> 1 to "📘 مبانی پایه و علوم و فنون ۱ (چاپ ۱۴۰۳) — بخش کردن کلمات، هجای کوتاه و بلند و خط عروضی"
+    "arooz_02_cutting_u_dash",
+    "aroozm1406-01-rhythm-clap",
+    "aroozm1406-02-taghtee",
+    "aroozm1406-03-poetry-hook" -> 1 to "📘 مبانی پایه و علوم و فنون ۱ (چاپ ۱۴۰۳) — بخش کردن کلمات، هجای کوتاه و بلند و خط عروضی"
 
     "arooz_04_ghafieh_rules",
     "arooz_02_ghafieh_radif",
@@ -580,7 +603,11 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "arooz_05_all_16_konkoor_meters",
     "arooz_06_konkoor_100_speed_scansion",
     "arooz_fonoon_ultra_fast_techniques",
-    "arooz_master_complete_100" -> 4 to "📕 پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶) — علوم و فنون ادبی ۳ (اوزان دوری، ۱۶ وزن و اختیارات شاعری)"
+    "arooz_master_complete_100",
+    "arooz12-01-dowri",
+    "arooz12-02-meters12",
+    "arooz12-03-licenses",
+    "arooz12-04-ghafieh-advanced" -> 4 to "📕 پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶) — علوم و فنون ادبی ۳ (اوزان دوری، ۱۶ وزن و اختیارات شاعری)"
 
     // 5. Fonoon (زیبایی‌شناسی، تاریخ ادبیات و سبک‌شناسی — علوم و فنون ۱، ۲ و ۳)
     "fonoon_00_zero_to_100_all_24_arrayeh_step_by_step" -> 1 to "📘 پیش‌نیاز از منفی صفر — آموزش پله‌به‌پله تمام ۲۴ آرایه ادبی از ساده‌ترین تا پیشرفته‌ترین"
@@ -606,7 +633,22 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "fonoon_05_styles_history_comprehensive",
     "fonoon_07_complete_literary_history_10_11_12",
     "fonoon_04_mnemonics_final20",
-    "fonoon_master_arrayeh_micro_notes" -> 4 to "📕 پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶) — علوم و فنون ۳ + کل تاریخ ادبیات و سبک‌شناسی دهم تا دوازدهم"
+    "fonoon_master_arrayeh_micro_notes",
+    "fon12-01-laf-nashr",
+    "fon12-02-oslub-moadele-hosn-talil",
+    "fon12-03-iham-tanasob",
+    "fon12-04-eghragh-talmih",
+    "fon3-01-tarikh-12-13-bazgasht-bidari",
+    "fon3-04-sabkshenasi-12-13",
+    "fon3-07-tarikh-14-moaser-enghelab",
+    "fon3-10-sabkshenasi-moaser-enghelab",
+    "fon3-02-music-bases",
+    "fon3-05-licenses-verbal",
+    "fon3-08-licenses-metric",
+    "fon3-11-nimai-meter",
+    "fon3-03-moraat-tazmin",
+    "fon3-06-tazad-motanaghez",
+    "fon3-12-hesamizi" -> 4 to "📕 پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶) — علوم و فنون ۳ + کل تاریخ ادبیات و سبک‌شناسی دهم تا دوازدهم"
 
     // 6. Logic (منطق دهم چاپ ۱۴۰۳)
     "phil_00_khodemoni_logic_10_complete",
@@ -635,21 +677,73 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "phil_09_khodemoni_philosophy_11_12_complete",
     "philo_05_grade12_existence_causality",
     "philo_06_grade12_theology_islamic_schools",
-    "philo_07_mnemonics_final20" -> 4 to "📕 پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶) — کتاب فلسفه ۲ کامل به زبان خودمونی (درس ۱ تا ۱۱)"
+    "philo_07_mnemonics_final20",
+    "phil2-02-jahan-momkenat",
+    "phil2-04-kodam-tasvir",
+    "phil2-07-aghl-1",
+    "phil2-08-aghl-2",
+    "phil2-09-aghaz-falsafeh",
+    "phil2-10-dowreh-miyani",
+    "phil2-11-dowran-motakhkher",
+    "phil2-12-hekmat-moaser" -> 4 to "📕 پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶) — کتاب فلسفه ۲ کامل به زبان خودمونی (درس ۱ تا ۱۲)"
 
     // 8. History 1, 2, 3 (تاریخ ۱، ۲ و ۳)
     "hist_00_elementary_to_9th_zero" -> 1 to "📘 پایه اول ابتدایی تا نهم (سطح زیرِ صفر) — محاسبه قرن‌ها، گاه‌شماری و الفبای تاریخ"
     "hist_10_ch1_ancient_world_mesopotamia_egypt",
     "hist_10_ch2_ancient_iran_medes_achaemenids_parthians_sasanians",
-    "hist_01_grade10_1403" -> 2 to "📗 پایه دهم انسانی (چاپ ۱۴۰۳ ویژه کنکور ۱۴۰۶) — صفحه ۰ تا آخر کتاب تاریخ ۱ (ایران و جهان باستان)"
+    "hist_01_grade10_1403",
+    "hist1-01",
+    "hist1-02",
+    "hist1-03",
+    "hist1-04",
+    "hist1-05",
+    "hist1-06",
+    "hist1-07",
+    "hist1-08",
+    "hist1-09",
+    "hist1-10",
+    "hist1-11",
+    "hist1-12",
+    "hist1-13",
+    "hist1-14",
+    "hist1-15",
+    "hist1-16" -> 2 to "📗 پایه دهم انسانی (چاپ دهم ۱۴۰۴ ویژه کنکور ۱۴۰۶) — صفحه ۰ تا آخر کتاب تاریخ ۱ (ایران و جهان باستان)"
     "hist_11_ch1_islam_prophet_caliphates",
     "hist_11_ch2_iran_islamic_dynasties_tahirid_to_timurid",
-    "hist_02_grade11_1404" -> 3 to "📙 پایه یازدهم انسانی (چاپ ۱۴۰۴ ویژه کنکور ۱۴۰۶) — صفحه ۰ تا آخر کتاب تاریخ ۲ (اسلام و ایران تا صفویه)"
+    "hist_02_grade11_1404",
+    "hist2-01",
+    "hist2-02",
+    "hist2-03",
+    "hist2-04",
+    "hist2-05",
+    "hist2-06",
+    "hist2-07",
+    "hist2-08",
+    "hist2-09",
+    "hist2-10",
+    "hist2-11",
+    "hist2-12",
+    "hist2-13",
+    "hist2-14",
+    "hist2-15",
+    "hist2-16" -> 3 to "📙 پایه یازدهم انسانی (چاپ نهم ۱۴۰۴ ویژه کنکور ۱۴۰۶) — صفحه ۰ تا آخر کتاب تاریخ ۲ (اسلام و ایران تا صفویه)"
     "hist_12_ch1_afshar_zand_qajar_constitution",
     "hist_12_ch2_pahlavi_oil_nationalization_revolution",
     "hist_03_grade12_1405",
     "hist_05_safavid_constitutional_oil",
-    "hist_04_treaties_kings_konkoor_tables" -> 4 to "📕 پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶) — کتاب تاریخ ۳ معاصر + جداول عهدنامه‌ها و سلسله‌ها"
+    "hist_04_treaties_kings_konkoor_tables",
+    "hist3-01",
+    "hist3-02",
+    "hist3-03",
+    "hist3-04",
+    "hist3-05",
+    "hist3-06",
+    "hist3-07",
+    "hist3-08",
+    "hist3-09",
+    "hist3-10",
+    "hist3-11",
+    "hist3-12" -> 4 to "📕 پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶) — کتاب تاریخ ۳ معاصر + جداول عهدنامه‌ها و سلسله‌ها"
 
     // 9. Geography 1, 2, 3 (جغرافیا ۱، ۲ و ۳)
     "geo_00_zero_maps_coordinates" -> 1 to "📘 از زیرِ صفر به زبان کوچه و بازار — حل چشمی مسائل ساعت، نصف‌النهار و مقیاس نقشه"
@@ -664,7 +758,11 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "geo_03_grade12_1405",
     "geo_04_iran_climate_rivers_gis",
     "geo_12_ch1_applied_geography_hazards",
-    "geo_12_ch2_climate_spatial_planning_gis" -> 4 to "📕 پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶) — صفحه ۰ تا آخر کتاب جغرافیا ۳ (کاربردی)"
+    "geo_12_ch2_climate_spatial_planning_gis",
+    "geo1406-01-settlements",
+    "geo1406-02-city-rural-management",
+    "geo1406-03-transport",
+    "geo1406-04-natural-hazards" -> 4 to "📕 پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶) — صفحه ۰ تا آخر کتاب جغرافیا ۳ (کاربردی)"
 
     // 10. Sociology 1, 2, 3 (جامعه‌شناسی ۱، ۲ و ۳)
     "soc_000_khodemoni_zero_to_100",
@@ -672,14 +770,55 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "soc_10_ch1_human_social_action",
     "soc_10_ch2_culture_layers_values",
     "soc_01_grade10_1403_complete",
-    "soc_01b_grade10_identity_mobility_control" -> 2 to "📗 پایه دهم انسانی (چاپ ۱۴۰۳ ویژه کنکور ۱۴۰۶) — صفحه ۰ تا آخر کتاب جامعه‌شناسی ۱ (درس ۱ تا ۱۴)"
+    "soc_01b_grade10_identity_mobility_control",
+    "soc1-01",
+    "soc1-02",
+    "soc1-03",
+    "soc1-04",
+    "soc1-05",
+    "soc1-06",
+    "soc1-07",
+    "soc1-08",
+    "soc1-09",
+    "soc1-10",
+    "soc1-11",
+    "soc1-12",
+    "soc1-13",
+    "soc1-14",
+    "soc1-15",
+    "soc1-16" -> 2 to "📗 پایه دهم انسانی (چاپ ۱۴۰۳ ویژه کنکور ۱۴۰۶) — صفحه ۰ تا آخر کتاب جامعه‌شناسی ۱ (درس ۱ تا ۱۶)"
     "soc_11_ch1_cultural_world_globalization",
     "soc_02_grade11_1404_complete",
-    "soc_02b_grade11_west_islam_modernity" -> 3 to "📙 پایه یازدهم انسانی (چاپ ۱۴۰۴ ویژه کنکور ۱۴۰۶) — صفحه ۰ تا آخر کتاب جامعه‌شناسی ۲ (درس ۱ تا ۱۴)"
+    "soc_02b_grade11_west_islam_modernity",
+    "soc2-01",
+    "soc2-02",
+    "soc2-03",
+    "soc2-04",
+    "soc2-05",
+    "soc2-06",
+    "soc2-07",
+    "soc2-08",
+    "soc2-09",
+    "soc2-10",
+    "soc2-11",
+    "soc2-12",
+    "soc2-13",
+    "soc2-14",
+    "soc2-15" -> 3 to "📙 پایه یازدهم انسانی (چاپ ۱۴۰۴ ویژه کنکور ۱۴۰۶) — صفحه ۰ تا آخر کتاب جامعه‌شناسی ۲ (درس ۱ تا ۱۵)"
     "soc_12_ch1_three_approaches_social_sciences",
     "soc_03_grade12_1405_complete",
     "soc_12_ch2_social_order_family_policy",
-    "soc_master_10_11_12_full_encyclopedia" -> 4 to "📕 پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶) — صفحه ۰ تا آخر کتاب جامعه‌شناسی ۳ و ۳ رویکرد کنکور"
+    "soc_master_10_11_12_full_encyclopedia",
+    "soc3-01",
+    "soc3-02",
+    "soc3-03",
+    "soc3-04",
+    "soc3-05",
+    "soc3-06",
+    "soc3-07",
+    "soc3-08",
+    "soc3-09",
+    "soc3-10" -> 4 to "📕 پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶) — صفحه ۰ تا آخر کتاب جامعه‌شناسی ۳ و ۳ رویکرد کنکور"
 
     // 11. Psychology 11 (روان‌شناسی یازدهم چاپ ۱۴۰۴)
     "psych_00_zero_khodemoni" -> 1 to "📘 از زیرِ صفر به زبان کوچه و بازار — ترجمه تمام کلمات سخت روان‌شناسی به زبان خودمونی"
@@ -700,13 +839,20 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "econ_10_ch2_market_supply_demand",
     "econ_05_tax_gini_distribution",
     "econ_03_gdp_inflation_unemployment_budget",
-    "econ_10_ch4_trade_exchange_resilience" -> 2 to "📗 پایه دهم انسانی (چاپ ۱۴۰۳ ویژه کنکور ۱۴۰۶) — صفحه ۰ تا آخر کتاب اقتصاد دهم (فصل ۱ تا ۵ کامل)"
+    "econ_10_ch4_trade_exchange_resilience",
+    "gdp1406-01-what-is-gdp",
+    "gdp1406-02-gdp-calculation-nominal-real" -> 2 to "📗 پایه دهم انسانی (چاپ ۱۴۰۳ ویژه کنکور ۱۴۰۶) — صفحه ۰ تا آخر کتاب اقتصاد دهم (فصل ۱ تا ۵ کامل)"
 
     // 13. Din o Zendegi 1, 2, 3 (دین و زندگی ۱، ۲ و ۳)
     "dini_10_ch1_purpose_creation_theology",
     "dini_10_ch2_death_barzakh_hereafter",
     "dini_10_ch3_friendship_ethics_society",
-    "dini_01_grade10_1403_complete" -> 2 to "📗 پایه دهم انسانی (چاپ ۱۴۰۳ ویژه کنکور ۱۴۰۶) — صفحه ۰ تا آخر دین و زندگی ۱ (درس ۱ تا ۱۲)"
+    "dini_01_grade10_1403_complete",
+    "dini1-01-hadaf-zendegi",
+    "dini1-02-qodrat-parvaz",
+    "dini1-03-be-sooye-javedanegi",
+    "dini1-04-ayandeye-rowshan",
+    "dini1-05-manzelgahe-baad" -> 2 to "📗 پایه دهم انسانی (چاپ دهم ۱۴۰۴ ویژه کنکور ۱۴۰۶) — صفحه ۰ تا آخر دین و زندگی ۱ (درس ۱ تا ۱۲)"
     "dini_11_ch1_divine_guidance_quran_prophet",
     "dini_11_ch2_imamate_ghadir_velayat",
     "dini_11_ch3_imams_life_ghaybat_velayat",
@@ -715,32 +861,104 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "dini_03_grade12_1405_complete",
     "dini_04_divine_laws_sunan_barzakh",
     "far_05_dini_farhangian_ensani",
-    "far_08_dini_complete_10_11_12_1406" -> 4 to "📕 پایه دوازدهم انسانی (چاپ ۱۴۰۵) و فرهنگیان — دین و زندگی ۳ + بانک جامع پیام آیات"
+    "far_08_dini_complete_10_11_12_1406",
+    "dini3-01-qaza-qadar",
+    "dini3-02-sonnat-elahi",
+    "dini3-03-towbe",
+    "dini3-04-donyaye-emruz" -> 4 to "📕 پایه دوازدهم انسانی (چاپ ۱۴۰۵) و فرهنگیان — دین و زندگی ۳ + بانک جامع پیام آیات"
 
     // 14. Farsi 1, 2, 3 (فارسی ۱، ۲ و ۳)
-    "far_09_farsi_grammar_1_to_12_1406" -> 1 to "📘 از کلاس اول ابتدایی تا دوازدهم — دستور زبان فارسی، نقش‌ها، گروه اسمی و ساختمان واژه"
+    "far_09_farsi_grammar_1_to_12_1406",
+    "found1406-farsi-01-alphabet-reading",
+    "found1406-farsi-02-sentence-grammar" -> 1 to "📘 از کلاس اول ابتدایی تا دوازدهم — دستور زبان فارسی، نقش‌ها، گروه اسمی و ساختمان واژه"
     "farsi_01_syntax_roles_groups",
     "farsi_10_ch1_grammar_vocab_realms",
-    "farsi_10_ch2_literary_intellectual_realms" -> 2 to "📗 پایه دهم انسانی (چاپ ۱۴۰۳ ویژه کنکور ۱۴۰۶) — فارسی ۱ (قلمرو زبانی، ادبی و فکری)"
+    "farsi_10_ch2_literary_intellectual_realms",
+    "far1-01-cheshmeh",
+    "far1-02-az-amookhtan-nang-madar",
+    "far1-03-pasdari-haghighat",
+    "far1-05-bidad-zaleman",
+    "far1-06-mehr-vafa",
+    "far1-07-jamal-kamal",
+    "far1-08-safar-basreh",
+    "far1-09-kelas-naghashi",
+    "far1-10-daryadelan-safshekan",
+    "far1-11-khak-azadegan",
+    "far1-12-rostam-ashkbous",
+    "far1-13-gordafarid",
+    "far1-14-tooti-baghal",
+    "far1-16-khosrow",
+    "far1-17-sepideh-dam",
+    "far1-18-azamat-negah" -> 2 to "📗 پایه دهم انسانی (چاپ ۱۴۰۳ ویژه کنکور ۱۴۰۶) — فارسی ۱ (قلمرو زبانی، ادبی و فکری)"
     "farsi_02_word_morphology",
     "farsi_11_ch1_grammar_vocab_realms",
-    "farsi_02_vocab_spelling_3_realms" -> 3 to "📙 پایه یازدهم انسانی (چاپ ۱۴۰۴ ویژه کنکور ۱۴۰۶) — فارسی ۲ (ساختمان واژه، نقش‌های تبعی، املا و قلمروها)"
+    "farsi_02_vocab_spelling_3_realms",
+    "far2-01-niki",
+    "far2-02-ghazi-bast",
+    "far2-03-dar-amvaj-sand",
+    "far2-05-aghazgari-tanha",
+    "far2-06-parvardeh-eshgh",
+    "far2-07-baran-mohabbat",
+    "far2-08-dar-kooy-asheghan",
+    "far2-09-zowq-latif",
+    "far2-10-bang-jaras",
+    "far2-11-yaran-ashegh",
+    "far2-12-kaveh-dadkhah",
+    "far2-14-hamleh-heydari",
+    "far2-15-kabootar-towqdar",
+    "far2-16-ghesseh-eynakam",
+    "far2-17-khamooshi-darya",
+    "far2-18-khan-adl" -> 3 to "📙 پایه یازدهم انسانی (چاپ ۱۴۰۴ ویژه کنکور ۱۴۰۶) — فارسی ۲ (ساختمان واژه، نقش‌های تبعی، املا و قلمروها)"
     "farsi_12_ch1_syntax_noun_phrase_realms",
     "farsi_12_ch2_final_exam_vocab_spelling_authors",
-    "farsi_04_advanced_syntax_pronoun_shift" -> 4 to "📕 پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور و نهایی) — فارسی ۳ و فنون زبانی پیشرفته"
+    "farsi_04_advanced_syntax_pronoun_shift",
+    "far1406-01-shokr-nemat",
+    "far1406-02-mast-hoshiyar",
+    "far1406-03-azadi",
+    "far1406-05-damavandiyeh",
+    "far1406-06-naynameh",
+    "far1406-07-haghighate-eshgh" -> 4 to "📕 پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور و نهایی) — فارسی ۳ و فنون زبانی پیشرفته"
 
     // 15. Negaresh 1, 2, 3 (نگارش ۱، ۲ و ۳)
     "negaresh_01_grade10_objective_subjective",
     "negaresh_10_ch2_proverb_parable_writing",
-    "negaresh_master_10_11_12_complete" -> 2 to "📗 پایه دهم و یازدهم (چاپ ۱۴۰۳ و ۱۴۰۴) — نگارش ۱ و ۲ (مثل‌نویسی، حکایت‌نگاری، بازآفرینی و گزارش‌نویسی)"
+    "negaresh_master_10_11_12_complete",
+    "neg2-01-hekayat",
+    "neg2-02-masal",
+    "neg2-03-gozaresh",
+    "neg2-04-dastan",
+    "neg2-05-janeshin",
+    "neg2-06-sanjesh",
+    "neg2-07-nasazi",
+    "neg2-08-kholaseh",
+    "neg2b-01",
+    "neg2b-02",
+    "neg2b-03",
+    "neg2b-04",
+    "neg2b-05",
+    "neg2b-06",
+    "neg2b-07",
+    "neg2b-08",
+    "neg3-01",
+    "neg3-02",
+    "neg3-03",
+    "neg3-04",
+    "neg3-05",
+    "neg3-06" -> 2 to "📗 پایه دهم و یازدهم (چاپ ۱۴۰۳ و ۱۴۰۴) — نگارش ۱ و ۲ (مثل‌نویسی، حکایت‌نگاری، بازآفرینی و گزارش‌نویسی)"
     "negaresh_03_grade11_report_dialogue_recreate" -> 3 to "📙 پایه یازدهم انسانی (چاپ ۱۴۰۴) — نگارش ۲ (گزارش‌نویسی، گفتگو و بازآفرینی مثل)"
     "negaresh_02_grade12_final_20_templates",
-    "farsi_03_negaresh_final_exam_20" -> 4 to "📕 پایه دوازدهم (چاپ ۱۴۰۵ ویژه امتحان نهایی) — نگارش ۳ و قالب آماده نمره ۲۰ نهایی"
+    "farsi_03_negaresh_final_exam_20",
+    "neg1406-01-khatereh",
+    "neg1406-02-safarnameh",
+    "neg1406-03-tosif",
+    "neg1406-04-zendeginameh" -> 4 to "📕 پایه دوازدهم (چاپ ۱۴۰۵ ویژه امتحان نهایی) — نگارش ۳ و قالب آماده نمره ۲۰ نهایی"
 
     // 16. Farhangian Exclusive Resources (منابع اختصاصی فرهنگیان ۱۴۰۶)
     "far_01_roadmap_1406",
     "far_08_qaraati_teacher_methods_complete",
-    "far_02_gharaati_talim" -> 3 to "📙 دفترچه اختصاصی فرهنگیان ۱۴۰۶ — مهارت‌های معلمی استاد قرائتی (فصل ۱ تا ۳) و سند تحول بنیادین"
+    "far_02_gharaati_talim",
+    "farh1406-01-sanad-tahavol",
+    "farh1406-02-talim-tarbiyat-eslami" -> 3 to "📙 دفترچه اختصاصی فرهنگیان ۱۴۰۶ — مهارت‌های معلمی استاد قرائتی (فصل ۱ تا ۳) و سند تحول بنیادین"
     "far_03a_verbal_logical_math_intelligence_full",
     "far_03_teacher_intelligence",
     "far_09_teacher_aptitude_reasoning",
@@ -763,20 +981,28 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "salamat_01_health_dimensions_nutrition_bmi",
     "gen_01_salamat_grade12_1405",
     "salamat_02_diseases_communicable_non",
-    "salamat_03_mental_health_first_aid" -> 4 to "📕 پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه نهایی) — صفحه ۰ تا آخر کتاب سلامت و بهداشت دوازدهم"
+    "salamat_03_mental_health_first_aid",
+    "sal1406-01-addiction" -> 4 to "📕 پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه نهایی) — صفحه ۰ تا آخر کتاب سلامت و بهداشت دوازدهم"
 
     // 19. Media Literacy 10, Environment 11, Family Management 12 (رسانه، محیط زیست و خانواده)
     "gen_04_savad_resaneh_karafarini_grade10_1403",
     "resaneh_01_persuasion_techniques",
-    "resaneh_10_ch2_media_diet_ethics_entrepreneurship" -> 2 to "📗 پایه دهم انسانی (چاپ ۱۴۰۳) — تفکر و سواد رسانه‌ای دهم + کارگاه کارآفرینی و تولید دهم"
+    "resaneh_10_ch2_media_diet_ethics_entrepreneurship",
+    "res1406-01-media-message" -> 2 to "📗 پایه دهم انسانی (چاپ ۱۴۰۳) — تفکر و سواد رسانه‌ای دهم + کارگاه کارآفرینی و تولید دهم"
     "gen_03_mohit_zist_grade11_1404",
-    "mohit_11_ch2_biodiversity_energy_pollution" -> 3 to "📙 پایه یازدهم انسانی (چاپ ۱۴۰۴) — انسان و محیط زیست یازدهم (فصل ۱ تا ۷ کامل)"
+    "mohit_11_ch2_biodiversity_energy_pollution",
+    "moh1406-01-water-air",
+    "moh1406-02-soil" -> 3 to "📙 پایه یازدهم انسانی (چاپ ۱۴۰۴) — انسان و محیط زیست یازدهم (فصل ۱ تا ۷ کامل)"
     "family_12_management_lifestyle_complete",
     "far_10_remaining_humanities_books_10_11_12" -> 4 to "📕 پایه دوازدهم انسانی (چاپ ۱۴۰۵) — مدیریت خانواده و سبک زندگی ۱۲ و جمع‌بندی دروس مهارتی"
 
     // 20. Scientific Learning Methods & Speed Reading (روش‌های نوین یادگیری و تست‌زنی)
     "study_01_feynman_active_recall_leitner",
-    "study_04_feynman_technique_deep_mastery" -> 1 to "📘 روش‌های علمی یادگیری جهانی — تکنیک فاینمن، بازیابی فعال (Active Recall) و مرور فاصله‌دار لایتنر"
+    "study_04_feynman_technique_deep_mastery",
+    "methods1406-01-sq3r",
+    "methods1406-02-memory-palace",
+    "methods1406-03-interleaving",
+    "methods1406-04-arabic-study" -> 1 to "📘 روش‌های علمی یادگیری جهانی — تکنیک فاینمن، بازیابی فعال (Active Recall) و مرور فاصله‌دار لایتنر"
     "study_02_cornell_mindmap_speed_reading" -> 2 to "📗 خلاصه‌نویسی و تندخوانی — روش کرنل (Cornell)، نقشه ذهنی (Mind Map)، رمزگردانی دوگانه و تندخوانی"
     "study_03_konkoor_test_strategy_final20" -> 4 to "📕 مهندسی جلسه کنکور و امتحان نهایی — تکنیک ضربدر و منها، زمان‌های نقصانی، رد گزینه و فرمول نمره ۲۰ نهایی"
 
@@ -868,17 +1094,25 @@ fun ZeroLesson.officialTextbookReference(): String = when (id) {
     "phil_02_logic_propositions_square" -> "📚 مطابق درس ۶ و ۷ کتاب منطق — پایه دهم انسانی (چاپ ۱۴۰۳ ویژه کنکور ۱۴۰۶)"
     "phil_03_logic_syllogisms_fallacies" -> "📚 مطابق درس ۸، ۹ و ۱۰ کتاب منطق — پایه دهم انسانی (چاپ ۱۴۰۳ ویژه کنکور ۱۴۰۶)"
     "phil_04_grade11_history_epistemology" -> "📚 مطابق درس ۱ تا ۱۲ کتاب فلسفه ۱ — پایه یازدهم انسانی (چاپ ۱۴۰۴ ویژه کنکور ۱۴۰۶)"
-    "phil_05_grade12_existence_quiddity" -> "📚 مطابق درس ۱، ۲ و ۳ کتاب فلسفه ۲ — پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶)"
-    "phil_06_grade12_causality_motion_schools" -> "📚 مطابق درس ۴، ۵ و ۶ کتاب فلسفه ۲ — پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶)"
-    "phil_07_grade12_mulla_sadra_and_theology" -> "📚 مطابق درس ۷ تا ۱۱ کتاب فلسفه ۲ — پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶)"
+    "phil_05_grade12_existence_quiddity" -> "📚 مطابق درس ۱ کتاب فلسفه ۲ — پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶)"
+    "phil_06_grade12_causality_motion_schools" -> "📚 مطابق درس ۳، ۱۰ و ۱۱ کتاب فلسفه ۲ — پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶)"
+    "phil_07_grade12_mulla_sadra_and_theology" -> "📚 مطابق درس ۵ و ۶ کتاب فلسفه ۲ — پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶)"
+    "phil2-02-jahan-momkenat" -> "📚 مطابق درس ۲ کتاب فلسفه ۲ — پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶)"
+    "phil2-04-kodam-tasvir" -> "📚 مطابق درس ۴ کتاب فلسفه ۲ — پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶)"
+    "phil2-07-aghl-1" -> "📚 مطابق درس ۷ کتاب فلسفه ۲ — پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶)"
+    "phil2-08-aghl-2" -> "📚 مطابق درس ۸ کتاب فلسفه ۲ — پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶)"
+    "phil2-09-aghaz-falsafeh" -> "📚 مطابق درس ۹ کتاب فلسفه ۲ — پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶)"
+    "phil2-10-dowreh-miyani" -> "📚 مطابق درس ۱۰ کتاب فلسفه ۲ — پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶)"
+    "phil2-11-dowran-motakhkher" -> "📚 مطابق درس ۱۱ کتاب فلسفه ۲ — پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶)"
+    "phil2-12-hekmat-moaser" -> "📚 مطابق درس ۱۲ کتاب فلسفه ۲ — پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶)"
     "phil_08_konkoor_100_master_tables" -> "📚 جداول جامع ۱۰۰٪ منطق دهم (۱۴۰۳)، فلسفه ۱ یازدهم (۱۴۰۴) و فلسفه ۲ دوازدهم (۱۴۰۵)"
     "phil_09_khodemoni_philosophy_11_12_complete" -> "📚 آموزش کاملاً خودمونی و بدون کلمات پیچیده کل فلسفه یازدهم (چاپ ۱۴۰۴) و دوازدهم (چاپ ۱۴۰۵)"
     "philo_07_mnemonics_final20" -> "📚 مطابق کلیدواژه‌های تستی منطق دهم (۱۴۰۳)، فلسفه ۱ یازدهم (۱۴۰۴) و فلسفه ۲ دوازدهم (۱۴۰۵)"
 
     // History & Geography
     "hist_00_elementary_to_9th_zero" -> "📚 مطابق مطالعات اجتماعی اول ابتدایی تا نهم (تبدیل سال به قرن، گاه‌شماری و سلسله‌ها)"
-    "hist_01_grade10_1403" -> "📚 صفحه ۰ تا آخر کتاب تاریخ ۱ (ایران و جهان باستان) — پایه دهم انسانی (چاپ ۱۴۰۳ ویژه کنکور ۱۴۰۶)"
-    "hist_02_grade11_1404" -> "📚 صفحه ۰ تا آخر کتاب تاریخ ۲ (تاریخ اسلام و ایران تا پایان صفویه) — پایه یازدهم انسانی (چاپ ۱۴۰۴ ویژه کنکور ۱۴۰۶)"
+    "hist_01_grade10_1403" -> "📚 صفحه ۰ تا آخر کتاب تاریخ ۱ (ایران و جهان باستان) — پایه دهم انسانی (چاپ دهم ۱۴۰۴، کد ۱۱۰۲۱۹)"
+    "hist_02_grade11_1404" -> "📚 صفحه ۰ تا آخر کتاب تاریخ ۲ (تاریخ اسلام و ایران تا پایان صفویه) — پایه یازدهم انسانی (چاپ نهم ۱۴۰۴، کد ۱۱۱۲۱۹)"
     "hist_03_grade12_1405" -> "📚 صفحه ۰ تا آخر کتاب تاریخ ۳ (ایران و جهان معاصر) — پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶)"
     "hist_04_treaties_kings_konkoor_tables" -> "📚 جداول جامع عهدنامه‌ها، شاهان و مناصب دیوانی تاریخ ۱ (۱۴۰۳)، ۲ (۱۴۰۴) و ۳ (۱۴۰۵) ویژه کنکور ۱۴۰۶"
     "geo_00_zero_maps_coordinates" -> "📚 آموزش تصویری و بدون فرمول مسائل ساعت، نصف‌النهار و مقیاس نقشه در جغرافیای کنکور"
@@ -893,7 +1127,7 @@ fun ZeroLesson.officialTextbookReference(): String = when (id) {
     "soc_01b_grade10_identity_mobility_control" -> "📚 صفحه ۰ تا آخر کتاب جامعه‌شناسی ۱ (بخش دوم: هویت، جامعه‌پذیری، تحرک و کج‌روی) — پایه دهم انسانی (چاپ ۱۴۰۳)"
     "soc_02_grade11_1404_complete" -> "📚 صفحه ۰ تا آخر کتاب جامعه‌شناسی ۲ (بخش اول: فرهنگ جهانی و استعمار) — پایه یازدهم انسانی (چاپ ۱۴۰۴)"
     "soc_02b_grade11_west_islam_modernity" -> "📚 صفحه ۰ تا آخر کتاب جامعه‌شناسی ۲ (بخش دوم: رنسانس، روشنگری، اومانیسم، سکولاریسم و بیداری اسلامی) — پایه یازدهم (چاپ ۱۴۰۴)"
-    "soc_03_grade12_1405_complete" -> "📚 صفحه ۰ تا آخر کتاب جامعه‌شناسی ۳ (درس ۱ تا ۱۰: رویکرد تبیینی، تفسیری و انتقادی) — پایه دوازدهم انسانی (چاپ ۱۴۰۵)"
+    "soc_03_grade12_1405_complete" -> "📚 صفحه ۰ تا آخر کتاب جامعه‌شناسی ۳ (درس ۱ تا ۱۰: ذخیره دانشی تا افق علوم اجتماعی در جهان اسلام) — پایه دوازدهم انسانی (چاپ ۱۴۰۵، کد ۱۱۲۲۲۲)"
     "psych_00_zero_khodemoni" -> "📚 ترجمه کاملاً خودمونی تمام اصطلاحات روان‌شناسی یازدهم (مکاتب، شرطی‌سازی کلاسیک و کنشی، استرس) به زبان کوچه و بازار"
     "psych_01_grade11_1404_complete" -> "📚 صفحه ۰ تا آخر کتاب روان‌شناسی یازدهم (فصل ۱ تا ۸ کامل) — پایه یازدهم انسانی (چاپ ۱۴۰۴ ویژه کنکور ۱۴۰۶)"
     "psych_02_sensation_memory_forgetting" -> "📚 مطابق فصل ۳ و ۴ روان‌شناسی یازدهم (چاپ ۱۴۰۴) — احساس، توجه، ادراک، حافظه و تداخل پیش‌گستر و پس‌گستر"
@@ -957,23 +1191,23 @@ fun ZeroLesson.officialTextbookReference(): String = when (id) {
     "logic_10_lesson3_4_relations_five_universals" -> "📚 مطابق درس ۳ و ۴ منطق — پایه دهم انسانی (چاپ ۱۴۰۳، کد ۱۱۰۲۲۰: مفاهیم جزئی و کلی، نسب اربع و کلیات خمس)"
     "logic_10_lesson5_definitions" -> "📚 مطابق درس ۵ منطق — پایه دهم انسانی (چاپ ۱۴۰۳، کد ۱۱۰۲۲۰: تعریف، حد و رسم، شروط تعریف و تقسیم منطقی)"
     "philo_04_grade11_history_epistemology" -> "📚 مطابق درس ۱ تا ۱۲ فلسفه ۱ — پایه یازدهم انسانی (چاپ ۱۴۰۴، کد ۱۱۱۲۱۹: تاریخ فلسفه یونان و اسلامی و معرفت‌شناسی)"
-    "soc_10_ch1_human_social_action" -> "📚 مطابق درس ۱ تا ۴ جامعه‌شناسی ۱ — پایه دهم انسانی (چاپ ۱۴۰۳، کد ۱۱۰۲۲۲: کنش انسانی، کنش اجتماعی و پیامدهای آن)"
-    "soc_10_ch2_culture_layers_values" -> "📚 مطابق درس ۵ تا ۹ جامعه‌شناسی ۱ — پایه دهم انسانی (چاپ ۱۴۰۳، کد ۱۱۰۲۲۲: جامعه، فرهنگ، لایه‌های فرهنگ، ارزش و هنجار)"
-    "soc_11_ch1_cultural_world_globalization" -> "📚 مطابق درس ۱ تا ۷ جامعه‌شناسی ۲ — پایه یازدهم انسانی (چاپ ۱۴۰۴، کد ۱۱۱۲۲۲: جهان فرهنگی، هویت جمعی و تحولات فرهنگی)"
-    "soc_12_ch1_three_approaches_social_sciences" -> "📚 مطابق درس ۱ تا ۵ جامعه‌شناسی ۳ — پایه دوازدهم انسانی (چاپ ۱۴۰۵، کد ۱۱۲۲۲۲: رویکردهای تبیینی، تفسیری و انتقادی)"
+    "soc_10_ch1_human_social_action" -> "📚 مطابق درس ۱ تا ۴ جامعه‌شناسی ۱ — پایه دهم انسانی (چاپ ۱۴۰۳: کنش‌های ما، پدیده‌های اجتماعی، جهان اجتماعی، اجزا و لایه‌های جهان اجتماعی)"
+    "soc_10_ch2_culture_layers_values" -> "📚 مطابق درس ۵ تا ۹ جامعه‌شناسی ۱ — پایه دهم انسانی (چاپ ۱۴۰۳: جهان‌های اجتماعی، پیامدها و ارزیابی، هویت، بازتولید هویت اجتماعی)"
+    "soc_11_ch1_cultural_world_globalization" -> "📚 مطابق درس ۱ تا ۷ جامعه‌شناسی ۲ — پایه یازدهم انسانی (چاپ ۱۴۰۴: جهان فرهنگی، فرهنگ جهانی، نمونه‌های فرهنگ جهانی، باورها و ارزش‌های بنیادین فرهنگ غرب، تکوین فرهنگ معاصر غرب، جامعه جهانی)"
+    "soc_12_ch1_three_approaches_social_sciences" -> "📚 مطابق درس ۱ تا ۵ جامعه‌شناسی ۳ — پایه دوازدهم انسانی (چاپ ۱۴۰۵، کد ۱۱۲۲۲۲: ذخیره دانشی، علوم اجتماعی، نظم اجتماعی، کنش اجتماعی، معنای زندگی)"
     "geo_10_ch1_location_topography_climate_rivers" -> "📚 مطابق درس ۱ تا ۵ جغرافیای ایران — پایه دهم (چاپ ۱۴۰۳، کد ۱۱۰۲۰۹: موقعیت، ناهمواری‌ها، آب‌وهوا و منابع آب ایران)"
     "geo_10_ch3_economy_transport_borders" -> "📚 مطابق درس ۸ تا ۱۰ جغرافیای ایران — پایه دهم (چاپ ۱۴۰۳، کد ۱۱۰۲۰۹: اقتصاد، حمل‌ونقل، استان‌ها و مرزهای سیاسی ایران)"
     "geo_11_ch1_regions_biomes_culture" -> "📚 مطابق درس ۱ تا ۵ جغرافیا ۲ (ناحیه‌ای) — پایه یازدهم انسانی (چاپ ۱۴۰۴، کد ۱۱۱۲۱۷: مفهوم ناحیه، زیست‌بوم‌ها و نواحی فرهنگی)"
     "geo_11_ch3_case_studies_sw_asia_europe" -> "📚 مطابق درس ۸ تا ۱۰ جغرافیا ۲ (ناحیه‌ای) — پایه یازدهم انسانی (چاپ ۱۴۰۴، کد ۱۱۱۲۱۷: جنوب غربی آسیا، اروپا و ژئوپلیتیک)"
     "geo_12_ch1_applied_geography_hazards" -> "📚 مطابق درس ۱ تا ۴ جغرافیا ۳ (کاربردی) — پایه دوازدهم انسانی (چاپ ۱۴۰۵، کد ۱۱۲۲۱۷: شهر و روستا، مخاطرات طبیعی و مدیریت بحران)"
-    "dini_10_ch1_purpose_creation_theology" -> "📚 مطابق درس ۱ تا ۴ دین و زندگی ۱ — پایه دهم انسانی (چاپ ۱۴۰۳، کد ۱۱۰۲۰۱: هدف زندگی، سرمایه‌های انسان و توحید)"
+    "dini_10_ch1_purpose_creation_theology" -> "📚 مطابق درس ۱ تا ۱۲ دین و زندگی ۱ — پایه دهم انسانی (چاپ دهم ۱۴۰۴، کد ۱۱۰۲۰۵)"
     "dini_10_ch3_friendship_ethics_society" -> "📚 مطابق درس ۷ تا ۱۲ دین و زندگی ۱ — پایه دهم انسانی (چاپ ۱۴۰۳، کد ۱۱۰۲۰۱: واقعه بزرگ قیامت، فرشتگان، دوستی و عفاف)"
     "dini_11_ch1_divine_guidance_quran_prophet" -> "📚 مطابق درس ۱ تا ۵ دین و زندگی ۲ — پایه یازدهم انسانی (چاپ ۱۴۰۴، کد ۱۱۱۲۱۴: هدایت الهی، اعجاز قرآن و ختم نبوت)"
     "dini_11_ch3_imams_life_ghaybat_velayat" -> "📚 مطابق درس ۹ تا ۱۴ دین و زندگی ۲ — پایه یازدهم انسانی (چاپ ۱۴۰۴، کد ۱۱۱۲۱۴: سیره ائمه ع، عصر غیبت، ولایت فقیه و انتظار)"
-    "farsi_10_ch2_literary_intellectual_realms" -> "📚 مطابق درس ۱ تا ۱۸ فارسی ۱ — پایه دهم (چاپ ۱۴۰۳، کد ۱۱۰۲۰۳: قلمرو ادبی، فکری، املا و تاریخ ادبیات)"
+    "farsi_10_ch2_literary_intellectual_realms" -> "📚 مطابق درس ۱ تا ۱۸ فارسی ۱ — پایه دهم (چاپ ۱۴۰۳، کد ۱۱۰۲۰۱: قلمرو ادبی، فکری، املا و تاریخ ادبیات)"
     "farsi_12_ch1_syntax_noun_phrase_realms" -> "📚 مطابق درس ۱ تا ۱۸ فارسی ۳ — پایه دوازدهم (چاپ ۱۴۰۵، کد ۱۱۲۲۰۳: قلمرو زبانی، گروه اسمی، وابسته‌ها و شمارش واژه)"
     "farsi_12_ch2_final_exam_vocab_spelling_authors" -> "📚 مطابق درس ۱ تا ۱۸ فارسی ۳ — پایه دوازدهم (چاپ ۱۴۰۵، کد ۱۱۲۲۰۳: قلمرو ادبی و فکری، هم‌آواها و تاریخ ادبیات نهایی)"
-    "negaresh_10_ch2_proverb_parable_writing" -> "📚 مطابق درس ۳ تا ۶ نگارش ۱ — پایه دهم (چاپ ۱۴۰۳، کد ۱۱۰۲۰۴: مثل‌نویسی، نوشتن با فهرست، سنجش و مقایسه و حکایت‌نگاری)"
+    "negaresh_10_ch2_proverb_parable_writing" -> "📚 مطابق درس ۱ تا ۶ نگارش ۱ — پایه دهم (چاپ ۱۴۰۳، کد ۱۱۰۲۰۲: مثل‌نویسی، نوشتن با فهرست، سنجش و مقایسه و حکایت‌نگاری)"
     "hoviyat_04_iranian_islamic_identity_globalization" -> "📚 مطابق فصل ۵ و ۶ هویت اجتماعی — پایه دوازدهم (چاپ ۱۴۰۵، کد ۱۱۲۲۲۵: هویت ایرانی-اسلامی، انقلاب اسلامی و جهانی شدن)"
     "salamat_01_health_dimensions_nutrition_bmi" -> "📚 مطابق فصل ۱ تا ۳ سلامت و بهداشت — پایه دوازدهم (چاپ ۱۴۰۵، کد ۱۱۲۲۰۸: ابعاد سلامت، تغذیه سالم، BMI و سطوح پیشگیری)"
     "resaneh_10_ch2_media_diet_ethics_entrepreneurship" -> "📚 مطابق تفکر و سواد رسانه‌ای دهم (کد ۱۱۰۲۱۶) و کارگاه کارآفرینی و تولید دهم (چاپ ۱۴۰۳: رژیم مصرف رسانه‌ای و بوم کسب‌وکار)"
@@ -1107,7 +1341,7 @@ fun ZeroLesson.prerequisiteStepOrder(): Int = when (id) {
     "philo_03_logic_syllogism_conditional" -> 8
     "logic_phil_complete_mastery" -> 9
 
-    // 7. PHILOSOPHY (فلسفه ۱ یازدهم و فلسفه ۲ دوازدهم): Lesson 1..12 Grade 11 -> Lesson 1..11 Grade 12 -> Master Tables
+    // 7. PHILOSOPHY (فلسفه ۱ یازدهم و فلسفه ۲ دوازدهم): Lesson 1..12 Grade 11 -> Lesson 1..12 Grade 12 -> Master Tables
     "phil_11_ch1_what_is_philosophy_greeks" -> 1
     "phil_11_ch2_epistemology_knowledge" -> 2
     "phil_11_ch3_islamic_philosophy_ethics" -> 3
@@ -1115,10 +1349,18 @@ fun ZeroLesson.prerequisiteStepOrder(): Int = when (id) {
     "philo_04_grade11_history_epistemology" -> 5
     "phil_09_khodemoni_philosophy_11_12_complete" -> 6
     "phil_05_grade12_existence_quiddity" -> 7
-    "phil_06_grade12_causality_motion_schools" -> 8
-    "phil_07_grade12_mulla_sadra_and_theology" -> 9
-    "phil_08_konkoor_100_master_tables" -> 10
-    "philo_07_mnemonics_final20" -> 11
+    "phil2-02-jahan-momkenat" -> 8
+    "phil_06_grade12_causality_motion_schools" -> 9
+    "phil2-04-kodam-tasvir" -> 10
+    "phil_07_grade12_mulla_sadra_and_theology" -> 11
+    "phil2-07-aghl-1" -> 12
+    "phil2-08-aghl-2" -> 13
+    "phil2-09-aghaz-falsafeh" -> 14
+    "phil2-10-dowreh-miyani" -> 15
+    "phil2-11-dowran-motakhkher" -> 16
+    "phil2-12-hekmat-moaser" -> 17
+    "phil_08_konkoor_100_master_tables" -> 18
+    "philo_07_mnemonics_final20" -> 19
 
     // 8. SOCIOLOGY: Step-by-step from zero dictionary -> elementary -> Grade 10 -> Grade 11 -> Grade 12 -> Full Encyclopedia
     "soc_000_khodemoni_zero_to_100" -> 1
