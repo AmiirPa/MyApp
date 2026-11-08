@@ -1,10 +1,5 @@
 package com.example.ui.components
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -405,11 +400,9 @@ private fun ResourceItemCard(
             )
 
             // جزئیات آکاردئونی باز شده
-            AnimatedVisibility(
-                visible = isExpanded,
-                enter = fadeIn() + expandVertically(),
-                exit = fadeOut() + shrinkVertically()
-            ) {
+            // (بدون AnimatedVisibility: انیمیشن expandVertically داخل LazyColumn
+            //  گاهی ارتفاع کارت را اشتباه اندازه می‌گرفت و فضای خالی بزرگ می‌ساخت.)
+            if (isExpanded) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                     modifier = Modifier.padding(top = 4.dp)
@@ -417,6 +410,11 @@ private fun ResourceItemCard(
                     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
 
                     // سال چاپ و مرجع
+                    // (متن weight دارد تا دکمه «علامت‌گذاری تهیه کتاب» جای طبیعی خودش را
+                    //  بگیرد؛ قبلاً متن بدون weight تمام عرض ردیف را می‌گرفت و دکمه
+                    //  با عرض صفر اندازه‌گیری می‌شد: هم نامرئی بود، هم متنش در عرض صفر
+                    //  خط‌به‌خط می‌شکست و ردیف را چندصد پیکسل بلند می‌کرد — همان فضای
+                    //  خالی بزرگی که در اسکرین‌شات دیده می‌شد.)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -426,7 +424,8 @@ private fun ResourceItemCard(
                             text = "🏷️ سال چاپ مجاز سنجش: ${item.authorizedEditionYear}",
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.Medium,
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.weight(1f)
                         )
 
                         // تیک منبع تهیه شده

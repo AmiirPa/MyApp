@@ -124,20 +124,26 @@ enum class BuiltInFontPreset(
     val persianTitle: String,
     val persianSubtitle: String,
     @FontRes val regularRes: Int,
-    @FontRes val boldRes: Int = regularRes
+    @FontRes val boldRes: Int = regularRes,
+    @FontRes val mediumRes: Int = regularRes,
+    @FontRes val lightRes: Int = regularRes
 ) {
     // === ۰. ایران‌سنس و ایران‌یکان — فونت پیش‌فرض برنامه ===
     IRANSANSX(
         persianTitle = "ایران‌سنس ایکس (IranSansX)",
         persianSubtitle = "فونت پیش‌فرض برنامه؛ مدرن، خوانا و استاندارد",
         regularRes = R.font.iransansx,
-        boldRes = R.font.iransansx_bold
+        boldRes = R.font.iransansx_bold,
+        mediumRes = R.font.iransansx_medium,
+        lightRes = R.font.iransansx_light
     ),
     IRANYEKANX(
         persianTitle = "ایران‌یکان ایکس (IranYekanX)",
         persianSubtitle = "فونت هندسی و مدرن یکان، مناسب تیتر و متن",
         regularRes = R.font.iranyekanx,
-        boldRes = R.font.iranyekanx_bold
+        boldRes = R.font.iranyekanx_bold,
+        mediumRes = R.font.iranyekanx_medium,
+        lightRes = R.font.iranyekanx_light
     ),
     // === ۱. خانواده فونت‌های مدرن و استاندارد فارسی ===
     VAZIRMATN(
@@ -433,6 +439,8 @@ enum class BuiltInFontPreset(
                 createDualFontFamily(
                     regularRes = regularRes,
                     boldRes = boldRes,
+                    mediumRes = mediumRes,
+                    lightRes = lightRes,
                     forceBold = forceBold
                 )
             }
