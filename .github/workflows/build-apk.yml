@@ -34,6 +34,9 @@ jobs:
 
       - name: Prepare keystore
         run: |
+          if [ -f my-upload-key.jks.base64 ]; then
+            base64 -d my-upload-key.jks.base64 > my-upload-key.jks
+          fi
           if [ -f debug.keystore.base64 ]; then
             base64 -d debug.keystore.base64 > debug.keystore
           elif [ ! -f debug.keystore ]; then
@@ -43,6 +46,9 @@ jobs:
           fi
 
       - name: Run Unit Tests & Build Official Release APK
+        env:
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           chmod +x gradlew
           ./gradlew testDebugUnitTest assembleRelease --no-daemon -Djava.awt.headless=true -Dorg.gradle.jvmargs="-Xmx3072m -XX:MaxMetaspaceSize=1024m -Djava.awt.headless=true"
