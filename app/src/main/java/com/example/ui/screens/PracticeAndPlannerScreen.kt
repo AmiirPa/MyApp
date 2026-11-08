@@ -1088,7 +1088,7 @@ fun StudyPlannerAndFarhangianScreen(
                                         completed,
                                         prev?.isBookmarked ?: false,
                                         prev?.userNote ?: "",
-                                        if (completed) 100 else 50
+                                        prev?.masteryPercent ?: 0
                                     )
                                 },
                                 onToggleLessonBookmarked = { lesson, bookmarked ->
@@ -1098,7 +1098,7 @@ fun StudyPlannerAndFarhangianScreen(
                                         prev?.isCompleted ?: false,
                                         bookmarked,
                                         prev?.userNote ?: "",
-                                        prev?.masteryPercent ?: 50
+                                        prev?.masteryPercent ?: 0
                                     )
                                 }
                             )

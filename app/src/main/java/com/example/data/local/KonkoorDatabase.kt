@@ -98,7 +98,7 @@ interface KonkoorDao {
         ExamResultEntity::class
     ],
     version = 1,
-    exportSchema = false
+    exportSchema = true
 )
 abstract class KonkoorDatabase : RoomDatabase() {
     abstract fun konkoorDao(): KonkoorDao
@@ -114,7 +114,6 @@ abstract class KonkoorDatabase : RoomDatabase() {
                     KonkoorDatabase::class.java,
                     "konkoor_farhangian_1406.db"
                 )
-                    .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance
                 instance
