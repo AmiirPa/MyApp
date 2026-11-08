@@ -345,20 +345,13 @@ class AppThemeController(context: Context) {
     var fontRevision by mutableIntStateOf(0)
         private set
 
-    // الف) تنظیمات یادگیری (Part 13A)
-    var learningStartLevel by mutableStateOf(prefs.getString(KEY_LEARNING_START_LEVEL, "MINUS_ZERO") ?: "MINUS_ZERO")
-        private set
-
-    var learningPaceMode by mutableStateOf(prefs.getString(KEY_LEARNING_PACE_MODE, "SLOW") ?: "SLOW")
-        private set
-
-    var explanationDetailLevel by mutableStateOf(prefs.getString(KEY_EXPLANATION_DETAIL_LEVEL, "COMPLETE") ?: "COMPLETE")
-        private set
-
+    // الف) تنظیمات یادگیری (Part 13A) — فقط مواردی که واقعاً خوانده می‌شوند نگه
+    // داشته شده‌اند: showPrerequisitesBeforeLesson و showMnemonicsAndMemoryTricks
+    // در HomeAndLessonsScreen مصرف می‌شوند. چهار تنظیم مرده
+    // (learningStartLevel ،learningPaceMode ،explanationDetailLevel
+    // و showUnderstandingCheck) حذف شدند: هیچ خواننده‌ای نداشتند — مقدارشان
+    // ذخیره می‌شد اما هیچ‌جای برنامه روی آموزش اثر نمی‌گذاشت.
     var showPrerequisitesBeforeLesson by mutableStateOf(prefs.getBoolean(KEY_SHOW_PREREQUISITES, true))
-        private set
-
-    var showUnderstandingCheck by mutableStateOf(prefs.getBoolean(KEY_SHOW_UNDERSTANDING_CHECK, true))
         private set
 
     var showMnemonicsAndMemoryTricks by mutableStateOf(prefs.getBoolean(KEY_SHOW_MNEMONICS, true))
@@ -655,29 +648,9 @@ class AppThemeController(context: Context) {
         prefs.edit().remove(KEY_BUG_LOGS).apply()
     }
 
-    fun updateLearningStartLevel(level: String) {
-        learningStartLevel = level
-        prefs.edit().putString(KEY_LEARNING_START_LEVEL, level).apply()
-    }
-
-    fun updateLearningPaceMode(pace: String) {
-        learningPaceMode = pace
-        prefs.edit().putString(KEY_LEARNING_PACE_MODE, pace).apply()
-    }
-
-    fun updateExplanationDetailLevel(detail: String) {
-        explanationDetailLevel = detail
-        prefs.edit().putString(KEY_EXPLANATION_DETAIL_LEVEL, detail).apply()
-    }
-
     fun updateShowPrerequisitesBeforeLesson(enabled: Boolean) {
         showPrerequisitesBeforeLesson = enabled
         prefs.edit().putBoolean(KEY_SHOW_PREREQUISITES, enabled).apply()
-    }
-
-    fun updateShowUnderstandingCheck(enabled: Boolean) {
-        showUnderstandingCheck = enabled
-        prefs.edit().putBoolean(KEY_SHOW_UNDERSTANDING_CHECK, enabled).apply()
     }
 
     fun updateShowMnemonicsAndMemoryTricks(enabled: Boolean) {
@@ -895,11 +868,7 @@ class AppThemeController(context: Context) {
         private const val KEY_UNDERLINE_PALETTE = "underline_color_palette_v35"
         private const val KEY_TEXT_ALIGNMENT_PRESET = "text_alignment_preset_v35"
         private const val KEY_BUG_LOGS = "user_bug_logs_v1"
-        private const val KEY_LEARNING_START_LEVEL = "learning_start_level_v1"
-        private const val KEY_LEARNING_PACE_MODE = "learning_pace_mode_v1"
-        private const val KEY_EXPLANATION_DETAIL_LEVEL = "explanation_detail_level_v1"
         private const val KEY_SHOW_PREREQUISITES = "show_prerequisites_before_lesson_v1"
-        private const val KEY_SHOW_UNDERSTANDING_CHECK = "show_understanding_check_v1"
         private const val KEY_SHOW_MNEMONICS = "show_mnemonics_v1"
         private const val KEY_TABLE_DISPLAY_PREF = "table_display_pref_v1"
         private const val KEY_REDUCE_MOTION = "reduce_motion_v1"

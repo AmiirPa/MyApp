@@ -276,12 +276,27 @@ class LocalKonkoorStore(context: Context) {
         prefs.edit().putString(KEY_LESSONS, arr.toString()).apply()
     }
 
-    private fun restoreUpdatedAt(obj: JSONObject): Timestamp {
+    private fun restoreUpdatedAt(obj: JSONObject): Timestamp? {
         // Records saved before updatedAt was persisted carry no timestamp;
-        // fall back to now, exactly as the old code did for every record.
-        if (!obj.has("updatedAtMillis")) return Timestamp.now()
+        // a missing timestamp means "not enough data" — it is never
+        // replaced with "now", which would fabricate a study time the
+        // user never had.
+        if (!obj.has("updatedAtMillis")) return null
         val millis = obj.optLong("updatedAtMillis", 0L)
-        if (millis <= 0L) return Timestamp.now()
+        if (millis <= 0L) return null
+        return Timestamp(millis / 1000L, ((millis % 1000L) * 1_000_000L).toInt())
+    }
+
+    /**
+     * Restores a timestamp previously saved as epoch millis, or null when the
+     * record carries none. A missing timestamp means "not enough data" — it is
+     * never replaced with "now", which would fabricate a review/creation time
+     * the user never had. Same shape as [restoreUpdatedAt].
+     */
+    private fun restoreTimestampMillis(obj: JSONObject, key: String): Timestamp? {
+        if (!obj.has(key)) return null
+        val millis = obj.optLong(key, 0L)
+        if (millis <= 0L) return null
         return Timestamp(millis / 1000L, ((millis % 1000L) * 1_000_000L).toInt())
     }
 
@@ -319,7 +334,7 @@ class LocalKonkoorStore(context: Context) {
                             subjectId = obj.optString("subjectId"),
                             leitnerBox = obj.optInt("leitnerBox", 1),
                             reviewCount = obj.optInt("reviewCount", 0),
-                            updatedAt = Timestamp.now()
+                            updatedAt = restoreTimestampMillis(obj, "updatedAtMillis")
                         )
                     )
                 }
@@ -336,6 +351,7 @@ class LocalKonkoorStore(context: Context) {
                     put("subjectId", item.subjectId)
                     put("leitnerBox", item.leitnerBox)
                     put("reviewCount", item.reviewCount)
+                    item.updatedAt?.let { put("updatedAtMillis", it.seconds * 1000L + it.nanoseconds / 1_000_000) }
                 }
             )
         }
@@ -358,7 +374,7 @@ class LocalKonkoorStore(context: Context) {
                             stageTag = obj.optString("stageTag"),
                             durationMinutes = obj.optInt("durationMinutes", 30),
                             isCompleted = obj.optBoolean("isCompleted", false),
-                            createdAt = Timestamp.now()
+                            createdAt = restoreTimestampMillis(obj, "createdAtMillis")
                         )
                     )
                 }
@@ -377,6 +393,7 @@ class LocalKonkoorStore(context: Context) {
                     put("stageTag", item.stageTag)
                     put("durationMinutes", item.durationMinutes)
                     put("isCompleted", item.isCompleted)
+                    item.createdAt?.let { put("createdAtMillis", it.seconds * 1000L + it.nanoseconds / 1_000_000) }
                 }
             )
         }
@@ -399,7 +416,7 @@ class LocalKonkoorStore(context: Context) {
                             correctCount = obj.optInt("correctCount", 0),
                             totalCount = obj.optInt("totalCount", 0),
                             scorePercent = obj.optInt("scorePercent", 0),
-                            createdAt = Timestamp.now()
+                            createdAt = restoreTimestampMillis(obj, "createdAtMillis")
                         )
                     )
                 }
@@ -418,6 +435,7 @@ class LocalKonkoorStore(context: Context) {
                     put("correctCount", item.correctCount)
                     put("totalCount", item.totalCount)
                     put("scorePercent", item.scorePercent)
+                    item.createdAt?.let { put("createdAtMillis", it.seconds * 1000L + it.nanoseconds / 1_000_000) }
                 }
             )
         }

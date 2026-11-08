@@ -95,7 +95,6 @@ import com.example.data.firebase.authStateFlow
 import com.example.data.local.LocalKonkoorStore
 import com.example.ui.AppTab
 import com.example.ui.KonkoorViewModel
-import com.example.ui.ai.configureAppCheck
 import com.example.ui.components.BidiFormatter
 import com.example.ui.components.SavedItemsModalSheet
 import com.example.ui.screens.CounselingAndMentorshipScreen
@@ -123,7 +122,6 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        configureAppCheck(this, intent)
         enableEdgeToEdge()
         setContent {
             val context = LocalContext.current
@@ -138,6 +136,10 @@ class MainActivity : ComponentActivity() {
                 s
             } else null
 
+            // The ViewModel is intentionally created once: its cloud session is NOT
+            // frozen from this first snapshot. Every later auth emission below calls
+            // onAuthChanged, which (re)starts or cleanly stops cloud sync. Recreating
+            // the ViewModel per user would wipe UI state (tab, open lesson) instead.
             val viewModel = remember {
                 val store = LocalKonkoorStore(context.applicationContext)
                 val user = try { Firebase.auth.currentUser } catch (_: Exception) { null }
@@ -145,6 +147,21 @@ class MainActivity : ComponentActivity() {
                     try { KonkoorCloudRepository(context.applicationContext) } catch (_: Exception) { null }
                 } else null
                 KonkoorViewModel(repo, user?.uid, store)
+            }
+
+            // authFlow is the Firebase AuthStateListener (see authStateFlow() in
+            // GoogleAuthHelper.kt). It used to feed only the header UI; it now also
+            // drives the ViewModel's cloud session, so signing in after launch starts
+            // sync and signing out stops the Firestore listeners and falls back to
+            // the local store. The first emission matches the snapshot above and is
+            // a no-op inside onAuthChanged.
+            val appContext = context.applicationContext
+            LaunchedEffect(currentUser?.uid) {
+                val user = currentUser
+                val repo = if (user != null) {
+                    try { KonkoorCloudRepository(appContext) } catch (_: Exception) { null }
+                } else null
+                viewModel.onAuthChanged(user?.uid, repo)
             }
 
             val systemDark = isSystemInDarkTheme()
@@ -293,8 +310,14 @@ private fun AppScaffold(
                                 if (isSubLevelOpen) {
                                     IconButton(
                                         onClick = {
+                                            // NOTE: the top bar (and therefore this button) is only
+                                            // composed when activeLessonId == null, so there is no
+                                            // "close lesson" branch here — that case is handled by
+                                            // LessonDetailView's own BackHandler and the system
+                                            // BackHandler in AppScaffold. The old
+                                            // `activeLessonId != null -> openLesson(null)` branch
+                                            // could never fire from this button and was removed.
                                             when {
-                                                uiState.activeLessonId != null -> viewModel.openLesson(null)
                                                 uiState.activeTab == AppTab.SETTINGS -> viewModel.selectTab(lastNonSettingsTab)
                                                 else -> viewModel.selectSubject("all", navigateToLessons = false)
                                             }
@@ -515,8 +538,6 @@ private fun AppScaffold(
                                     },
                                     onOpenLesson = { viewModel.openLesson(it) },
                                     onNavigateTab = { viewModel.selectTab(it) },
-                                    onSelectGradeFilter = { viewModel.selectGradeFilter(it) },
-                                    onSelectSubjectAndGrade = { sub, grade -> viewModel.selectSubjectAndGrade(sub, grade) },
                                     onSaveLessonState = { lesson, isCompleted, isBookmarked, note, mastery ->
                                         viewModel.saveLessonState(lesson, isCompleted, isBookmarked, note, mastery)
                                     }
