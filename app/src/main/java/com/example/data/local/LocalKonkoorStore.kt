@@ -5,6 +5,7 @@ import com.example.data.firebase.CloudExamResult
 import com.example.data.firebase.CloudFlashcardProgress
 import com.example.data.firebase.CloudLessonProgress
 import com.example.data.firebase.CloudStudyTask
+import com.example.util.StreakCalculator
 import com.google.firebase.Timestamp
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,6 +28,15 @@ class LocalKonkoorStore(context: Context) {
 
     private val _examResults = MutableStateFlow(loadExams())
     val examResults: StateFlow<List<CloudExamResult>> = _examResults.asStateFlow()
+
+    /**
+     * Epoch days (see [StreakCalculator]) on which at least one lesson was
+     * completed. Recorded from the moment this version runs; there is no
+     * honest way to backfill earlier days because lesson progress saved
+     * before this fix carries no timestamp.
+     */
+    private val _completedDays = MutableStateFlow(loadCompletedDays())
+    val completedDays: StateFlow<Set<Long>> = _completedDays.asStateFlow()
 
     init {
         if (prefs.getBoolean(KEY_SEEDED, false).not() && _studyTasks.value.isEmpty()) {
@@ -71,7 +81,7 @@ class LocalKonkoorStore(context: Context) {
                 id = "local_task_4",
                 userId = LOCAL_USER_ID,
                 title = "مرور درس ۱ منطق دهم (جعبه کادو و کلیات خمس)",
-                subjectId = "philosophy",
+                subjectId = "logic",
                 stageTag = "پایه منفی صفر",
                 durationMinutes = 30,
                 isCompleted = false,
@@ -120,6 +130,17 @@ class LocalKonkoorStore(context: Context) {
         }
         _lessonProgress.value = current
         persistLessons(current)
+        if (isCompleted) {
+            recordStudyDay(StreakCalculator.todayEpochDay())
+        }
+    }
+
+    private fun recordStudyDay(epochDay: Long) {
+        val updated = _completedDays.value + epochDay
+        if (updated != _completedDays.value) {
+            _completedDays.value = updated
+            persistCompletedDays(updated)
+        }
     }
 
     fun updateFlashcardBox(
@@ -229,7 +250,7 @@ class LocalKonkoorStore(context: Context) {
                             isBookmarked = obj.optBoolean("isBookmarked", false),
                             userNote = obj.optString("userNote", ""),
                             masteryPercent = obj.optInt("masteryPercent", 0),
-                            updatedAt = Timestamp.now()
+                            updatedAt = restoreUpdatedAt(obj)
                         )
                     )
                 }
@@ -248,10 +269,38 @@ class LocalKonkoorStore(context: Context) {
                     put("isBookmarked", item.isBookmarked)
                     put("userNote", item.userNote)
                     put("masteryPercent", item.masteryPercent)
+                    item.updatedAt?.let { put("updatedAtMillis", it.seconds * 1000L + it.nanoseconds / 1_000_000) }
                 }
             )
         }
         prefs.edit().putString(KEY_LESSONS, arr.toString()).apply()
+    }
+
+    private fun restoreUpdatedAt(obj: JSONObject): Timestamp {
+        // Records saved before updatedAt was persisted carry no timestamp;
+        // fall back to now, exactly as the old code did for every record.
+        if (!obj.has("updatedAtMillis")) return Timestamp.now()
+        val millis = obj.optLong("updatedAtMillis", 0L)
+        if (millis <= 0L) return Timestamp.now()
+        return Timestamp(millis / 1000L, ((millis % 1000L) * 1_000_000L).toInt())
+    }
+
+    private fun loadCompletedDays(): Set<Long> {
+        val raw = prefs.getString(KEY_COMPLETED_DAYS, null) ?: return emptySet()
+        return runCatching {
+            val arr = JSONArray(raw)
+            buildSet {
+                for (i in 0 until arr.length()) {
+                    add(arr.optLong(i, 0L))
+                }
+            }.filter { it > 0L }.toSet()
+        }.getOrDefault(emptySet())
+    }
+
+    private fun persistCompletedDays(days: Set<Long>) {
+        val arr = JSONArray()
+        days.sorted().forEach { arr.put(it) }
+        prefs.edit().putString(KEY_COMPLETED_DAYS, arr.toString()).apply()
     }
 
     private fun loadFlashcards(): List<CloudFlashcardProgress> {
@@ -397,6 +446,7 @@ class LocalKonkoorStore(context: Context) {
         private const val KEY_FLASHCARDS = "flashcards_json"
         private const val KEY_TASKS = "tasks_json"
         private const val KEY_EXAMS = "exams_json"
+        private const val KEY_COMPLETED_DAYS = "completed_study_days_v1"
         private const val KEY_ROADMAP_STEPS = "completed_roadmap_steps_v1"
     }
 }

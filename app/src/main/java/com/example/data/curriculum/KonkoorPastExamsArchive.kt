@@ -76,17 +76,17 @@ object KonkoorPastExamsArchive {
                 QuizQuestionItem(
                     id = "q_1405_math_1",
                     subjectId = "math",
-                    difficultyTag = "ریاضی و آمار • سوال ۱ سازمان سنجش (دفترچه ۱)",
-                    questionText = "در معادله درجه دوم (a - 1)x² - 5x + (a + 4) = 0، اگر حاصل‌ضرب ریشه‌ها برابر ۳ باشد، مقدار a و ریشه دیگر معادله کدام است؟",
+                    difficultyTag = "ریاضی و آمار • سوال ۱ شبیه‌ساز (دفترچه ۱)",
+                    questionText = "در معادله درجه دوم (a - 1)x² - 5x + (a + 4) = 0، اگر حاصل‌ضرب ریشه‌ها برابر ۶ باشد و یکی از ریشه‌ها x = 2 باشد، مقدار a و ریشه دیگر معادله کدام است؟",
                     options = listOf(
-                        "a = 3.5 و ریشه دیگر x = 1",
-                        "a = 2.5 و ریشه دیگر x = 2",
-                        "a = 4 و ریشه دیگر x = 3",
-                        "a = 5 و ریشه دیگر x = 1.5"
+                        "a = 2 و ریشه دیگر x = 3",
+                        "a = 3 و ریشه دیگر x = 2",
+                        "a = 2 و ریشه دیگر x = 1",
+                        "a = 4 و ریشه دیگر x = 3"
                     ),
                     correctOptionIndex = 0,
-                    zeroLevelSolution = "در معادله ax² + bx + c = 0 حاصل‌ضرب ریشه‌ها P = c/a است.\n۱. (a + 4)/(a - 1) = 3 ⟹ a + 4 = 3a - 3 ⟹ 2a = 7 ⟹ a = 3.5\n۲. جای‌گذاری a = 3.5 در معادله: 2.5x² - 5x + 7.5 = 0 ⟹ ضرب در ۲: 5x² - 10x + 15 = 0 ⟹ x = 1 ریشه دیگر است.",
-                    shortcutTechnique = "شگرد ضرب ریشه‌ها c/a = 3 در ۵ ثانیه مقدار a = 3.5 را مشخص می‌کند!"
+                    zeroLevelSolution = "در معادله ax² + bx + c = 0 حاصل‌ضرب ریشه‌ها P = c/a است.\n۱. (a + 4)/(a - 1) = 6 ⟹ a + 4 = 6a - 6 ⟹ 5a = 10 ⟹ a = 2\n۲. جای‌گذاری a = 2 در معادله: x² - 5x + 6 = 0 ⟹ (x - 2)(x - 3) = 0 ⟹ ریشه‌ها ۲ و ۳ هستند؛ پس ریشه دیگر x = 3 است.",
+                    shortcutTechnique = "شگرد ضرب ریشه‌ها c/a = 6 در ۵ ثانیه مقدار a = 2 را مشخص می‌کند!"
                 ),
                 // ۲. ریاضی و آمار
                 QuizQuestionItem(
@@ -619,9 +619,9 @@ object KonkoorPastExamsArchive {
                         "۶۰",
                         "۷۲۰"
                     ),
-                    correctOptionIndex = 0,
-                    zeroLevelSolution = "کلمه ایران شامل ۵ حرف متمایز (الف، ی، ر، ا، ن) نیست! بلکه دارای ۵ حرف است. تعداد جایگشت n حرف متمایز برابر n! است: ۵! = ۵ × ۴ × ۳ × ۲ × ۱ = ۱۲۰.",
-                    shortcutTechnique = "۵ حرف متمایز ⟹ ۵! = ۱۲۰ در ۵ ثانیه!"
+                    correctOptionIndex = 2,
+                    zeroLevelSolution = "کلمه «ایران» ۵ حرف دارد اما حرف «ا» دو بار تکرار شده است؛ پس تعداد جایگشت با تکرار برابر است با ۵! تقسیم بر ۲! یعنی ۱۲۰ تقسیم بر ۲ = ۶۰.",
+                    shortcutTechnique = "حرف «ا» دو بار تکرار شده ⟹ ۵! تقسیم بر ۲! = ۶۰ در ۵ ثانیه!"
                 )
             )
         ),
@@ -635,9 +635,9 @@ object KonkoorPastExamsArchive {
             badge = "ویژه فرهنگیان ۱۴۰۴",
             bookletNumber = 3,
             startTime = "۱۰:۳۰ صبح",
-            endTime = "۱۱:۴۵ صبح",
+            endTime = "۱۱:۳۰ صبح",
             isFarhangianSpecial = true,
-            totalTimeMinutes = 75,
+            totalTimeMinutes = 60,
             description = "دفترچه مستقل سازمان سنجش برای پذیرش دانشگاه فرهنگیان: هوش و استعداد معلمی (۲۰ سوال) + تعلیم و تربیت اسلامی (۲۰ سوال)",
             subjectTimings = defaultFarhangianBookletTimings,
             questions = listOf(
@@ -824,9 +824,9 @@ object KonkoorPastExamsArchive {
             badge = "فرهنگیان ۱۴۰۳",
             bookletNumber = 3,
             startTime = "۱۰:۳۰ صبح",
-            endTime = "۱۱:۴۵ صبح",
+            endTime = "۱۱:۳۰ صبح",
             isFarhangianSpecial = true,
-            totalTimeMinutes = 75,
+            totalTimeMinutes = 60,
             description = "اولین آزمون اختصاصی مستقل پذیرش دانشگاه فرهنگیان در اردیبهشت ۱۴۰۳ (هوش معلمی + تعلیم و تربیت)",
             subjectTimings = defaultFarhangianBookletTimings,
             questions = listOf(
@@ -1152,16 +1152,16 @@ object KonkoorPastExamsArchive {
                     id = "q_1398_fonoon_1",
                     subjectId = "fonoon",
                     difficultyTag = "کنکور سراسری ۱۳۹۸ — علوم و فنون (عروض)",
-                    questionText = "وزن عروضی بیت «دست از مس وجود چو مردان خدا بشوی // تا کیمیای عشق بیابی و زر شوی» کدام است؟",
+                    questionText = "وزن عروضی بیت «دست از مس وجود چو مردان ره بشوی // تا کیمیای عشق بیابی و زر شوی» کدام است؟",
                     options = listOf(
-                        "مفعول مفاعیلن مفعول مفاعیلن (بحر هزج مجثوث)",
+                        "مفعول فاعلات مفاعیل فاعلن (بحر مضارع مثمن اخرب مکفوف محذوف)",
                         "فاعلاتن فاعلاتن فاعلاتن فاعلاتن",
                         "مستفعلن مستفعلن مستفعلن مستفعلن",
                         "مفاعیلن مفاعیلن مفاعیلن مفاعیلن"
                     ),
                     correctOptionIndex = 0,
-                    zeroLevelSolution = "تقطیع هجایی: دست-از-م-سـ (- - U U) و-جو-د-چو (- U U -) مر-دا-ن-خ-دا (- - U U) ب-شوی (- -). الگو: مفعول مفاعیلن مفعول مفاعیلن.",
-                    shortcutTechnique = "بیت معروف حافظ «دست از مس وجود...» = مفعول مفاعیلن مفعول مفاعیلن!"
+                    zeroLevelSolution = "وزن این غزل حافظ (شعرخوانی «در مکتب حقایق»، فارسی دوازدهم) مفعول فاعلات مفاعیل فاعلن است؛ بحر مضارع مثمن اخرب مکفوف محذوف. بیت درست آن «دست از مس وجود چو مردان ره بشوی» است؛ «مردان ره» یعنی رهروان راه عشق.",
+                    shortcutTechnique = "بیت معروف حافظ «دست از مس وجود چو مردان ره بشوی» = مفعول فاعلات مفاعیل فاعلن!"
                 )
             )
         )
