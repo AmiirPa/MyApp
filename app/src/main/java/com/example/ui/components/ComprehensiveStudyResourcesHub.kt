@@ -56,6 +56,7 @@ import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -94,6 +95,21 @@ data class ComprehensiveResourceItem(
     val authorizedEditionYear: String = "چاپ رسمی مصوب سنجش"
 )
 
+// دیتاست منابع یک‌بار برای کل فرآیند ساخته می‌شود (lazy): پیش‌تر با remember
+// ساخته می‌شد و با هر بار خروج از ترکیب — مثلاً تعویض تب مشاوره و برگشتن به
+// «کتابخانه و منابع» — از نو ساخته می‌شد.
+private val comprehensiveResourceDataset: List<ComprehensiveResourceItem> by lazy {
+    buildComprehensiveResourceDataset()
+}
+
+private val resourceCategoryTabs = listOf(
+    "🎓 منابع فرهنگیان",
+    "📖 دروس کنکور",
+    "🏆 کتب تستی رتبه‌ها",
+    "📝 امتحانات نهایی",
+    "👥 مصاحبه و گزینش"
+)
+
 /**
  * مرجع و بانک جامع منابع کنکور انسانی و دانشگاه فرهنگیان ۱۴۰۶
  */
@@ -110,10 +126,8 @@ fun ComprehensiveStudyResourcesHubCard(
     val expandedItemMap = remember { mutableStateMapOf<String, Boolean>() }
     val userOwnedResourceMap = remember { mutableStateMapOf<String, Boolean>() }
 
-    val allResources = remember { buildComprehensiveResourceDataset() }
-
-    val filteredResources = remember(selectedCategoryTab, searchQuery, allResources) {
-        allResources.filter { item ->
+    val filteredResources = remember(selectedCategoryTab, searchQuery) {
+        comprehensiveResourceDataset.filter { item ->
             val matchTab = item.categoryTab == selectedCategoryTab
             val matchQuery = searchQuery.isBlank() ||
                     item.title.contains(searchQuery, ignoreCase = true) ||
@@ -189,14 +203,7 @@ fun ComprehensiveStudyResourcesHubCard(
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(14.dp))
             ) {
-                val categoryTabs = listOf(
-                    "🎓 منابع فرهنگیان",
-                    "📖 دروس کنکور",
-                    "🏆 کتب تستی رتبه‌ها",
-                    "📝 امتحانات نهایی",
-                    "👥 مصاحبه و گزینش"
-                )
-                categoryTabs.forEachIndexed { index, title ->
+                resourceCategoryTabs.forEachIndexed { index, title ->
                     val isSelected = selectedCategoryTab == index
                     Tab(
                         selected = isSelected,
@@ -278,18 +285,22 @@ fun ComprehensiveStudyResourcesHubCard(
                     }
                 } else {
                     filteredResources.forEachIndexed { index, item ->
-                        val isExpanded = expandedItemMap[item.id] == true
-                        val isOwned = userOwnedResourceMap[item.id] == true
+                        // key پایدار: با تغییر فیلتر/جستجو، کارت‌ها به‌جای
+                        // ترکیب دوبارهٔ همه، فقط جابه‌جا/حذف/اضافه می‌شوند.
+                        key(item.id) {
+                            val isExpanded = expandedItemMap[item.id] == true
+                            val isOwned = userOwnedResourceMap[item.id] == true
 
-                        ResourceItemCard(
-                            item = item,
-                            listIndex = index,
-                            isExpanded = isExpanded,
-                            isOwned = isOwned,
-                            onToggleExpand = { expandedItemMap[item.id] = !isExpanded },
-                            onToggleOwned = { userOwnedResourceMap[item.id] = !isOwned },
-                            onOpenLesson = onOpenLesson
-                        )
+                            ResourceItemCard(
+                                item = item,
+                                listIndex = index,
+                                isExpanded = isExpanded,
+                                isOwned = isOwned,
+                                onToggleExpand = { expandedItemMap[item.id] = !isExpanded },
+                                onToggleOwned = { userOwnedResourceMap[item.id] = !isOwned },
+                                onOpenLesson = onOpenLesson
+                            )
+                        }
                     }
                 }
             }

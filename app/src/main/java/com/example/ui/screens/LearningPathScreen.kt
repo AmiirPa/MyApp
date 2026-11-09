@@ -44,6 +44,8 @@ import androidx.compose.ui.unit.sp
 import com.example.data.curriculum.LearningPath1406
 import com.example.data.curriculum.LearningPathStatus
 import com.example.data.curriculum.LearningPathStep
+import com.example.data.curriculum.ZeroLesson
+import com.example.data.firebase.CloudLessonProgress
 import com.example.ui.KonkoorUiState
 import com.example.ui.components.BidiFormatter
 
@@ -62,15 +64,19 @@ fun currentLearningPathStep(uiState: KonkoorUiState): LearningPathStep {
     } ?: LearningPath1406.steps.last()
 }
 
-/** اولین درس حل‌نشده قدم که واقعا در فهرست درس‌ها هست؛ اگر نباشد null. */
+/**
+ * اولین درس حل‌نشده قدم که واقعا در فهرست درس‌ها هست؛ اگر نباشد null.
+ * [lessonById] باید کش‌شده (remember روی allLessons) داده شود — ساختن
+ * associateBy روی ۲٬۴۲۷ درس در هر فراخوانی گران است، پس نقشه اینجا
+ * ساخته نمی‌شود.
+ */
 fun nextUnfinishedPathLessonId(
     step: LearningPathStep,
-    uiState: KonkoorUiState
+    progress: Map<String, CloudLessonProgress>,
+    lessonById: Map<String, ZeroLesson>
 ): String? {
-    val byId = uiState.allLessons.associateBy { it.id }
-    val progress = uiState.lessonProgressMap
     return step.lessonIds.firstOrNull { id ->
-        byId.containsKey(id) && progress[id]?.isCompleted != true
+        lessonById.containsKey(id) && progress[id]?.isCompleted != true
     }
 }
 
@@ -103,8 +109,8 @@ fun LearningPathScreen(
     }
     val currentStep = remember(progress) { currentLearningPathStep(uiState) }
     val completedSteps = remember(progress) { countCompletedPathSteps(uiState) }
-    val nextLessonId = remember(progress, uiState.allLessons, currentStep) {
-        nextUnfinishedPathLessonId(currentStep, uiState)
+    val nextLessonId = remember(progress, lessonById, currentStep) {
+        nextUnfinishedPathLessonId(currentStep, progress, lessonById)
     }
     val nextLesson = nextLessonId?.let { lessonById[it] }
     val allReadyDone = completedSteps == steps.count {

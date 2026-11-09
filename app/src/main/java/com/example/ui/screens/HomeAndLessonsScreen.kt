@@ -787,12 +787,18 @@ fun HomeDashboardScreen(
     val pathCurrentStep = remember(uiState.lessonProgressMap) {
         currentLearningPathStep(uiState)
     }
+    // نقشه درس‌ها یک‌بار کش می‌شود (remember روی allLessons) و به
+    // nextUnfinishedPathLessonId داده می‌شود تا associateBy روی ۲٬۴۲۷ درس
+    // در هر فراخوانی ساخته نشود.
+    val pathLessonById = remember(uiState.allLessons) {
+        uiState.allLessons.associateBy { it.id }
+    }
     val pathNextLessonId = remember(
-        uiState.allLessons,
         uiState.lessonProgressMap,
+        pathLessonById,
         pathCurrentStep
     ) {
-        nextUnfinishedPathLessonId(pathCurrentStep, uiState)
+        nextUnfinishedPathLessonId(pathCurrentStep, uiState.lessonProgressMap, pathLessonById)
     }
     val pathNextLessonTitle = remember(uiState.allLessons, pathNextLessonId) {
         uiState.allLessons.find { it.id == pathNextLessonId }?.title
@@ -933,6 +939,15 @@ fun StudyFirstHomeScreen(
                         completedSteps = pathCompletedSteps,
                         onOpenPath = onOpenLearningPath,
                         onOpenNextLesson = onOpenNextPathLesson
+                    )
+                }
+
+                // 2b. نوار «امروز»: یک خط گرم و جمع‌وجور — قدم فعلی مسیر
+                // (همان قدم کارت hero) + تیتر قدم؛ بدون دکمه و بدون بخش تازه.
+                item(key = "home_today_bar") {
+                    TodayStepBar(
+                        stepNumber = pathStepNumber,
+                        stepTitle = pathStepTitle
                     )
                 }
 
@@ -1111,14 +1126,25 @@ private fun LearningPathHeroCard(
     onOpenPath: () -> Unit,
     onOpenNextLesson: () -> Unit
 ) {
+    // گرادیان گرم و اشباع از پالت موجود برنامه (نارنجی/کهرباییِ تم و
+    // SubjectCatalog) — متن‌ها و چیدمان کارت دست نخورده‌اند.
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(20.dp))
+            .background(
+                Brush.linearGradient(
+                    listOf(
+                        Color(0xFFEA580C),
+                        Color(0xFFF97316),
+                        Color(0xFFF59E0B)
+                    )
+                )
+            )
             .clickable(onClick = onOpenPath)
             .testTag("home_learning_path_hero_card"),
         shape = RoundedCornerShape(20.dp),
-        color = MaterialTheme.colorScheme.primaryContainer,
+        color = Color.Transparent,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.35f))
     ) {
         Column(
@@ -1223,6 +1249,45 @@ private fun LearningPathHeroCard(
                 )
             }
         }
+    }
+}
+
+/**
+ * نوار باریک و گرم «امروز»: فقط یک خط — قدم فعلی مسیر ۱ تا ۱۰۰
+ * (همان قدمی که کارت hero نشان می‌دهد) + تیتر قدم. بدون دکمه، بدون
+ * بخش تازه؛ گرما از همان نارنجی/کهرباییِ پالت برنامه با آلفای کم می‌آید.
+ */
+@Composable
+private fun TodayStepBar(
+    stepNumber: Int,
+    stepTitle: String
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(14.dp))
+            .background(
+                Brush.horizontalGradient(
+                    listOf(
+                        Color(0xFFEA580C).copy(alpha = 0.14f),
+                        Color(0xFFF59E0B).copy(alpha = 0.14f)
+                    )
+                )
+            )
+            .testTag("home_today_bar")
+            .padding(horizontal = 14.dp, vertical = 10.dp)
+    ) {
+        Text(
+            text = "قدم امروز: قدم " +
+                BidiFormatter.toPersianDigits(stepNumber.toString()) +
+                " از ۱۰۰" +
+                if (stepTitle.isBlank()) "" else " — " + stepTitle,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
     }
 }
 
@@ -1756,7 +1821,8 @@ fun SimpleProgressBar(
 private fun MinimalBookTocCard(
     chapterTitle: String,
     lessons: List<ZeroLesson>,
-    onSelectLesson: (ZeroLesson) -> Unit
+    onSelectLesson: (ZeroLesson) -> Unit,
+    accentColor: Color = MaterialTheme.colorScheme.primary
 ) {
     var isExpanded by remember { mutableStateOf(true) }
     val countFa = BidiFormatter.toPersianDigits(lessons.size.toString())
@@ -1818,6 +1884,13 @@ private fun MinimalBookTocCard(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
+                        // نقطه رنگی کوچکِ موضوعِ درس — تیتر تک‌خطی می‌ماند.
+                        Box(
+                            modifier = Modifier
+                                .size(8.dp)
+                                .clip(CircleShape)
+                                .background(accentColor)
+                        )
                         Text(
                             text = itemNumFa,
                             fontSize = 13.sp,
@@ -2270,7 +2343,8 @@ fun ZeroLessonsScreen(
                                 MinimalBookTocCard(
                                     chapterTitle = chapterTitle,
                                     lessons = chapterLessons,
-                                    onSelectLesson = { lesson -> onOpenLesson(lesson.id) }
+                                    onSelectLesson = { lesson -> onOpenLesson(lesson.id) },
+                                    accentColor = currentSubject.color
                                 )
                             }
                         }

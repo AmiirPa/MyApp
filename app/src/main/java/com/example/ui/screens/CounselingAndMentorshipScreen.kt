@@ -1,10 +1,5 @@
 package com.example.ui.screens
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -90,6 +85,22 @@ data class CounselingArticle(
     val suitableForSoldierTeachers: String
 )
 
+// فهرست مقاله‌ها یک‌بار برای کل فرآیند ساخته می‌شود (lazy): پیش‌تر با
+// remember ساخته می‌شد و با هر بار خروج از ترکیب — مثلاً رفتن به زیربخش
+// دیگر تب «بیشتر» و برگشتن — از نو ساخته می‌شد.
+private val comprehensiveCounselingArticles: List<CounselingArticle> by lazy {
+    buildComprehensiveCounselingArticles()
+}
+
+private val counselingCategories = listOf(
+    0 to "تکنیک‌های یادگیری",
+    1 to "مدیریت زمان و تمرکز",
+    2 to "استراتژی تست‌زنی",
+    3 to "کنترل استرس",
+    4 to "تجربیات رتبه‌ها",
+    5 to "کتابخانه و منابع"
+)
+
 @OptIn(ExperimentalLayoutApi::class, androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
 fun CounselingAndMentorshipScreen(
@@ -97,20 +108,12 @@ fun CounselingAndMentorshipScreen(
     onNavigateTab: (AppTab) -> Unit
 ) {
     var selectedCategoryTab by remember { mutableIntStateOf(0) }
-    val articles = remember { buildComprehensiveCounselingArticles() }
 
-    val filteredArticles = remember(selectedCategoryTab, articles) {
-        articles.filter { it.tabCategory == selectedCategoryTab }
+    val filteredArticles = remember(selectedCategoryTab) {
+        comprehensiveCounselingArticles.filter { it.tabCategory == selectedCategoryTab }
     }
 
-    val categories = listOf(
-        0 to "تکنیک‌های یادگیری",
-        1 to "مدیریت زمان و تمرکز",
-        2 to "استراتژی تست‌زنی",
-        3 to "کنترل استرس",
-        4 to "تجربیات رتبه‌ها",
-        5 to "کتابخانه و منابع"
-    )
+    val categories = counselingCategories
 
     LazyColumn(
         modifier = Modifier
@@ -250,11 +253,12 @@ private fun CounselingArticleCard(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            AnimatedVisibility(
-                visible = isExpanded,
-                enter = fadeIn() + expandVertically(),
-                exit = fadeOut() + shrinkVertically()
-            ) {
+            // بدون AnimatedVisibility: انیمیشن expandVertically داخل LazyColumn
+            // محتوای بازشده (چند BiDiText بلند با حروف‌چینی فارسی) را در هر فریم
+            // انیمیشن از نو اندازه‌گیری می‌کرد و هم‌زمان با دو fade تودرتوی
+            // تعویض تب، ترکیب اول تب «بیشتر» را قفل می‌کرد؛ همان دلیلی که در
+            // هاب منابع هم AnimatedVisibility حذف شده است. محتوا عیناً همان است.
+            if (isExpanded) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
