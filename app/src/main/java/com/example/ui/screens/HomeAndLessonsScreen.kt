@@ -2347,6 +2347,64 @@ fun SubjectListItem(
     )
 }
 
+/**
+ * ردیف والد گروه در کاتالوگ (فقط نمایشی): یک ردیف تمیز عمودی با تیتر
+ * گروه، شمارش «N درس • M مبحث» و فلش باز/بسته‌شدن؛ زیرشاخه‌ها با زدن
+ * روی همین ردیف، عمودی زیر آن باز می‌شوند.
+ */
+@Composable
+private fun SubjectGroupRow(
+    group: SubjectGroupUi,
+    lessonsCount: Int,
+    childCount: Int,
+    isExpanded: Boolean,
+    onToggle: () -> Unit
+) {
+    val lessonsFa = BidiFormatter.toPersianDigits(lessonsCount.toString())
+    val childFa = BidiFormatter.toPersianDigits(childCount.toString())
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .clickable(onClick = onToggle)
+            .testTag("catalog_group_${group.id}"),
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.surface,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Text(
+                text = group.title,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f)
+            )
+            Text(
+                text = BidiFormatter.applyPreferredDigits("$childFa درس • $lessonsFa مبحث"),
+                fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Icon(
+                imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                contentDescription = if (isExpanded) "بستن گروه" else "باز کردن گروه",
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(20.dp)
+            )
+        }
+    }
+}
+
 @Composable
 fun SimpleProgressBar(
     value: Int
@@ -2531,6 +2589,48 @@ object LessonSpacing {
     val media = 20.dp
 }
 
+/**
+ * گروه‌بندی نمایشی کاتالوگ درس‌ها (فقط UI): ۲۹ درس زیر ۱۲ والد.
+ * هیچ subjectId تغییر نام نمی‌دهد و هیچ داده‌ای در data/curriculum
+ * عوض نمی‌شود؛ این نقشه فقط نحوهٔ نمایش فهرست در ZeroLessonsScreen
+ * است. درس‌هایی که روزی به کاتالوگ اضافه شوند و در این نقشه نباشند،
+ * در انتهای فهرست به‌صورت تخت می‌آیند تا هیچ درسی گم نشود.
+ */
+private data class SubjectGroupUi(
+    val id: String,
+    val title: String,
+    val childIds: List<String>
+)
+
+private val SubjectCatalogGroups = listOf(
+    SubjectGroupUi("literature", "ادبیات", listOf("farsi", "negaresh", "fonoon", "arooz")),
+    SubjectGroupUi("arabic", "عربی", listOf("arabic")),
+    SubjectGroupUi("dini", "دینی", listOf("dini", "quran", "hedyeh", "payam")),
+    SubjectGroupUi("english", "زبان", listOf("english")),
+    SubjectGroupUi("math", "ریاضی", listOf("math")),
+    SubjectGroupUi("science", "علوم", listOf("science")),
+    SubjectGroupUi(
+        "social",
+        "علوم اجتماعی",
+        listOf("social_studies", "sociology", "history", "geography", "economics", "social_identity", "general_humanities")
+    ),
+    SubjectGroupUi("philosophy", "فلسفه و منطق", listOf("philosophy", "logic")),
+    SubjectGroupUi("psychology", "روان‌شناسی", listOf("psychology")),
+    SubjectGroupUi("honar", "هنر", listOf("honar")),
+    SubjectGroupUi(
+        "life_skills",
+        "مهارت‌های زندگی",
+        listOf("tafakkor", "study_methods", "media_environment", "karfan", "defa")
+    ),
+    SubjectGroupUi("farhangian", "فرهنگیان", listOf("farhangian"))
+)
+
+/** ردیف‌های نمایشی کاتالوگ: یا یک والد گروه، یا یک درس زیر والد بازشده. */
+private sealed interface CatalogRow {
+    data class Group(val group: SubjectGroupUi, val lessonsCount: Int, val childCount: Int) : CatalogRow
+    data class Child(val subjectUi: StudySubjectUi) : CatalogRow
+}
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ZeroLessonsScreen(
@@ -2651,7 +2751,7 @@ fun ZeroLessonsScreen(
                             color = HomeText
                         )
                         Text(
-                            text = BidiFormatter.applyPreferredDigits("${uiState.subjects.size} درس • ${uiState.totalLessonsCount} مبحث — روی یک درس بزنید."),
+                            text = BidiFormatter.applyPreferredDigits("${SubjectCatalogGroups.size} گروه • ${uiState.subjects.size} درس • ${uiState.totalLessonsCount} مبحث — روی یک گروه بزنید تا درس‌هایش باز شود."),
                             fontSize = 12.sp,
                             color = HomeMuted,
                             maxLines = 1,
@@ -2680,23 +2780,123 @@ fun ZeroLessonsScreen(
                     )
                 }
 
-                items(filteredSubjects, key = { it.id }) { subject ->
-                    val subjectLessonsCount = remember(uiState.allLessons, subject.id) {
-                        uiState.allLessons.count { it.normalizedSubjectId() == subject.id }
+                // گروه‌بندی ۱۲تایی نمایشی کاتالوگ: وقتی جستجو خالی است ۱۲ والد
+                // نشان داده می‌شوند و زیرشاخهٔ هر والد با زدن روی آن، عمودی
+                // زیر همان والد باز می‌شود؛ وقتی جستجو خالی نیست، فهرست تخت
+                // فیلترشده مثل قبل روی هر ۲۹ درس نشان داده می‌شود.
+                var expandedGroupIds by remember { mutableStateOf(setOf<String>()) }
+                val catalogRows = remember(
+                    uiState.subjects,
+                    uiState.allLessons,
+                    uiState.lessonProgressMap,
+                    expandedGroupIds
+                ) {
+                    val byId = uiState.subjects.associateBy { it.id }
+                    val groupedIds = mutableSetOf<String>()
+                    val rows = mutableListOf<CatalogRow>()
+                    for (group in SubjectCatalogGroups) {
+                        val children = group.childIds.mapNotNull { byId[it] }
+                        if (children.isEmpty()) continue
+                        groupedIds += group.childIds
+                        val groupLessonsCount = uiState.allLessons.count {
+                            it.normalizedSubjectId() in group.childIds
+                        }
+                        rows += CatalogRow.Group(group, groupLessonsCount, children.size)
+                        if (group.id in expandedGroupIds) {
+                            for (sub in children) {
+                                val lessonsCount = uiState.allLessons.count {
+                                    it.normalizedSubjectId() == sub.id
+                                }
+                                val countFa = BidiFormatter.toPersianDigits(lessonsCount.toString())
+                                val cleanTitle = sub.shortTitle.ifBlank { sub.title.substringAfter(". ") }
+                                val pct = (uiState.subjectProgressFraction(sub.id) * 100).toInt().coerceIn(0, 100)
+                                rows += CatalogRow.Child(
+                                    StudySubjectUi(
+                                        id = sub.id,
+                                        title = BidiFormatter.applyPreferredDigits(cleanTitle),
+                                        subtitle = BidiFormatter.applyPreferredDigits("$countFa مبحث آموزشی • ${sub.subtitle}"),
+                                        progress = pct
+                                    )
+                                )
+                            }
+                        }
                     }
-                    val countFa = BidiFormatter.toPersianDigits(subjectLessonsCount.toString())
-                    val cleanTitle = subject.shortTitle.ifBlank { subject.title.substringAfter(". ") }
-                    val pct = (uiState.subjectProgressFraction(subject.id) * 100).toInt().coerceIn(0, 100)
+                    // درس‌های خارج از نقشهٔ گروه‌ها (اگر روزی اضافه شوند) تخت
+                    // در انتها می‌آیند تا هیچ درسی گم نشود.
+                    for (sub in uiState.subjects) {
+                        if (sub.id !in groupedIds) {
+                            val lessonsCount = uiState.allLessons.count {
+                                it.normalizedSubjectId() == sub.id
+                            }
+                            val countFa = BidiFormatter.toPersianDigits(lessonsCount.toString())
+                            val cleanTitle = sub.shortTitle.ifBlank { sub.title.substringAfter(". ") }
+                            val pct = (uiState.subjectProgressFraction(sub.id) * 100).toInt().coerceIn(0, 100)
+                            rows += CatalogRow.Child(
+                                StudySubjectUi(
+                                    id = sub.id,
+                                    title = BidiFormatter.applyPreferredDigits(cleanTitle),
+                                    subtitle = BidiFormatter.applyPreferredDigits("$countFa مبحث آموزشی • ${sub.subtitle}"),
+                                    progress = pct
+                                )
+                            )
+                        }
+                    }
+                    rows.toList()
+                }
 
-                    SubjectListItem(
-                        subject = StudySubjectUi(
-                            id = subject.id,
-                            title = BidiFormatter.applyPreferredDigits(cleanTitle),
-                            subtitle = BidiFormatter.applyPreferredDigits("$countFa مبحث آموزشی • ${subject.subtitle}"),
-                            progress = pct
-                        ),
-                        onClick = { onSelectSubject(subject.id) }
-                    )
+                if (subjectSearchQuery.trim().isEmpty()) {
+                    items(
+                        catalogRows,
+                        key = { row ->
+                            when (row) {
+                                is CatalogRow.Group -> "group_${row.group.id}"
+                                is CatalogRow.Child -> "subject_${row.subjectUi.id}"
+                            }
+                        }
+                    ) { row ->
+                        when (row) {
+                            is CatalogRow.Group -> SubjectGroupRow(
+                                group = row.group,
+                                lessonsCount = row.lessonsCount,
+                                childCount = row.childCount,
+                                isExpanded = row.group.id in expandedGroupIds,
+                                onToggle = {
+                                    expandedGroupIds = if (row.group.id in expandedGroupIds) {
+                                        expandedGroupIds - row.group.id
+                                    } else {
+                                        expandedGroupIds + row.group.id
+                                    }
+                                }
+                            )
+                            is CatalogRow.Child -> Box(
+                                modifier = Modifier.padding(start = 14.dp)
+                            ) {
+                                SubjectListItem(
+                                    subject = row.subjectUi,
+                                    onClick = { onSelectSubject(row.subjectUi.id) }
+                                )
+                            }
+                        }
+                    }
+                } else {
+                    items(filteredSubjects, key = { it.id }) { subject ->
+                        val subjectLessonsCount = remember(uiState.allLessons, subject.id) {
+                            uiState.allLessons.count { it.normalizedSubjectId() == subject.id }
+                        }
+                        val countFa = BidiFormatter.toPersianDigits(subjectLessonsCount.toString())
+                        val cleanTitle = subject.shortTitle.ifBlank { subject.title.substringAfter(". ") }
+                        val pct = (uiState.subjectProgressFraction(subject.id) * 100).toInt().coerceIn(0, 100)
+
+                        SubjectListItem(
+                            subject = StudySubjectUi(
+                                id = subject.id,
+                                title = BidiFormatter.applyPreferredDigits(cleanTitle),
+                                subtitle = BidiFormatter.applyPreferredDigits("$countFa مبحث آموزشی • ${subject.subtitle}"),
+                                progress = pct
+                            ),
+                            onClick = { onSelectSubject(subject.id) }
+                        )
+                    }
                 }
             }
         } else {
