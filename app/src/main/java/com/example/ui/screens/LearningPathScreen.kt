@@ -36,12 +36,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.curriculum.LearningPath1406
+import com.example.data.curriculum.LearningPathElementary1406
+import com.example.data.curriculum.LearningPathMiddle1406
 import com.example.data.curriculum.LearningPathStatus
 import com.example.data.curriculum.LearningPathStep
 import com.example.data.curriculum.ZeroLesson
@@ -53,15 +57,23 @@ import com.example.ui.components.BidiFormatter
  * قدم فعلی مسیر: اولین قدمی که همه درس‌هایش کامل نشده‌اند.
  * درسی که در [KonkoorUiState.lessonProgressMap] نیست، کامل‌نشده حساب می‌شود.
  * قدم‌های GAP درس ندارند، پس قدم فعلی نیستند و رد می‌شوند؛ اگر همه قدم‌های
- * آماده کامل شده باشند، آخرین قدم (۱۰۰) برگردانده می‌شود.
+ * آماده کامل شده باشند، آخرین قدم برگردانده می‌شود.
  */
-fun currentLearningPathStep(uiState: KonkoorUiState): LearningPathStep {
+fun currentLearningPathStep(
+    uiState: KonkoorUiState,
+    steps: List<LearningPathStep>
+): LearningPathStep {
     val progress = uiState.lessonProgressMap
-    return LearningPath1406.steps.firstOrNull { step ->
+    return steps.firstOrNull { step ->
         step.status == LearningPathStatus.READY &&
             step.lessonIds.isNotEmpty() &&
             step.lessonIds.any { progress[it]?.isCompleted != true }
-    } ?: LearningPath1406.steps.last()
+    } ?: steps.last()
+}
+
+/** نسخه تک‌آرگومانی: مسیر ۱ تا ۱۰۰ (کارت hero خانه همین را صدا می‌زند). */
+fun currentLearningPathStep(uiState: KonkoorUiState): LearningPathStep {
+    return currentLearningPathStep(uiState, LearningPath1406.steps)
 }
 
 /**
@@ -81,17 +93,33 @@ fun nextUnfinishedPathLessonId(
 }
 
 /** چند قدم آماده کامل شده‌اند (قدم‌های GAP شمرده نمی‌شوند). */
-fun countCompletedPathSteps(uiState: KonkoorUiState): Int {
+fun countCompletedPathSteps(
+    uiState: KonkoorUiState,
+    steps: List<LearningPathStep>
+): Int {
     val progress = uiState.lessonProgressMap
-    return LearningPath1406.steps.count { step ->
+    return steps.count { step ->
         step.status == LearningPathStatus.READY &&
             step.lessonIds.isNotEmpty() &&
             step.lessonIds.all { progress[it]?.isCompleted == true }
     }
 }
 
+/** نسخه تک‌آرگومانی: مسیر ۱ تا ۱۰۰ (کارت hero خانه همین را صدا می‌زند). */
+fun countCompletedPathSteps(uiState: KonkoorUiState): Int {
+    return countCompletedPathSteps(uiState, LearningPath1406.steps)
+}
+
+/** سه بخش مسیر یادگیری: دبستان، متوسطه اول، متوسطه دوم و فرهنگیان. */
+private enum class LearningPathSection {
+    ELEMENTARY,
+    MIDDLE,
+    HIGH
+}
+
 /**
- * جاده عمودی ۱ تا ۱۰۰: هر قدم یک ردیف با شماره در دایره، تیتر، زیرتیتر،
+ * جاده عمودی سه مسیر یادگیری (دبستان، متوسطه اول، متوسطه دوم و فرهنگیان):
+ * هر قدم یک ردیف با شماره در دایره، تیتر، زیرتیتر،
  * تعداد درس‌ها و وضعیت. زدن روی قدم، درس‌هایش را باز می‌کند (درس‌هایی که
  * در فهرست درس‌ها نیستند، «هنوز ساخته نشده» نشان داده می‌شوند).
  * باز کردن درس دقیقا با همان الگوی AddedLessonsScreen است: شناسه درس به
@@ -102,13 +130,39 @@ fun LearningPathScreen(
     uiState: KonkoorUiState,
     onOpenLesson: (String) -> Unit
 ) {
-    val steps = LearningPath1406.steps
+    // پیش‌فرض: مسیر فعلی (متوسطه دوم و فرهنگیان).
+    var selectedSection by remember { mutableStateOf(LearningPathSection.HIGH) }
+    val steps = when (selectedSection) {
+        LearningPathSection.ELEMENTARY -> LearningPathElementary1406.steps
+        LearningPathSection.MIDDLE -> LearningPathMiddle1406.steps
+        LearningPathSection.HIGH -> LearningPath1406.steps
+    }
+    val pathTitle = when (selectedSection) {
+        LearningPathSection.ELEMENTARY -> "مسیر دبستان"
+        LearningPathSection.MIDDLE -> "مسیر متوسطه اول"
+        LearningPathSection.HIGH -> "مسیر یادگیری ۱ تا ۱۰۰"
+    }
+    val pathSubtitle = when (selectedSection) {
+        LearningPathSection.ELEMENTARY,
+        LearningPathSection.MIDDLE -> "اول این را بخوان، بعد آن را — قدم به قدم، پله به پله."
+        LearningPathSection.HIGH -> "از صفر تا کنکور انسانی و فرهنگیان ۱۴۰۶؛ یک قدم در یک زمان."
+    }
+    // پیشوند یکتای testTag قدم‌ها برای هر مسیر.
+    val stepTagPrefix = when (selectedSection) {
+        LearningPathSection.ELEMENTARY -> "learning_path_step_elem_"
+        LearningPathSection.MIDDLE -> "learning_path_step_mid_"
+        LearningPathSection.HIGH -> "learning_path_step_"
+    }
     val progress = uiState.lessonProgressMap
     val lessonById = remember(uiState.allLessons) {
         uiState.allLessons.associateBy { it.id }
     }
-    val currentStep = remember(progress) { currentLearningPathStep(uiState) }
-    val completedSteps = remember(progress) { countCompletedPathSteps(uiState) }
+    val currentStep = remember(progress, selectedSection) {
+        currentLearningPathStep(uiState, steps)
+    }
+    val completedSteps = remember(progress, selectedSection) {
+        countCompletedPathSteps(uiState, steps)
+    }
     val nextLessonId = remember(progress, lessonById, currentStep) {
         nextUnfinishedPathLessonId(currentStep, progress, lessonById)
     }
@@ -117,10 +171,13 @@ fun LearningPathScreen(
         it.status == LearningPathStatus.READY && it.lessonIds.isNotEmpty()
     }
 
-    // قدم فعلی از اول باز است تا کاربر درس‌هایش را ببیند.
-    var expandedStep by remember { mutableStateOf<Int?>(currentStep.stepNumber) }
+    // قدم فعلی از اول باز است تا کاربر درس‌هایش را ببیند؛ با عوض شدن
+    // مسیر، قدم فعلی مسیر تازه باز می‌شود.
+    var expandedStep by remember(selectedSection) {
+        mutableStateOf<Int?>(currentStep.stepNumber)
+    }
     val listState = rememberLazyListState()
-    LaunchedEffect(Unit) {
+    LaunchedEffect(selectedSection) {
         listState.scrollToItem((currentStep.stepNumber - 1).coerceAtLeast(0))
     }
 
@@ -130,21 +187,98 @@ fun LearningPathScreen(
             .padding(horizontal = 20.dp, vertical = 12.dp)
             .testTag("learning_path_root")
     ) {
+        // انتخاب‌گر سه‌تایی مسیر — به همان سبک چیپ‌های سه‌گانهٔ بخش
+        // «بیشتر» (سه دکمه هم‌اندازه، فعال با رنگ primary). برچسب سوم
+        // بلند است، پس متن چیپ‌ها دو خطه و وسط‌چین است تا بریده نشود.
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 10.dp),
+            shape = RoundedCornerShape(14.dp),
+            color = MaterialTheme.colorScheme.surface,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                listOf(
+                    Triple(
+                        LearningPathSection.ELEMENTARY,
+                        "دبستان",
+                        "learning_path_section_elementary"
+                    ),
+                    Triple(
+                        LearningPathSection.MIDDLE,
+                        "متوسطه اول",
+                        "learning_path_section_middle"
+                    ),
+                    Triple(
+                        LearningPathSection.HIGH,
+                        "متوسطه دوم و فرهنگیان",
+                        "learning_path_section_high"
+                    )
+                ).forEach { (section, label, tag) ->
+                    val isSelected = selectedSection == section
+                    Surface(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(10.dp))
+                            .clickable { selectedSection = section }
+                            .testTag(tag),
+                        color = if (isSelected) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            Color.Transparent
+                        },
+                        shape = RoundedCornerShape(10.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 4.dp, vertical = 9.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = label,
+                                fontSize = 12.sp,
+                                fontWeight = if (isSelected) {
+                                    FontWeight.Bold
+                                } else {
+                                    FontWeight.Medium
+                                },
+                                color = if (isSelected) {
+                                    MaterialTheme.colorScheme.onPrimary
+                                } else {
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                                },
+                                maxLines = 2,
+                                textAlign = TextAlign.Center,
+                                lineHeight = 15.sp
+                            )
+                        }
+                    }
+                }
+            }
+        }
         Text(
-            text = "مسیر یادگیری ۱ تا ۱۰۰",
+            text = pathTitle,
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface
         )
         Text(
-            text = "از صفر تا کنکور انسانی و فرهنگیان ۱۴۰۶؛ یک قدم در یک زمان.",
+            text = pathSubtitle,
             fontSize = 13.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 4.dp)
         )
         Text(
             text = BidiFormatter.toPersianDigits(completedSteps.toString()) +
-                " قدم از " + BidiFormatter.toPersianDigits("100") + " کامل شد",
+                " قدم از " + BidiFormatter.toPersianDigits(steps.size.toString()) + " کامل شد",
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary,
@@ -182,7 +316,11 @@ fun LearningPathScreen(
             }
         } else if (allReadyDone) {
             Text(
-                text = "همه قدم‌های آماده کامل شد؛ قدم‌های ۹۹ و ۱۰۰ هنوز ساخته نشده‌اند.",
+                text = if (selectedSection == LearningPathSection.HIGH) {
+                    "همه قدم‌های آماده کامل شد؛ قدم‌های ۹۹ و ۱۰۰ هنوز ساخته نشده‌اند."
+                } else {
+                    "همه قدم‌های این مسیر کامل شد؛ آفرین، برو سراغ مسیر بعدی."
+                },
                 fontSize = 13.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(bottom = 10.dp)
@@ -217,7 +355,7 @@ fun LearningPathScreen(
                         .clickable {
                             expandedStep = if (isExpanded) null else step.stepNumber
                         }
-                        .testTag("learning_path_step_${step.stepNumber}"),
+                        .testTag(stepTagPrefix + step.stepNumber),
                     shape = RoundedCornerShape(14.dp),
                     color = if (isCurrent) {
                         MaterialTheme.colorScheme.primaryContainer
