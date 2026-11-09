@@ -1301,7 +1301,7 @@ object KonkoorPastExamsArchive {
     private val completeOrderedExamPapers: List<PastKonkoorExamPaper> by lazy(LazyThreadSafetyMode.PUBLICATION) {
         examPapers.mapIndexed { index, paper ->
             buildCompleteOrderedBookletPaper(paper, index)
-        } + KonkoorRealQuestions1406.papers
+        } + KonkoorRealQuestions1406.papers + KonkoorReal1404Tir1406.papers + KonkoorReal1404Ordibehesht1406.papers + KonkoorReal1405Sessions1406.papers + KonkoorReal1402Sessions1406.papers + KonkoorReal1397to1400_1406.papers + KonkoorRealFarhangian1406.papers + KonkoorReal1403Logic1406.papers
     }
 
     val standaloneYearlyAllSubjectsPapers: List<PastKonkoorExamPaper> by lazy(LazyThreadSafetyMode.PUBLICATION) {
