@@ -13,6 +13,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -47,6 +48,20 @@ data class ResponsiveDimens(
 }
 
 val LocalResponsiveDimens = staticCompositionLocalOf { ResponsiveDimens() }
+
+/**
+ * رنگ لهجهٔ پویا برای سطوح بزرگ و پررنگ برنامه (سربرگ درس، کارت مسیر،
+ * کارت «ادامه مطالعه»، قاب نمودارها): وقتی داینامیک کالر روشن است، رنگ
+ * لهجه از رنگ‌های سیستم (تصویر زمینهٔ گوشی) می‌آید؛ وقتی خاموش است، رنگ
+ * ثابت موضوع برمی‌گردد. علت اینکه تا حالا داینامیک کالر «کار نمی‌کرد» همین
+ * بود: خود colorScheme پویا بود، ولی همهٔ این سطوح بزرگ رنگ ثابت موضوع
+ * یا نارنجیِ ثابت داشتند و هیچ‌وقت scheme را نمی‌خواندند.
+ */
+@Composable
+fun resolveDynamicAccent(fallback: Color): Color {
+    val controller = LocalAppThemeController.current
+    return if (controller.useDynamicColor) MaterialTheme.colorScheme.primary else fallback
+}
 
 @Composable
 fun MyApplicationTheme(
