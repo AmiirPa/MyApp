@@ -2,6 +2,7 @@ package com.example.ui.components
 
 import java.util.Collections
 import com.example.data.curriculum.FlashcardItem
+import com.example.data.curriculum.LessonDiagramOverlays
 import com.example.data.curriculum.MiniCheckQuestion
 import com.example.data.curriculum.QuizQuestionItem
 import com.example.data.curriculum.WorkedExample
@@ -527,12 +528,21 @@ object ArabicTextProcessor {
                 }
             val cleanedExp = cleanStepExplanationText(step.simpleExplanation)
             val cleanedDiagram = cleanVisualDiagram(step.visualDiagramText, cleanedTitle, cleanedExp)
+            // نمودار پوششی یکتای گام‌های خیلی کوتاه (LessonDiagramOverlays): فقط وقتی
+            // نمودار فعلی خالی یا خیلی کوتاه (< ۸۰ کاراکتر) است جایگزین می‌شود؛ نمودارهای
+            // غنی موجود هرگز بازنویسی نمی‌شوند. کلید شمارهٔ گام پس از غنی‌سازی (idx + 1) است.
+            val overlayDiagram = LessonDiagramOverlays.byLessonId[processed.id]?.get(idx + 1)
+            val finalDiagram = if (overlayDiagram != null && cleanedDiagram.trim().length < 80) {
+                processArabicText(overlayDiagram)
+            } else {
+                cleanedDiagram
+            }
             val cleanedTrick = cleanMemoryTrickText(step.memoryTrick, cleanedTitle, cleanedExp)
             step.copy(
                 stepNumber = idx + 1,
                 title = cleanedTitle,
                 simpleExplanation = cleanedExp,
-                visualDiagramText = cleanedDiagram,
+                visualDiagramText = finalDiagram,
                 memoryTrick = cleanedTrick
             )
         }
