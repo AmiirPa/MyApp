@@ -62,6 +62,27 @@ data class MiniCheckQuestion(
     val explanation: String
 )
 
+/** پایه‌ی تحصیلی. SUB_ZERO یعنی «زیر صفر» (پیش‌نیاز/مبانی). (گام ۱ fix-plan) */
+enum class Grade(val label: String) {
+    SUB_ZERO("زیر صفر"),
+    G1("اول"), G2("دوم"), G3("سوم"), G4("چهارم"), G5("پنجم"), G6("ششم"),
+    G7("هفتم"), G8("هشتم"), G9("نهم"),
+    G10("دهم"), G11("یازدهم"), G12("دوازدهم");
+
+    val number: Int get() = ordinal
+}
+
+/** نوع محتوا داخل یک فصل. (گام ۱ fix-plan) */
+enum class SectionType(val label: String) {
+    LESSON("درس‌نامه"),
+    NOTES("نکته و جمع‌بندی"),
+    TEST("تست"),
+    REVIEW("مرور"),
+    METHOD("روش مطالعه")
+}
+
+data class GlossaryItem(val term: String, val meaning: String)
+
 data class ZeroLesson(
     val id: String,
     val subjectId: String,
@@ -74,8 +95,29 @@ data class ZeroLesson(
     val steps: List<ZeroStep>,
     val goldenFormulas: List<String>,
     val workedExamples: List<WorkedExample>,
-    val miniCheck: MiniCheckQuestion
+    val miniCheck: MiniCheckQuestion,
+    // ── ساختار سلسله‌مراتبی (گام ۱ fix-plan؛ در خط لولهٔ FlashcardAndQuizBank پر می‌شود) ──
+    val grade: Grade = Grade.SUB_ZERO,
+    val bookTitle: String = "",
+    val chapterNumber: Int = 0,
+    val chapterTitle: String = "",
+    val sectionNumber: Int = 0,
+    val sectionType: SectionType = SectionType.LESSON,
+    val keyPoints: List<String> = emptyList(),
+    val examTraps: List<String> = emptyList(),
+    val glossary: List<GlossaryItem> = emptyList()
 ) {
+    /**
+     * کلید مرتب‌سازی از ساختار: پایه → فصل → بخش → نوع محتوا.
+     * ضریب‌ها با بیشینه‌ی واقعی (۱۰۲ درس در یک فصل) سازگارند: sectionNumber تا
+     * ۱۰۲ می‌رسد و chapterNumber تا ۲۰؛ پس هیچ هم‌پوشانی‌ای نیست.
+     */
+    val sortKey: Int
+        get() = grade.number * 100_000_000 +
+                chapterNumber * 1_000_000 +
+                sectionNumber * 10 +
+                sectionType.ordinal
+
     constructor(
         id: String,
         subjectId: String,
@@ -3293,6 +3335,152 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
 
 
     else -> 4 to "📕 مباحث تکمیلی کتاب درسی و جمع‌بندی کنکور ۱۴۰۶"
+}
+
+// ── سلسله‌مراتب گام ۱ fix-plan: پایه/کتاب/فصل از روی folder ──────────────────
+
+/** درس‌هایی که folderشان مستقیم یعنی پایه (grade N → folder N). */
+private val DIRECT_FOLDER_SUBJECTS = setOf(
+    "science", "quran", "hedyeh", "social_studies", "payam",
+    "karfan", "tafakkor", "honar", "defa"
+)
+
+/**
+ * پایه‌ی هر درس از روی folder.
+ * درس‌های قدیمی: folder ۱ = مبانی (زیر صفر)، ۲ تا ۴ = دهم تا دوازدهم،
+ * ۵ تا ۱۳ = اول تا نهم دبستان/متوسطه اول (folder N+4).
+ * درس‌های تازه (علوم، قرآن، هدیه، ...): folder N = پایه‌ی N.
+ * مباحث تکمیلی/جمع‌بندی کنکور (else-branch) همیشه سطح دوازدهم است.
+ * تمرین‌های folder ۲۰ پایه‌شان از id/عنوان حدس زده می‌شود.
+ */
+fun ZeroLesson.hierarchyGrade(): Grade {
+    val (folderNum, folderTitle) = subcategoryFolder()
+    if ("مباحث تکمیلی" in folderTitle) return Grade.G12
+    if (folderNum == 20) return guessPracticeGrade()
+    if (normalizedSubjectId() in DIRECT_FOLDER_SUBJECTS) {
+        return when (folderNum) {
+            1 -> Grade.G1
+            2 -> Grade.G2
+            3 -> Grade.G3
+            4 -> Grade.G4
+            5 -> Grade.G5
+            6 -> Grade.G6
+            7 -> Grade.G7
+            8 -> Grade.G8
+            9 -> Grade.G9
+            10 -> Grade.G10
+            11 -> Grade.G11
+            12 -> Grade.G12
+            else -> Grade.SUB_ZERO
+        }
+    }
+    return when (folderNum) {
+        1 -> Grade.SUB_ZERO
+        2 -> Grade.G10
+        3 -> Grade.G11
+        4 -> Grade.G12
+        5 -> Grade.G1
+        6 -> Grade.G2
+        7 -> Grade.G3
+        8 -> Grade.G4
+        9 -> Grade.G5
+        10 -> Grade.G6
+        11 -> Grade.G7
+        12 -> Grade.G8
+        13 -> Grade.G9
+        else -> Grade.SUB_ZERO
+    }
+}
+
+private fun grade1to9(n: Int): Grade = when (n) {
+    1 -> Grade.G1
+    2 -> Grade.G2
+    3 -> Grade.G3
+    4 -> Grade.G4
+    5 -> Grade.G5
+    6 -> Grade.G6
+    7 -> Grade.G7
+    8 -> Grade.G8
+    else -> Grade.G9
+}
+
+private fun grade10plus(n: Int): Grade = when (n) {
+    1 -> Grade.G10
+    2 -> Grade.G11
+    else -> Grade.G12
+}
+
+private fun persianDigitToInt(c: Char): Int? = when (c) {
+    in '۰'..'۹' -> c - '۰'
+    in '0'..'9' -> c - '0'
+    else -> null
+}
+
+/**
+ * حدس پایه برای تمرین‌های folder ۲۰ از روی id و عنوان.
+ * همه‌ی ۵۳۴ تمرین فعلی با این قاعده‌ها پوشش داده می‌شوند (فهرست کامل در
+ * ~/workspace/myapp-work/folder20-grade-guesses.json)؛ اگر هیچ قاعده‌ای
+ * نخورد، G12 برمی‌گردد تا تمرین به انتهای پایه‌ی دوازدهم برود، نه اول.
+ * قاعده‌ها به ترتیب اولویت‌اند؛ «اقتصاد» فقط پایه‌ی دهم دارد، «انسان و محیط
+ * زیست» فقط یازدهم و «سلامت و بهداشت» فقط دوازدهم.
+ */
+fun ZeroLesson.guessPracticeGrade(): Grade {
+    val haystack = "$id $title"
+    Regex("arabi([123])").find(haystack)?.let {
+        return grade10plus(it.groupValues[1].toInt())
+    }
+    Regex("elem(\\d)").find(haystack)?.let {
+        return grade1to9(it.groupValues[1].toInt())
+    }
+    Regex("mid(\\d)").find(haystack)?.let {
+        return grade1to9(it.groupValues[1].toInt())
+    }
+    Regex("(?:farsi|math|dini|geo|his|soc|eng|neg|fonoon|arooz|psy|phil|logic|fon)0?([123])")
+        .find(haystack)?.let { return grade10plus(it.groupValues[1].toInt()) }
+    if ("اقتصاد" in haystack) return Grade.G10
+    Regex("(?:فارسی|عربی|ریاضی|دینی|تاریخ|جغرافیا|جامعه‌شناسی|جامعه|انگلیسی|نگارش|فلسفه|علوم و فنون(?: ادبی)?|علوم|قرآن|هدیه|پیام|هنر|تفکر|کارآفرینی)\\s*([۱۲۳])")
+        .find(haystack)?.let {
+            return grade10plus(persianDigitToInt(it.groupValues[1].first()) ?: 3)
+        }
+    if ("انسان و محیط زیست" in haystack) return Grade.G11
+    if ("سلامت و بهداشت" in haystack) return Grade.G12
+    for ((word, grade) in listOf(
+        "دوازدهم" to Grade.G12, "یازدهم" to Grade.G11, "دهم" to Grade.G10,
+        "نهم" to Grade.G9, "هشتم" to Grade.G8, "هفتم" to Grade.G7
+    )) {
+        if (word in haystack) return grade
+    }
+    Regex("پایه\\s*([۰-۹\\d])").find(haystack)?.let {
+        val n = persianDigitToInt(it.groupValues[1].first()) ?: return@let
+        if (n in 1..9) return grade1to9(n)
+    }
+    return Grade.G12
+}
+
+/** نوع محتوای هر درس از روی folder و عنوان (فقط فراداده؛ در sort بی‌اثر است چون sectionNumber یکتاست). */
+fun ZeroLesson.hierarchySectionType(folderNum: Int): SectionType {
+    if (folderNum == 20) return SectionType.TEST
+    return when {
+        "روش مطالعه" in title -> SectionType.METHOD
+        "تست" in title -> SectionType.TEST
+        title.startsWith("مرور") || "مرور و جمع‌بندی" in title -> SectionType.REVIEW
+        "جمع‌بندی" in title || "جمع بندی" in title || title.startsWith("نکته") -> SectionType.NOTES
+        else -> SectionType.LESSON
+    }
+}
+
+/**
+ * نام کتاب هر درس: اول «— کتاب X» را از تیتر folder می‌گیرد؛ اگر نبود،
+ * «موضوع + پایه» می‌سازد؛ مبانی (folder ۱ درس‌های قدیمی) کتاب ندارد.
+ */
+fun ZeroLesson.hierarchyBookTitle(): String {
+    val (folderNum, folderTitle) = subcategoryFolder()
+    val afterKetab = folderTitle.substringAfter("کتاب ", "").trim()
+    if (afterKetab.isNotBlank()) return afterKetab
+    if (folderNum == 1 && normalizedSubjectId() !in DIRECT_FOLDER_SUBJECTS) return "مبانی و پیش‌نیازها"
+    val short = SubjectCatalog.subjects.find { it.id == normalizedSubjectId() }?.shortTitle?.ifBlank { null }
+        ?: normalizedSubjectId()
+    return "$short ${hierarchyGrade().label}"
 }
 
 /**
