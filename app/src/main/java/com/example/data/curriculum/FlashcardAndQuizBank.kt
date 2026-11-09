@@ -287,16 +287,31 @@ object FlashcardAndQuizBank {
             addAll(GapResanehPart2Completion1406.lessons)
             addAll(GapResanehPart3Completion1406.lessons)
             addAll(GapArabicLesson8Completion1406.lessons)
+            addAll(GapArabic12AndPsychologyCompletion1406.lessons.filter { it.id == "gap2-ar-tamyiz" || it.id == "gap2-ar-la-nafy-jins" })
+            addAll(GapBatch2Completion1406.lessons.filter { it.id == "gap3-ar-esm-fael" || it.id == "gap3-ar-esm-makan" || it.id == "gap3-ar-esm-tafdil" || it.id == "gap3-ar-afal-naqesa" || it.id == "gap3-neg-sadeh" })
     addAll(GapFamilyGirlsCompletion1406.lessons)
         }
             .distinctBy { it.id }
             .map { it.copy(subjectId = it.normalizedSubjectId()) }
+            // گام ۱ fix-plan: اشتقاق سلسله‌مراتب از folder، قبل از sort.
+            .map { lesson ->
+                val (folderNum, folderTitle) = lesson.subcategoryFolder()
+                lesson.copy(
+                    grade = lesson.hierarchyGrade(),
+                    bookTitle = lesson.hierarchyBookTitle(),
+                    chapterNumber = folderNum,
+                    chapterTitle = folderTitle,
+                    sectionType = lesson.hierarchySectionType(folderNum)
+                    // sectionNumber در mapIndexed پایین = bookLessonNum پر می‌شود.
+                )
+            }
             .groupBy { it.subjectId }
             .values
             .flatMap { subjectLessons ->
                 val sortedSubjectLessons = subjectLessons.sortedWith(
                     compareBy<ZeroLesson>(
-                        { it.subcategoryFolder().first },
+                        { it.grade.number },
+                        { it.chapterNumber },
                         { it.prerequisiteStepOrder() },
                         { it.orderIndex }
                     )
@@ -317,6 +332,7 @@ object FlashcardAndQuizBank {
                         .replace('\u0643', '\u06A9')
                     val normalizedLesson = lesson.copy(
                         orderIndex = globalIdx + 1,
+                        sectionNumber = bookLessonNum,
                         title = normalizedTitle,
                         levelBadge = "درس $persianStep • $cleanBadge",
                         steps = lesson.steps.map { step ->

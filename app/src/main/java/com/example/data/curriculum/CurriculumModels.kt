@@ -824,6 +824,10 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "arabic_11_ch1_tafzeel_makan_zaman",
     "arabic_11_ch2_shart_and_naqeseh",
     "arabic_11_ch3_moqarabeh_vasfiyeh_huruf",
+    "gap3-ar-esm-fael",
+    "gap3-ar-esm-makan",
+    "gap3-ar-esm-tafdil",
+    "gap3-ar-afal-naqesa",
     "arabic_03b_grade11_shart_naqeseh_vasf" -> 3 to "📙 پایه یازدهم انسانی (چاپ ۱۴۰۴ ویژه کنکور ۱۴۰۶) — کتاب عربی، زبان قرآن ۲"
 
     "arabic_03_grade12_rules",
@@ -846,6 +850,8 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "ar-tip-06",
     "ar12-04-lesson4-5-monada-mafoul-ialal",
     "ar12-05-lesson5-monada",
+    "gap2-ar-tamyiz",
+    "gap2-ar-la-nafy-jins",
     "site-sub-02" -> 4 to "📕 پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶) — کتاب عربی، زبان قرآن ۳ و جمع‌بندی ۱۰۰٪"
     "mid9-arabic-01-review",
     "mid9-arabic-02-safe-crossing",
@@ -1388,7 +1394,8 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "dini1-09-etemad-bar-oo",
     "dini1-10-yari-az-do-yar-aziz",
     "dini1-11-fazilat-arastegi",
-    "dini1-12-payam-pooshidegi" -> 2 to "📗 پایه دهم انسانی (چاپ دهم ۱۴۰۴ ویژه کنکور ۱۴۰۶) — صفحه ۰ تا آخر دین و زندگی ۱ (درس ۱ تا ۱۲)"
+    "dini1-12-payam-pooshidegi",
+    "dini_01_tawheed_degrees" -> 2 to "📗 پایه دهم انسانی (چاپ دهم ۱۴۰۴ ویژه کنکور ۱۴۰۶) — صفحه ۰ تا آخر دین و زندگی ۱ (درس ۱ تا ۱۲)"
     "dini2-01-hedayat-elahi",
     "dini2-02-tadavom-hedayat",
     "dini2-03-akharin-payambar",
@@ -1407,6 +1414,11 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "dini2-16-ezzat-nafs",
     "dini2-17-zaminehaye-peyvand",
     "dini2-18-peyvand-moqaddas",
+    "dini_11_ch1_divine_guidance_quran_prophet",
+    "dini_11_ch2_imamate_ghadir_velayat",
+    "dini_11_ch3_imams_life_ghaybat_velayat",
+    "dini_02_grade11_1404_complete",
+    "far_05_dini_farhangian_ensani" -> 3 to "📙 پایه یازدهم انسانی (چاپ نهم ۱۴۰۴ ویژه کنکور ۱۴۰۶) — صفحه ۰ تا آخر دین و زندگی ۲ انسانی (درس ۱ تا ۱۸)"
     "dini3-01-hasti-bakhsh",
     "dini3-02-yegane-bi-hamta",
     "dini3-03-towhid-va-sabk-zendegi",
@@ -1420,16 +1432,10 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "dini3-11-asr-shokoufai",
     "dini3-12-negahi-be-tamadon-jadid",
     "dini3-13-masouliyat-bozorg-ma",
-    "dini_11_ch1_divine_guidance_quran_prophet",
-    "dini_11_ch2_imamate_ghadir_velayat",
-    "dini_11_ch3_imams_life_ghaybat_velayat",
-    "dini_02_grade11_1404_complete" -> 3 to "📙 پایه یازدهم انسانی (چاپ نهم ۱۴۰۴ ویژه کنکور ۱۴۰۶) — صفحه ۰ تا آخر دین و زندگی ۲ انسانی (درس ۱ تا ۱۸)"
-    "dini_01_tawheed_degrees",
     "dini_03_grade12_1405_complete",
     "dini_04_divine_laws_sunan_barzakh",
-    "far_05_dini_farhangian_ensani",
-    "far_08_dini_complete_10_11_12_1406",
-
+    "site-sub-08",
+    "far_08_dini_complete_10_11_12_1406" -> 4 to "📕 پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶) — صفحه ۰ تا آخر دین و زندگی ۳ (درس ۱ تا ۱۳)"
     // 14. Farsi 1, 2, 3 (فارسی ۱، ۲ و ۳)
     "far_09_farsi_grammar_1_to_12_1406",
     "found1406-farsi-01-alphabet-reading",
@@ -1714,7 +1720,8 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "neg1406-01-khatereh",
     "neg1406-02-safarnameh",
     "neg1406-03-tosif",
-    "neg1406-04-zendeginameh" -> 4 to "📕 پایه دوازدهم (چاپ ۱۴۰۵ ویژه امتحان نهایی) — نگارش ۳ و قالب آماده نمره ۲۰ نهایی"
+    "neg1406-04-zendeginameh",
+    "gap3-neg-sadeh" -> 4 to "📕 پایه دوازدهم (چاپ ۱۴۰۵ ویژه امتحان نهایی) — نگارش ۳ و قالب آماده نمره ۲۰ نهایی"
     "elem2-negaresh-01-ketabkhaneh-kelas-ma",
     "elem2-negaresh-02-masjed-mahalleh-ma",
     "elem2-negaresh-03-khers-koochooloo",
@@ -3345,15 +3352,109 @@ private val DIRECT_FOLDER_SUBJECTS = setOf(
     "karfan", "tafakkor", "honar", "defa"
 )
 
+private val ZERO_TRACK_ID_RE = Regex("^(far0|math0|ar0|ar-zero|arooz0|arozero|aroozm1406|en0|eng-zero|english_step|english_00|psych0|eco0|fon0|fonoon_00|arabic_step|arabic_00|math_0|math_000|study_|methods1406|sm-tip|hum-tip|site-)")
+
+private val BOOK_SUBJECTS_RE = Regex("""(فارسی|عربی|ریاضی و آمار|دین و زندگی|دینی|تاریخ|جغرافیا|جامعه‌شناسی|انگلیسی|نگارش|فلسفه|علوم و فنون|منطق|روان‌شناسی|اقتصاد)\s*([۱۲۳])(?![۱۲۳۴۵۶۷۸۹0-9])""")
+
+private fun titleWords(title: String): List<String> =
+    title.split(Regex("""[\s،؛:()\[\]«»."“”!؟]+""")).filter { it.isNotEmpty() }
+
 /**
- * پایه‌ی هر درس از روی folder.
- * درس‌های قدیمی: folder ۱ = مبانی (زیر صفر)، ۲ تا ۴ = دهم تا دوازدهم،
- * ۵ تا ۱۳ = اول تا نهم دبستان/متوسطه اول (folder N+4).
- * درس‌های تازه (علوم، قرآن، هدیه، ...): folder N = پایه‌ی N.
- * مباحث تکمیلی/جمع‌بندی کنکور (else-branch) همیشه سطح دوازدهم است.
- * تمرین‌های folder ۲۰ پایه‌شان از id/عنوان حدس زده می‌شود.
+ * پایه‌ی هر درس — اول از الگوی شناسه و عنوان، folder فقط سیگنال ضعیف.
+ * folder در داده قابل اتکا نیست (فارسی ۱ در folder ۱، نگارش ۳ در folder ۲،
+ * دین ۳ در folder ۳)؛ پس پایه از شناسه و عنوان گرفته می‌شود.
+ *
+ * ترتیب اولویت (راستی‌آزمایی‌شده با پایتون روی هر ۲٬۵۹۵ درس؛ ۲٬۲۲۰ از شناسه،
+ * ۱۹۶ از عنوان، ۱۷۹ از folder، ۰ پیش‌فرض):
+ *  ۱) شناسه‌های مسیر صفر/مبانی (far0، math0، ar0، …) و found1406 → زیر صفر.
+ *     «بنیادین N» و «پایه N» در تیتر found1406 شماره‌ی ترتیب‌اند، نه پایه
+ *     (مثلاً «ریاضی پایه ۱۰ (دبستان)» درس دهم مسیر است، نه پایه‌ی دهم).
+ *  ۲) elem/mid + عدد → همان پایه (اول تا نهم).
+ *  ۳) شناسه‌ی کتاب انسانی + عدد (far1، dini3، neg2، …) → دهم تا دوازدهم؛
+ *     فلسفه استثناست: کتاب ۱ یازدهم و کتاب ۲ دوازدهم است (فلسفه‌ی دهم نداریم).
+ *  ۴) درس‌های تک‌پایه‌ای (اقتصاد دهم، روان‌شناسی یازدهم، منطق دهم، …).
+ *  ۵) عنوان: واژه‌ی پایه به‌تنهایی («دهم» نه «بدهم»/«می‌دهم»، نه «امام دهم»/«روز دهم»)،
+ *     «پایه N»، «فارسی ۱» و فهرست چندکتابه («فارسی ۱، ۲ و ۳» → دوازدهم).
+ *  ۶) folder (ضعیف)؛ اگر هیچ‌کدام نخورد، زیر صفر.
+ * پرچم: ۱۵۹ درس‌اند که پایه‌ی شناسه/عنوان با folder نمی‌خواند (بیشترین‌ها:
+ * نگارش ۲۳، فارسی ۲۰، روش مطالعه ۲۰، اقتصاد ۱۷، ریاضی ۱۶، دینی ۱۶).
  */
 fun ZeroLesson.hierarchyGrade(): Grade {
+    if (ZERO_TRACK_ID_RE.containsMatchIn(id)) return Grade.SUB_ZERO
+    if (id.startsWith("found1406")) return Grade.SUB_ZERO
+    bookGradeFromId(id)?.let { return it }
+    gradeFromTitle(title)?.let { return it }
+    return folderGradeFallback()
+}
+
+private fun bookGradeFromId(id: String): Grade? {
+    Regex("""^(elem|mid)(\d)""").find(id)?.let { return grade1to9(it.groupValues[2].toInt()) }
+    Regex("""^(far|farsi)([123])[-_]""").find(id)?.let { return grade10plus(it.groupValues[2].toInt()) }
+    Regex("""^dini([123])[-_]""").find(id)?.let { return grade10plus(it.groupValues[1].toInt()) }
+    Regex("""^dini_0([123])_""").find(id)?.let { return grade10plus(it.groupValues[1].toInt()) }
+    Regex("""^hist([123])[-_]""").find(id)?.let { return grade10plus(it.groupValues[1].toInt()) }
+    Regex("""^hist_0([123])_""").find(id)?.let { return grade10plus(it.groupValues[1].toInt()) }
+    Regex("""^soc([123])[-_]""").find(id)?.let { return grade10plus(it.groupValues[1].toInt()) }
+    Regex("""^geo([123])[-_]""").find(id)?.let { return grade10plus(it.groupValues[1].toInt()) }
+    Regex("""^geo_0([123])_""").find(id)?.let { return grade10plus(it.groupValues[1].toInt()) }
+    Regex("""^neg([123])b?[-_]""").find(id)?.let { return grade10plus(it.groupValues[1].toInt()) }
+    Regex("""^neg-practice-\d+-neg([123])""").find(id)?.let { return grade10plus(it.groupValues[1].toInt()) }
+    Regex("""^fon([123])[-_]""").find(id)?.let { return grade10plus(it.groupValues[1].toInt()) }
+    Regex("""^fon-practice-\d+-fon([123])""").find(id)?.let { return grade10plus(it.groupValues[1].toInt()) }
+    if (id.startsWith("ar12")) return Grade.G12
+    // فلسفه: کتاب ۱ یازدهم و کتاب ۲ دوازدهم است (فلسفه‌ی دهم نداریم؛ منطق دهم است).
+    Regex("""^phil([12])[-_]""").find(id)?.let {
+        return when (it.groupValues[1].toInt()) { 1 -> Grade.G11; else -> Grade.G12 }
+    }
+    if (id.startsWith("arooz12") || id.startsWith("fon12")) return Grade.G12
+    if (id.startsWith("eco") || id.startsWith("econ") || id.startsWith("economics") || id.startsWith("gdp1406")) return Grade.G10
+    if (id.startsWith("psych") || id.startsWith("psy1406")) return Grade.G11
+    if (id.startsWith("logic")) return Grade.G10
+    if (id.startsWith("salamat") || id.startsWith("sal1406") || id.startsWith("sal-practice")) return Grade.G12
+    if (id.startsWith("moh") || id.startsWith("moh1406") || id.startsWith("mohit")) return Grade.G11
+    if (id.startsWith("resaneh") || id.startsWith("res1406")) return Grade.G10
+    if (id.startsWith("family")) return Grade.G12
+    if (id.startsWith("hoviyat")) return Grade.G12
+    if (id.startsWith("farh") || id.startsWith("farhangian")) return Grade.G12
+    if (id.startsWith("persian")) return Grade.G12
+    return null
+}
+
+private fun gradeFromTitle(title: String): Grade? {
+    if (title.isBlank()) return null
+    // «امام دهم» (امام دهم) و «روز دهم» (روز عاشورا) پایه نیستند.
+    val clean = title.replace(Regex("""(امام|روز)\s*(دهم|یازدهم|دوازدهم|نهم|هشتم|هفتم)"""), "")
+    val words = titleWords(clean)
+    if ("دوازدهم" in words) return Grade.G12
+    if ("یازدهم" in words) return Grade.G11
+    if ("دهم" in words) return Grade.G10
+    Regex("""پایه\s*(هفتم|هشتم)\s*تا\s*نهم""").find(clean)?.let { return Grade.G9 }
+    Regex("""پایه\s*(اول|دوم|سوم|چهارم|پنجم|ششم|هفتم|هشتم|نهم)""").find(clean)?.let {
+        return grade1to9(
+            when (it.groupValues[1]) {
+                "اول" -> 1; "دوم" -> 2; "سوم" -> 3; "چهارم" -> 4; "پنجم" -> 5
+                "ششم" -> 6; "هفتم" -> 7; "هشتم" -> 8; else -> 9
+            }
+        )
+    }
+    Regex("""پایه\s*([۱۲۳۴۵۶۷۸۹])(?![۱۲۳۴۵۶۷۸۹0-9])""").find(clean)?.let {
+        return grade1to9(persianDigitToInt(it.groupValues[1].first()) ?: 9)
+    }
+    Regex("""(فارسی|ریاضی|علوم|عربی|دینی|مطالعات|پیام|هدیه|قرآن|هنر|تفکر|کارآفرینی|انگلیسی|زبان)\s+(هفتم|هشتم|نهم)\b""").find(clean)?.let {
+        return when (it.groupValues[2]) { "هفتم" -> Grade.G7; "هشتم" -> Grade.G8; else -> Grade.G9 }
+    }
+    if (Regex("""[۱۲۳]\s*،\s*[۱۲۳]\s*و\s*[۱۲۳]""").containsMatchIn(clean)) return Grade.G12
+    BOOK_SUBJECTS_RE.find(clean)?.let {
+        return grade10plus(persianDigitToInt(it.groupValues[2].first()) ?: 3)
+    }
+    Regex("""Vision\s*([123])""", RegexOption.IGNORE_CASE).find(clean)?.let {
+        return grade10plus(it.groupValues[1].toInt())
+    }
+    return null
+}
+
+/** سیگنال ضعیف folder؛ فقط وقتی شناسه و عنوان هیچ پایه‌ای ندادند. */
+private fun ZeroLesson.folderGradeFallback(): Grade {
     val (folderNum, folderTitle) = subcategoryFolder()
     if ("مباحث تکمیلی" in folderTitle) return Grade.G12
     if (folderNum == 20) return guessPracticeGrade()
@@ -3471,16 +3572,19 @@ fun ZeroLesson.hierarchySectionType(folderNum: Int): SectionType {
 
 /**
  * نام کتاب هر درس: اول «— کتاب X» را از تیتر folder می‌گیرد؛ اگر نبود،
- * «موضوع + پایه» می‌سازد؛ مبانی (folder ۱ درس‌های قدیمی) کتاب ندارد.
+ * «موضوع + پایه» می‌سازد؛ درس مبانی (پایه‌ی زیر صفر) کتاب ندارد.
+ * توجه: folder ۱ همیشه مبانی نیست (فارسی ۱ در folder ۱ است)؛ پس شرط «مبانی»
+ * روی پایه‌ی اشتقاق‌شده (شناسه/عنوان) است، نه روی شماره‌ی folder.
  */
 fun ZeroLesson.hierarchyBookTitle(): String {
-    val (folderNum, folderTitle) = subcategoryFolder()
+    val (_, folderTitle) = subcategoryFolder()
     val afterKetab = folderTitle.substringAfter("کتاب ", "").trim()
     if (afterKetab.isNotBlank()) return afterKetab
-    if (folderNum == 1 && normalizedSubjectId() !in DIRECT_FOLDER_SUBJECTS) return "مبانی و پیش‌نیازها"
+    val grade = hierarchyGrade()
+    if (grade == Grade.SUB_ZERO) return "مبانی و پیش‌نیازها"
     val short = SubjectCatalog.subjects.find { it.id == normalizedSubjectId() }?.shortTitle?.ifBlank { null }
         ?: normalizedSubjectId()
-    return "$short ${hierarchyGrade().label}"
+    return "$short ${grade.label}"
 }
 
 /**
