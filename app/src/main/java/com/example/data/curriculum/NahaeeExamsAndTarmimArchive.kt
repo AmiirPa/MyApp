@@ -45,8 +45,12 @@ data class TarmimMoadelGuideRule(
 )
 
 /**
- * آرشیو گزیده امتحانات نهایی نظام جدید (۱۳۹۸ تا ۱۴۰۴) شامل دوره‌های خرداد، شهریور و دی
- * همراه با بارم‌بندی امتحانات نهایی آموزش و پرورش؛ ۱۲ دفترچه کامل ۲۰ نمره‌ای خرداد ۱۴۰۴ و ۴۹ سؤال تشریحی گزیده از دوره‌های مختلف
+ * آرشیو گزیده امتحانات نهایی نظام جدید (۱۳۹۸ تا ۱۴۰۵) شامل دوره‌های خرداد، شهریور و دی
+ * همراه با بارم‌بندی امتحانات نهایی آموزش و پرورش؛ ۴۳ دفترچه کامل ۲۰ نمره‌ای
+ * (۱۴۰۵: ۱۲، ۱۴۰۴: ۱۲، ۱۴۰۳: ۱۵، ۱۴۰۲: ۴) و ۴۹ سؤال تشریحی گزیده از دوره‌های مختلف.
+ * توجه: اقتصاد/منطق/روان‌شناسی در ۱۴۰۴ و ۱۴۰۵ برگهٔ نهایی کشوری ندارند و دفترچه‌شان
+ * ساخته نشد؛ صورت دقیق بسیاری از سؤال‌های ۱۴۰۳ (به‌جز عربی) و دینی ۱۴۰۳ بازسازی‌شده
+ * از روی کلید رسمی است و در خود فایل‌ها افشا شده است.
  */
 object NahaeeExamsAndTarmimArchive {
 
@@ -1606,7 +1610,13 @@ object NahaeeExamsAndTarmimArchive {
                 )
             )
         )
-    ) + NahaeeRealQuestions1406.booklets
+    ) + NahaeeRealQuestions1406.booklets +
+        NahaeeKhordad1405A1406.booklets +
+        NahaeeKhordad1405B1406.booklets +
+        NahaeeKhordad1405C1406.booklets +
+        NahaeeKhordad1404ELP1406.booklets +
+        NahaeeKhordad1403B1406.booklets +
+        NahaeeKhordad1402A1406.booklets
 
     fun getAllNahaeeQuestions(): List<NahaeeDescriptiveQuestion> = descriptiveNahaeeQuestions
 }
