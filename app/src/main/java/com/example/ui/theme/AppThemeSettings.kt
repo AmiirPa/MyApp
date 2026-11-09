@@ -725,7 +725,7 @@ class AppThemeController(context: Context) {
         fontRevision++
         prefs.edit()
             .putString(KEY_THEME_MODE, AppThemeMode.SYSTEM.name)
-            .putString(KEY_COLOR_PALETTE, AppColorPalette.PIXEL_EXPRESSIVE_17.name)
+            .putString(KEY_COLOR_PALETTE, AppColorPalette.EMERALD_PERSIAN_ROYAL.name)
             .putBoolean(KEY_DYNAMIC_COLOR, Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
             .putString(KEY_FONT_PRESET, BuiltInFontPreset.IRANSANSX.name)
             .remove(KEY_CUSTOM_FONT_PATH)
