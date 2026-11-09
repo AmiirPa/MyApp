@@ -51,6 +51,7 @@ import com.example.data.curriculum.LearningPathMiddle1406
 import com.example.data.curriculum.LearningPathStatus
 import com.example.data.curriculum.LearningPathStep
 import com.example.data.curriculum.ZeroLesson
+import com.example.data.firebase.CloudLessonProgress
 import com.example.data.local.LearningPathPreference
 import com.example.ui.KonkoorUiState
 import com.example.ui.components.BidiFormatter
