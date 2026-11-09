@@ -19,8 +19,12 @@ object FlashcardAndQuizBank {
             addAll(MathAndStatsCurriculum.lessons)
             addAll(MathStatsGapsCompletion1406.lessons)
             addAll(MathSequencesSplitCompletion1406.lessons)
+            addAll(MathZeroPrereqCompletion1406.lessons)
+            addAll(MathZeroOrderOpsCompletion1406.lessons)
+            addAll(MathZeroProbFuncCompletion1406.lessons)
             // Arooz zero-to-mastery chain (rhythm-first) — must come before existing arooz lessons
             addAll(AroozZeroCompletion1406.lessons)
+            addAll(AroozKhafifRadif1406.lessons)
             addAll(FonoonAndAroozCurriculum.aroozLessons)
             addAll(FonoonAndAroozCurriculum.fonoonLessons)
             addAll(ArabicAndEnglishCurriculum.arabicLessons)
@@ -35,6 +39,7 @@ object FlashcardAndQuizBank {
             addAll(CentPercentFullCurriculum1406.lessons)
             addAll(UltraFastTechniquesEncyclopedia1406.lessons)
             addAll(PsychologyCompletion1406.lessons)
+            addAll(PsychologyDeepCompletion1406.lessons)
             addAll(PsychologyGapsCompletion1406.lessons)
             addAll(FarsiCompletion1406.lessons)
             addAll(Farsi3Part1Completion1406.lessons)
@@ -54,6 +59,9 @@ object FlashcardAndQuizBank {
             addAll(FarhangianSourcesCompletion1406.lessons)
             addAll(EconomicsRebuildPart1Completion1406.lessons)
             addAll(EconomicsRebuildPart2Completion1406.lessons)
+            addAll(EconomicsGaps1Completion1406.lessons)
+            addAll(EconomicsGaps2Completion1406.lessons)
+            addAll(EconomicsGaps3Completion1406.lessons)
             addAll(EconQuickMethodsCompletion1406.lessons)
             addAll(LogicCompletion1406.lessons)
             addAll(LogicGapsCompletion1406.lessons)
@@ -69,6 +77,7 @@ object FlashcardAndQuizBank {
             addAll(ArabicGapsCompletion1406.lessons)
             addAll(EnglishCompletion1406.lessons)
             addAll(EnglishZeroFinalCompletion1406.lessons)
+            addAll(EnglishZeroGrammarCompletion1406.lessons)
             addAll(StudyMethodsCompletion1406.lessons)
             addAll(StudyMethodsPlanningCompletion1406.lessons)
             addAll(SocialStudyTipsCompletion1406.lessons)
@@ -96,6 +105,7 @@ object FlashcardAndQuizBank {
             addAll(History3Part1Completion1406.lessons)
             addAll(History3Part2Completion1406.lessons)
             addAll(History3Part3Completion1406.lessons)
+            addAll(HistGeoGaps2Completion1406.lessons)
             addAll(Dini1Part1Completion1406.lessons)
             addAll(Dini1Part2Completion1406.lessons)
             addAll(Dini1Part3Completion1406.lessons)
@@ -119,11 +129,23 @@ object FlashcardAndQuizBank {
             addAll(Fonoon3HistoryCompletion1406.lessons)
             addAll(Fonoon3MusicCompletion1406.lessons)
             addAll(Fonoon3FiguresCompletion1406.lessons)
+            addAll(FonoonTamsilCompletion1406.lessons)
+            addAll(FonoonTashkhisJinasCompletion1406.lessons)
             addAll(Fonoon1Lesson10Completion1406.lessons)
             addAll(FoundationsMathPersian1406.lessons)
             addAll(FoundationsArabicEnglish1406.lessons)
             addAll(ArabicZeroTrackCompletion1406.lessons)
+            addAll(ArabicZeroRulesCompletion1406.lessons)
             addAll(FoundationsF1Completion1406.lessons)
+            addAll(FarsiZeroGrammar1Completion1406.lessons)
+            addAll(FarsiZeroGrammar2Completion1406.lessons)
+            addAll(FarsiZeroGrammar3Completion1406.lessons)
+            addAll(FarsiZeroGrammar4Completion1406.lessons)
+            addAll(FarsiZeroGrammar5Completion1406.lessons)
+            addAll(FarsiZeroGrammar6Completion1406.lessons)
+            addAll(FarsiZeroGrammar7Completion1406.lessons)
+            addAll(FarsiZeroGrammar8Completion1406.lessons)
+            addAll(FarsiZeroGrammar9Completion1406.lessons)
             addAll(FoundationsF7Completion1406.lessons)
             addAll(FoundationsF8Completion1406.lessons)
             addAll(FoundationsF3Completion1406.lessons)
@@ -287,16 +309,31 @@ object FlashcardAndQuizBank {
             addAll(GapResanehPart2Completion1406.lessons)
             addAll(GapResanehPart3Completion1406.lessons)
             addAll(GapArabicLesson8Completion1406.lessons)
+            addAll(GapArabic12AndPsychologyCompletion1406.lessons.filter { it.id == "gap2-ar-tamyiz" || it.id == "gap2-ar-la-nafy-jins" })
+            addAll(GapBatch2Completion1406.lessons.filter { it.id == "gap3-ar-esm-fael" || it.id == "gap3-ar-esm-makan" || it.id == "gap3-ar-esm-tafdil" || it.id == "gap3-ar-afal-naqesa" || it.id == "gap3-neg-sadeh" })
     addAll(GapFamilyGirlsCompletion1406.lessons)
         }
             .distinctBy { it.id }
             .map { it.copy(subjectId = it.normalizedSubjectId()) }
+            // گام ۱ fix-plan: اشتقاق سلسله‌مراتب از folder، قبل از sort.
+            .map { lesson ->
+                val (folderNum, folderTitle) = lesson.subcategoryFolder()
+                lesson.copy(
+                    grade = lesson.hierarchyGrade(),
+                    bookTitle = lesson.hierarchyBookTitle(),
+                    chapterNumber = folderNum,
+                    chapterTitle = folderTitle,
+                    sectionType = lesson.hierarchySectionType(folderNum)
+                    // sectionNumber در mapIndexed پایین = bookLessonNum پر می‌شود.
+                )
+            }
             .groupBy { it.subjectId }
             .values
             .flatMap { subjectLessons ->
                 val sortedSubjectLessons = subjectLessons.sortedWith(
                     compareBy<ZeroLesson>(
-                        { it.subcategoryFolder().first },
+                        { it.grade.number },
+                        { it.chapterNumber },
                         { it.prerequisiteStepOrder() },
                         { it.orderIndex }
                     )
@@ -317,6 +354,7 @@ object FlashcardAndQuizBank {
                         .replace('\u0643', '\u06A9')
                     val normalizedLesson = lesson.copy(
                         orderIndex = globalIdx + 1,
+                        sectionNumber = bookLessonNum,
                         title = normalizedTitle,
                         levelBadge = "درس $persianStep • $cleanBadge",
                         steps = lesson.steps.map { step ->
