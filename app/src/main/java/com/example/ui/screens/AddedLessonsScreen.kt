@@ -165,7 +165,7 @@ fun AddedLessonsScreen(
             // خوانده می‌شود؛ چون resolveDynamicAccent یک Composable است و در
             // اسکوپ غیر Composable ‏LazyColumn قابل فراخوانی نیست.
             val subjectDotColors = mutableMapOf<String, Color>()
-            for (subjectId in grouped.keys) {
+            for ((subjectId) in grouped) {
                 subjectDotColors[subjectId] = resolveDynamicAccent(
                     SubjectCatalog.getSubjectById(subjectId).color
                 )
