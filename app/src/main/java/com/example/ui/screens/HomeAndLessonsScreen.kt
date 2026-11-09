@@ -116,6 +116,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.lerp
@@ -1136,13 +1137,19 @@ private fun LearningPathHeroCard(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
+            .shadow(
+                elevation = 10.dp,
+                shape = RoundedCornerShape(20.dp),
+                spotColor = Color(0xFFEA580C).copy(alpha = 0.35f)
+            )
             .clip(RoundedCornerShape(20.dp))
             .background(
                 Brush.linearGradient(
                     listOf(
                         Color(0xFFEA580C),
                         Color(0xFFF97316),
-                        Color(0xFFF59E0B)
+                        Color(0xFFF59E0B),
+                        Color(0xFFFBBF24)
                     )
                 )
             )
@@ -1152,6 +1159,40 @@ private fun LearningPathHeroCard(
         color = Color.Transparent,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.35f))
     ) {
+        // گرادیان چندلایه ملایم (روشنای سفید بالا + سایه ملایم پایین) و
+        // دایره‌های نیمه‌شفاف — همان الگوی سربرگ درس؛ متن‌ها و چیدمان
+        // کارت دست نخورده‌اند.
+        Box(modifier = Modifier.fillMaxWidth()) {
+            Canvas(modifier = Modifier.matchParentSize()) {
+                drawCircle(
+                    color = Color.White.copy(alpha = 0.14f),
+                    radius = size.minDimension * 0.55f,
+                    center = Offset(size.width * 0.92f, -size.height * 0.25f)
+                )
+                drawCircle(
+                    color = Color.White.copy(alpha = 0.10f),
+                    radius = size.minDimension * 0.38f,
+                    center = Offset(size.width * 0.78f, size.height * 1.05f)
+                )
+                drawCircle(
+                    color = Color.White.copy(alpha = 0.08f),
+                    radius = size.minDimension * 0.22f,
+                    center = Offset(size.width * 0.08f, size.height * 0.15f)
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .background(
+                        Brush.linearGradient(
+                            colors = listOf(
+                                Color.White.copy(alpha = 0.10f),
+                                Color.Transparent,
+                                Color.Black.copy(alpha = 0.06f)
+                            )
+                        )
+                    )
+            )
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -1232,11 +1273,22 @@ private fun LearningPathHeroCard(
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     )
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.PlayArrow,
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp)
-                    )
+                    // نشان پخش داخل دایره سفید نیمه‌شفاف — فقط زیباسازی
+                    // دکمه؛ متن و عملکرد «درس بعدی» دست نخورده‌اند.
+                    Box(
+                        modifier = Modifier
+                            .size(26.dp)
+                            .clip(CircleShape)
+                            .background(Color.White.copy(alpha = 0.20f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.PlayArrow,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
                     Text(
                         text = "درس بعدی: " + nextLessonTitle,
                         fontSize = 13.sp,
@@ -1253,6 +1305,7 @@ private fun LearningPathHeroCard(
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             }
+        }
         }
     }
 }
@@ -1303,15 +1356,23 @@ private fun ExpressiveContinueStudyCard(
     token: SubjectDesignToken,
     onContinue: () -> Unit
 ) {
+    // زیباسازی فقط: گرادیان آماده توکن موضوع (به‌جای سطح تک‌رنگ) +
+    // سایه ملایم به رنگ لهجه موضوع؛ متن‌ها، تیترها و چیدمان دست نخورده‌اند.
     Surface(
         modifier = Modifier
             .fillMaxWidth()
+            .shadow(
+                elevation = 6.dp,
+                shape = RoundedCornerShape(20.dp),
+                spotColor = token.accentColor.copy(alpha = 0.25f)
+            )
             .clip(RoundedCornerShape(20.dp))
+            .background(token.gradientBrush)
             .clickable(onClick = onContinue)
             .testTag("continue_study_card"),
         shape = RoundedCornerShape(20.dp),
-        color = MaterialTheme.colorScheme.surface,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+        color = Color.Transparent,
+        border = BorderStroke(1.dp, token.accentColor.copy(alpha = 0.25f))
     ) {
         Row(
             modifier = Modifier
@@ -1324,13 +1385,13 @@ private fun ExpressiveContinueStudyCard(
                 modifier = Modifier
                     .size(44.dp)
                     .clip(RoundedCornerShape(14.dp))
-                    .background(MaterialTheme.colorScheme.primaryContainer),
+                    .background(token.accentColor.copy(alpha = 0.16f)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = token.icon,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                    tint = token.accentColor,
                     modifier = Modifier.size(22.dp)
                 )
             }
@@ -1834,6 +1895,11 @@ private fun MinimalBookTocCard(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
+            .shadow(
+                elevation = 4.dp,
+                shape = RoundedCornerShape(16.dp),
+                spotColor = accentColor.copy(alpha = 0.18f)
+            )
             .testTag("textbook_toc_card"),
         shape = RoundedCornerShape(16.dp),
         color = HomeSurface(),
@@ -1845,12 +1911,24 @@ private fun MinimalBookTocCard(
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
+            // سربرگ موضوع با گرادیان رنگ همان موضوع (accentColor از
+            // SubjectCatalog): نوار ملایم + تیتر و چیپ شمارش به رنگ موضوع.
+            // تیتر تک‌خطی و رفتار باز/بسته‌شدن دست نخورده‌اند.
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(10.dp))
+                    .background(
+                        Brush.horizontalGradient(
+                            listOf(
+                                accentColor.copy(alpha = 0.16f),
+                                accentColor.copy(alpha = 0.05f),
+                                Color.Transparent
+                            )
+                        )
+                    )
                     .clickable { isExpanded = !isExpanded }
-                    .padding(vertical = 8.dp),
+                    .padding(horizontal = 10.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -1858,21 +1936,28 @@ private fun MinimalBookTocCard(
                     text = BidiFormatter.formatMixedPersianText(chapterTitle),
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
-                    color = HomePrimary,
+                    color = accentColor,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f)
                 )
-                Text(
-                    text = "$countFa درس",
-                    fontSize = 12.sp,
-                    color = HomeMuted,
-                    maxLines = 1
-                )
+                Surface(
+                    shape = RoundedCornerShape(8.dp),
+                    color = accentColor.copy(alpha = 0.12f)
+                ) {
+                    Text(
+                        text = "$countFa درس",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = accentColor,
+                        maxLines = 1,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                    )
+                }
                 Icon(
                     imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
                     contentDescription = null,
-                    tint = HomePrimary,
+                    tint = accentColor,
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -1914,9 +1999,11 @@ private fun MinimalBookTocCard(
                         )
                     }
                     if (idx < lessons.lastIndex) {
+                        // جداکننده ظریف به رنگ موضوع، با کمی تورفتگی از دو طرف.
                         HorizontalDivider(
+                            modifier = Modifier.padding(horizontal = 4.dp),
                             thickness = 0.5.dp,
-                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)
+                            color = accentColor.copy(alpha = 0.14f)
                         )
                     }
                 }
@@ -2323,6 +2410,56 @@ fun ZeroLessonsScreen(
                             ),
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
+                            // کارت شمارش بالای فهرست: «N درس در M فصل» با
+                            // گرادیان رنگ موضوع؛ فقط شمارش است و ردیفی
+                            // اضافه یا کم نمی‌کند.
+                            item(key = "subject_lesson_count_card") {
+                                val chaptersFa = BidiFormatter.toPersianDigits(lessonsByChapter.size.toString())
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(RoundedCornerShape(14.dp))
+                                        .background(
+                                            Brush.horizontalGradient(
+                                                listOf(
+                                                    currentSubject.color.copy(alpha = 0.16f),
+                                                    currentSubject.color.copy(alpha = 0.05f)
+                                                )
+                                            )
+                                        )
+                                        .testTag("subject_lesson_count_card")
+                                        .padding(horizontal = 14.dp, vertical = 12.dp)
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(36.dp)
+                                                .clip(CircleShape)
+                                                .background(currentSubject.color.copy(alpha = 0.18f)),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.MenuBook,
+                                                contentDescription = null,
+                                                tint = currentSubject.color,
+                                                modifier = Modifier.size(20.dp)
+                                            )
+                                        }
+                                        Text(
+                                            text = "$countFa درس در $chaptersFa فصل",
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = HomeText,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                    }
+                                }
+                            }
+
                             item(key = "subject_topic_search") {
                                 OutlinedTextField(
                                     value = lessonSearchQuery,
