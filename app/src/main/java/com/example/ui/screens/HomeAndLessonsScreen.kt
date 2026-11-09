@@ -2680,9 +2680,11 @@ fun ZeroLessonsScreen(
             uiState.allLessons
                 .filter { it.normalizedSubjectId() == uiState.selectedSubjectId }
                 .sortedWith(
+                    // گام ۱ fix-plan: ترتیب سلسله‌مراتبی (پایه → فصل → بخش)، نه شماره‌ی folder.
                     compareBy<ZeroLesson>(
-                        { it.subcategoryFolder().first },
-                        { it.orderIndex }
+                        { it.grade.number },
+                        { it.chapterNumber },
+                        { it.sectionNumber }
                     )
                 )
         }
@@ -2727,6 +2729,71 @@ fun ZeroLessonsScreen(
                             sub.subtitle.contains(q, ignoreCase = true)
                     }
                 }
+            }
+
+
+            // گروه‌بندی ۱۲تایی نمایشی کاتالوگ: وقتی جستجو خالی است ۱۲ والد
+            // نشان داده می‌شوند و زیرشاخهٔ هر والد با زدن روی آن، عمودی
+            // زیر همان والد باز می‌شود؛ وقتی جستجو خالی نیست، فهرست تخت
+            // فیلترشده مثل قبل روی هر ۲۹ درس نشان داده می‌شود.
+            var expandedGroupIds by remember { mutableStateOf(setOf<String>()) }
+            val catalogRows = remember(
+                uiState.subjects,
+                uiState.allLessons,
+                uiState.lessonProgressMap,
+                expandedGroupIds
+            ) {
+                val byId = uiState.subjects.associateBy { it.id }
+                val groupedIds = mutableSetOf<String>()
+                val rows = mutableListOf<CatalogRow>()
+                for (group in SubjectCatalogGroups) {
+                    val children = group.childIds.mapNotNull { byId[it] }
+                    if (children.isEmpty()) continue
+                    groupedIds += group.childIds
+                    val groupLessonsCount = uiState.allLessons.count {
+                        it.normalizedSubjectId() in group.childIds
+                    }
+                    rows += CatalogRow.Group(group, groupLessonsCount, children.size)
+                    if (group.id in expandedGroupIds) {
+                        for (sub in children) {
+                            val lessonsCount = uiState.allLessons.count {
+                                it.normalizedSubjectId() == sub.id
+                            }
+                            val countFa = BidiFormatter.toPersianDigits(lessonsCount.toString())
+                            val cleanTitle = sub.shortTitle.ifBlank { sub.title.substringAfter(". ") }
+                            val pct = (uiState.subjectProgressFraction(sub.id) * 100).toInt().coerceIn(0, 100)
+                            rows += CatalogRow.Child(
+                                StudySubjectUi(
+                                    id = sub.id,
+                                    title = BidiFormatter.applyPreferredDigits(cleanTitle),
+                                    subtitle = BidiFormatter.applyPreferredDigits("$countFa مبحث آموزشی • ${sub.subtitle}"),
+                                    progress = pct
+                                )
+                            )
+                        }
+                    }
+                }
+                // درس‌های خارج از نقشهٔ گروه‌ها (اگر روزی اضافه شوند) تخت
+                // در انتها می‌آیند تا هیچ درسی گم نشود.
+                for (sub in uiState.subjects) {
+                    if (sub.id !in groupedIds) {
+                        val lessonsCount = uiState.allLessons.count {
+                            it.normalizedSubjectId() == sub.id
+                        }
+                        val countFa = BidiFormatter.toPersianDigits(lessonsCount.toString())
+                        val cleanTitle = sub.shortTitle.ifBlank { sub.title.substringAfter(". ") }
+                        val pct = (uiState.subjectProgressFraction(sub.id) * 100).toInt().coerceIn(0, 100)
+                        rows += CatalogRow.Child(
+                            StudySubjectUi(
+                                id = sub.id,
+                                title = BidiFormatter.applyPreferredDigits(cleanTitle),
+                                subtitle = BidiFormatter.applyPreferredDigits("$countFa مبحث آموزشی • ${sub.subtitle}"),
+                                progress = pct
+                            )
+                        )
+                    }
+                }
+                rows.toList()
             }
 
             LazyColumn(
@@ -2780,69 +2847,6 @@ fun ZeroLessonsScreen(
                     )
                 }
 
-                // گروه‌بندی ۱۲تایی نمایشی کاتالوگ: وقتی جستجو خالی است ۱۲ والد
-                // نشان داده می‌شوند و زیرشاخهٔ هر والد با زدن روی آن، عمودی
-                // زیر همان والد باز می‌شود؛ وقتی جستجو خالی نیست، فهرست تخت
-                // فیلترشده مثل قبل روی هر ۲۹ درس نشان داده می‌شود.
-                var expandedGroupIds by remember { mutableStateOf(setOf<String>()) }
-                val catalogRows = remember(
-                    uiState.subjects,
-                    uiState.allLessons,
-                    uiState.lessonProgressMap,
-                    expandedGroupIds
-                ) {
-                    val byId = uiState.subjects.associateBy { it.id }
-                    val groupedIds = mutableSetOf<String>()
-                    val rows = mutableListOf<CatalogRow>()
-                    for (group in SubjectCatalogGroups) {
-                        val children = group.childIds.mapNotNull { byId[it] }
-                        if (children.isEmpty()) continue
-                        groupedIds += group.childIds
-                        val groupLessonsCount = uiState.allLessons.count {
-                            it.normalizedSubjectId() in group.childIds
-                        }
-                        rows += CatalogRow.Group(group, groupLessonsCount, children.size)
-                        if (group.id in expandedGroupIds) {
-                            for (sub in children) {
-                                val lessonsCount = uiState.allLessons.count {
-                                    it.normalizedSubjectId() == sub.id
-                                }
-                                val countFa = BidiFormatter.toPersianDigits(lessonsCount.toString())
-                                val cleanTitle = sub.shortTitle.ifBlank { sub.title.substringAfter(". ") }
-                                val pct = (uiState.subjectProgressFraction(sub.id) * 100).toInt().coerceIn(0, 100)
-                                rows += CatalogRow.Child(
-                                    StudySubjectUi(
-                                        id = sub.id,
-                                        title = BidiFormatter.applyPreferredDigits(cleanTitle),
-                                        subtitle = BidiFormatter.applyPreferredDigits("$countFa مبحث آموزشی • ${sub.subtitle}"),
-                                        progress = pct
-                                    )
-                                )
-                            }
-                        }
-                    }
-                    // درس‌های خارج از نقشهٔ گروه‌ها (اگر روزی اضافه شوند) تخت
-                    // در انتها می‌آیند تا هیچ درسی گم نشود.
-                    for (sub in uiState.subjects) {
-                        if (sub.id !in groupedIds) {
-                            val lessonsCount = uiState.allLessons.count {
-                                it.normalizedSubjectId() == sub.id
-                            }
-                            val countFa = BidiFormatter.toPersianDigits(lessonsCount.toString())
-                            val cleanTitle = sub.shortTitle.ifBlank { sub.title.substringAfter(". ") }
-                            val pct = (uiState.subjectProgressFraction(sub.id) * 100).toInt().coerceIn(0, 100)
-                            rows += CatalogRow.Child(
-                                StudySubjectUi(
-                                    id = sub.id,
-                                    title = BidiFormatter.applyPreferredDigits(cleanTitle),
-                                    subtitle = BidiFormatter.applyPreferredDigits("$countFa مبحث آموزشی • ${sub.subtitle}"),
-                                    progress = pct
-                                )
-                            )
-                        }
-                    }
-                    rows.toList()
-                }
 
                 if (subjectSearchQuery.trim().isEmpty()) {
                     items(
@@ -2916,9 +2920,11 @@ fun ZeroLessonsScreen(
             val lessonsByChapter = remember(displayedLessons) {
                 displayedLessons
                     .sortedWith(
+                        // گام ۱ fix-plan: گروه‌های فصل به ترتیب پایه بیایند (اول تا نهم، بعد دهم تا دوازدهم).
                         compareBy<ZeroLesson>(
-                            { it.subcategoryFolder().first },
-                            { it.orderIndex }
+                            { it.grade.number },
+                            { it.chapterNumber },
+                            { it.sectionNumber }
                         )
                     )
                     .groupBy { lesson ->
