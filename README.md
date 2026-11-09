@@ -14,6 +14,7 @@
 ### 📥 دانلود مستقیم اپلیکیشن
 
 [⬇️ دانلود مستقیم آخرین نسخه رسمی APK (نسخه ۳.۶)](https://github.com/AmiirPa/MyApp/releases/latest/download/Sefr_Ta_Farhangian_v3.6.apk)
+
 [مشاهده تمام نسخه‌ها و تغییرات (Releases)](https://github.com/AmiirPa/MyApp/releases)
 
 [دانلود سورس کامل پروژه به‌صورت ZIP](https://github.com/AmiirPa/MyApp/archive/refs/heads/main.zip)
