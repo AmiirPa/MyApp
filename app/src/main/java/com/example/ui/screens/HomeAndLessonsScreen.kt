@@ -1293,8 +1293,7 @@ private fun StepLearnGateCard(
 /** همهٔ بخش‌های درس یاد گرفته شد — رفتن به مثال و تست. */
 @Composable
 private fun StepsCompletedCard(
-    accentColor: Color,
-    onGoToPractice: () -> Unit
+    accentColor: Color
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
@@ -1315,21 +1314,11 @@ private fun StepsCompletedCard(
                 fontWeight = FontWeight.Bold,
                 color = HomeText
             )
-            Button(
-                onClick = onGoToPractice,
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = accentColor,
-                    contentColor = Color.White
-                )
-            ) {
-                Text(
-                    text = "رفتن به مثال و تست",
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 1,
-                    softWrap = false
-                )
-            }
+            Text(
+                text = "مثال و تست در ادامهٔ همین صفحه است.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = HomeMuted
+            )
         }
     }
 }
@@ -3114,7 +3103,7 @@ private fun LessonDetailPageContent(
     var selectedMiniOption by remember(enrichedLesson.id) { mutableIntStateOf(-1) }
     var showMiniAnswer by remember(enrichedLesson.id) { mutableStateOf(false) }
     var showPdfDialog by remember(enrichedLesson.id) { mutableStateOf(false) }
-    var studySectionFilter by remember(enrichedLesson.id) { mutableIntStateOf(0) }
+    var studySectionFilter by remember(enrichedLesson.id) { mutableIntStateOf(4) }
     // آموزش قدم‌به‌قدم داخل درس: اول فقط بخش ۱ نشان داده می‌شود؛ بعد از
     // «یاد گرفتم» بخش بعد باز می‌شود. «نمایش یکجا» (تب ۴) همه را نشان می‌دهد.
     var revealedStepCount by remember(enrichedLesson.id) { mutableIntStateOf(1) }
@@ -3438,45 +3427,8 @@ private fun LessonDetailPageContent(
                     }
                 }
 
-                // Clean Minimalist 4-Tab Section Bar (Wrap-safe, no clipped labels)
-                val lessonTabs = listOf(
-                    Pair(0, "درس‌نامه"),
-                    Pair(2, "نکات کلیدی"),
-                    Pair(1, "مثال و تست"),
-                    Pair(4, "نمایش یکجا")
-                )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    lessonTabs.forEach { (tabIdx, tabTitle) ->
-                        val isSelected = studySectionFilter == tabIdx
-                        Surface(
-                            modifier = Modifier
-                                .weight(1f)
-                                .clip(RoundedCornerShape(10.dp))
-                                .clickable { studySectionFilter = tabIdx }
-                                .testTag("lesson_tab_$tabIdx"),
-                            shape = RoundedCornerShape(10.dp),
-                            color = if (isSelected) HomePrimary else HomeBackground,
-                            border = BorderStroke(1.dp, if (isSelected) HomePrimary else HomeBorder)
-                        ) {
-                            Text(
-                                text = tabTitle,
-                                fontSize = 11.5.sp,
-                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                color = if (isSelected) HomeOnPrimary else HomeMuted,
-                                textAlign = TextAlign.Center,
-                                maxLines = 1,
-                                softWrap = false,
-                                modifier = Modifier.padding(vertical = 8.dp, horizontal = 2.dp)
-                            )
-                        }
-                    }
-                }
+                // درس یک صفحهٔ عمودی یکپارچه است (بدون تب افقی): درس‌نامه قدم‌به‌قدم،
+                // بعد مثال و تست، بعد نکات کلیدی — همه زیرمجموعهٔ همین درس، پشت سر هم.
 
                 if (prevLesson != null || nextLesson != null) {
                     Row(
@@ -4591,12 +4543,8 @@ private fun LessonDetailPageContent(
 
             // ۲. گام‌های تدریس مفهومی کتاب درسی (همراه با جدول، مثال کاربردی مرتبط، و انیمیشن/نمودار در همان بخش)
             if (studySectionFilter in listOf(0, 4)) {
-                // قدم‌به‌قدم: در تب درس‌نامه فقط بخش‌های بازشده نشان داده می‌شوند.
-                val visibleSteps = if (studySectionFilter == 0) {
-                    enrichedLesson.steps.take(revealedStepCount.coerceIn(1, enrichedLesson.steps.size.coerceAtLeast(1)))
-                } else {
-                    enrichedLesson.steps
-                }
+                // قدم‌به‌قدم: در صفحهٔ عمودی درس فقط بخش‌های بازشده نشان داده می‌شوند.
+                val visibleSteps = enrichedLesson.steps.take(revealedStepCount.coerceIn(1, enrichedLesson.steps.size.coerceAtLeast(1)))
                 itemsIndexed(
                     visibleSteps,
                     key = { _, step -> "${enrichedLesson.id}_step_${step.stepNumber}_${step.title.hashCode()}" }
@@ -4735,7 +4683,7 @@ private fun LessonDetailPageContent(
                                 }
 
                                 // مثال کاربردی مرتبط دقیقاً زیر مفهوم همین گام (در تب درس‌نامه)
-                                if (pairedExample != null && studySectionFilter == 0) {
+                                if (pairedExample != null) {
                                     var showInlineSolution by remember(stepIdx) { mutableStateOf(false) }
                                     Spacer(modifier = Modifier.height(4.dp))
                                     Surface(
@@ -4924,7 +4872,7 @@ private fun LessonDetailPageContent(
             }
 
             // آموزش قدم‌به‌قدم: دکمه‌های «یاد گرفتم / یاد نگرفتم» زیر آخرین بخش بازشده (فقط تب درس‌نامه)
-            if (studySectionFilter == 0 && enrichedLesson.steps.isNotEmpty()) {
+            if (enrichedLesson.steps.isNotEmpty()) {
                 if (revealedStepCount < enrichedLesson.steps.size) {
                     item(key = "${enrichedLesson.id}_step_gate") {
                         StepLearnGateCard(
@@ -4950,10 +4898,7 @@ private fun LessonDetailPageContent(
                     }
                 } else {
                     item(key = "${enrichedLesson.id}_steps_done") {
-                        StepsCompletedCard(
-                            accentColor = lessonAccent,
-                            onGoToPractice = { studySectionFilter = 1 }
-                        )
+                        StepsCompletedCard(accentColor = lessonAccent)
                     }
                 }
             }
@@ -5305,18 +5250,16 @@ private fun LessonDetailPageContent(
                 }
             }
 
-            if (showMoreLessonCards) {
-            // ۴. کارگاه تصویری تعاملی و نمودارها (منحصراً در تب اختصاصی ۲ کارگاه — استفاده از enrichedLesson)
-            if (studySectionFilter == 2) {
-                // نکات کلیدی همین درس (اول): فرمول‌ها و قواعد اصلی + رمز هر گام.
-                // راهنماهای کلی کتاب دیگر اینجا نیستند؛ سر جای خودشان (صفحهٔ کتاب) هستند.
-                item(key = "${enrichedLesson.id}_own_key_points") {
-                    LessonOwnKeyPointsCard(
-                        lesson = enrichedLesson,
-                        accentColor = lessonAccent
-                    )
-                }
+            // نکات کلیدی همین درس — در صفحهٔ عمودی، بعد از مثال و تست، بدون تب و بدون ابزارها.
+            item(key = "${enrichedLesson.id}_own_key_points") {
+                LessonOwnKeyPointsCard(
+                    lesson = enrichedLesson,
+                    accentColor = lessonAccent
+                )
+            }
 
+            if (showMoreLessonCards) {
+            // ۴. کارگاه تصویری تعاملی و نمودارها (در منوی «ابزارها» — استفاده از enrichedLesson)
                 item(key = "${enrichedLesson.id}_interactive_visual_card") {
                     LessonInteractiveVisualCard(
                         lesson = enrichedLesson,
@@ -5331,9 +5274,8 @@ private fun LessonDetailPageContent(
                         accentColor = lessonAccent
                     )
                 }
-            }
 
-            // ۵. نکات تستی و رمزهای ۵ ثانیه‌ای — در منوی «ابزارها»، در همه تب‌ها
+            // ۵. نکات تستی و رمزهای ۵ ثانیه‌ای — در منوی «ابزارها»
                 item(key = "${lesson.id}_slow_learner_super_method") {
                     SlowLearnerSuperMethodCard(
                         lesson = lesson,
