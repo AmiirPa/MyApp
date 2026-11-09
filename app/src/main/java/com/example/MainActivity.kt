@@ -829,7 +829,12 @@ private fun MoreSectionScreen(
                                         listOf(primaryColor, primaryColor.copy(alpha = 0.82f))
                                     )
                                 } else {
-                                    MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f)
+                                    androidx.compose.ui.graphics.Brush.horizontalGradient(
+                                        listOf(
+                                            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f),
+                                            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f)
+                                        )
+                                    )
                                 }
                             ),
                         contentAlignment = Alignment.Center

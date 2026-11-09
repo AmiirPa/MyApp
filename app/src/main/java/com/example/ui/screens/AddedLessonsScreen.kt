@@ -230,6 +230,7 @@ fun AddedLessonsScreen(
                                     )
                                     .clickable(
                                         interactionSource = rowInteractionSource,
+                                        indication = null,
                                         onClick = { onOpenLesson(lesson.id) }
                                     )
                                     .padding(vertical = 12.dp, horizontal = 8.dp),
