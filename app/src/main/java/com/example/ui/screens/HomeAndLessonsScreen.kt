@@ -133,6 +133,7 @@ import com.example.data.curriculum.prerequisiteStepOrder
 import com.example.data.curriculum.subcategoryFolder
 import com.example.data.curriculum.normalizedSubjectId
 import com.example.data.curriculum.getPrerequisiteLinks
+import com.example.data.curriculum.LessonLogos1406
 import com.example.data.curriculum.MinusZeroLearningEngine
 import com.example.ui.AppTab
 import com.example.ui.KonkoorUiState
@@ -175,6 +176,7 @@ import androidx.compose.material.icons.filled.FormatUnderlined
 import androidx.compose.material.icons.filled.Highlight
 import com.example.ui.theme.AppThemeController
 import com.example.ui.theme.LocalAppThemeController
+import com.example.ui.theme.resolveDynamicAccent
 import com.example.ui.theme.LocalResponsiveDimens
 
 fun getSubjectIcon(subjectId: String): androidx.compose.ui.graphics.vector.ImageVector = when (subjectId) {
@@ -1134,24 +1136,27 @@ private fun LearningPathHeroCard(
 ) {
     // گرادیان گرم و اشباع از پالت موجود برنامه (نارنجی/کهرباییِ تم و
     // SubjectCatalog) — متن‌ها و چیدمان کارت دست نخورده‌اند.
+    // وقتی داینامیک کالر روشن است، گرادیان و سایهٔ کارت از رنگ‌های سیستم
+    // (تصویر زمینه) می‌آید؛ وقتی خاموش است، همان نارنجی/کهرباییِ گرم می‌ماند.
+    val heroScheme = MaterialTheme.colorScheme
+    val heroUseDynamic = LocalAppThemeController.current.useDynamicColor
+    val heroGradientColors = if (heroUseDynamic) {
+        listOf(heroScheme.primary, heroScheme.secondary, heroScheme.tertiary)
+    } else {
+        listOf(Color(0xFFEA580C), Color(0xFFF97316), Color(0xFFF59E0B), Color(0xFFFBBF24))
+    }
+    val heroSpotColor = if (heroUseDynamic) heroScheme.primary else Color(0xFFEA580C)
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .shadow(
                 elevation = 10.dp,
                 shape = RoundedCornerShape(20.dp),
-                spotColor = Color(0xFFEA580C).copy(alpha = 0.35f)
+                spotColor = heroSpotColor.copy(alpha = 0.35f)
             )
             .clip(RoundedCornerShape(20.dp))
             .background(
-                Brush.linearGradient(
-                    listOf(
-                        Color(0xFFEA580C),
-                        Color(0xFFF97316),
-                        Color(0xFFF59E0B),
-                        Color(0xFFFBBF24)
-                    )
-                )
+                Brush.linearGradient(heroGradientColors)
             )
             .clickable(onClick = onOpenPath)
             .testTag("home_learning_path_hero_card"),
@@ -1358,21 +1363,31 @@ private fun ExpressiveContinueStudyCard(
 ) {
     // زیباسازی فقط: گرادیان آماده توکن موضوع (به‌جای سطح تک‌رنگ) +
     // سایه ملایم به رنگ لهجه موضوع؛ متن‌ها، تیترها و چیدمان دست نخورده‌اند.
+    // وقتی داینامیک کالر روشن است، گرادیان و لهجهٔ این کارت از رنگ‌های سیستم
+    // (تصویر زمینه) می‌آید؛ وقتی خاموش است، همان توکن رنگ موضوع می‌ماند.
+    val continueScheme = MaterialTheme.colorScheme
+    val continueUseDynamic = LocalAppThemeController.current.useDynamicColor
+    val cardAccent = if (continueUseDynamic) continueScheme.primary else token.accentColor
+    val cardBrush = if (continueUseDynamic) {
+        Brush.linearGradient(listOf(continueScheme.primaryContainer, continueScheme.secondaryContainer))
+    } else {
+        token.gradientBrush
+    }
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .shadow(
                 elevation = 6.dp,
                 shape = RoundedCornerShape(20.dp),
-                spotColor = token.accentColor.copy(alpha = 0.25f)
+                spotColor = cardAccent.copy(alpha = 0.25f)
             )
             .clip(RoundedCornerShape(20.dp))
-            .background(token.gradientBrush)
+            .background(cardBrush)
             .clickable(onClick = onContinue)
             .testTag("continue_study_card"),
         shape = RoundedCornerShape(20.dp),
         color = Color.Transparent,
-        border = BorderStroke(1.dp, token.accentColor.copy(alpha = 0.25f))
+        border = BorderStroke(1.dp, cardAccent.copy(alpha = 0.25f))
     ) {
         Row(
             modifier = Modifier
@@ -1385,13 +1400,13 @@ private fun ExpressiveContinueStudyCard(
                 modifier = Modifier
                     .size(44.dp)
                     .clip(RoundedCornerShape(14.dp))
-                    .background(token.accentColor.copy(alpha = 0.16f)),
+                    .background(cardAccent.copy(alpha = 0.16f)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = token.icon,
                     contentDescription = null,
-                    tint = token.accentColor,
+                    tint = cardAccent,
                     modifier = Modifier.size(22.dp)
                 )
             }
@@ -2575,8 +2590,10 @@ private fun LessonDetailPageContent(
 
     val themeController = LocalAppThemeController.current
     val subject = SubjectCatalog.getSubjectById(enrichedLesson.normalizedSubjectId())
-    // رنگ لهجه درس = رنگ موضوع (از SubjectCatalog)، نه رنگ ثابت — سربرگ، نوار پیشرفت و جزئیات درس همه از همین رنگ می‌گیرند.
-    val lessonAccent = subject.color
+    // رنگ لهجه درس: وقتی داینامیک کالر روشن است، رنگ اصلی سیستم (تصویر زمینه)
+    // می‌آید و سربرگ، نوار پیشرفت، قاب نمودارها و همهٔ لهجه‌های صفحهٔ درس را
+    // می‌گیرد؛ وقتی خاموش است، رنگ ثابت موضوع (از SubjectCatalog) برمی‌گردد.
+    val lessonAccent = resolveDynamicAccent(subject.color)
     var isCompleted by remember(enrichedLesson.id, progress?.isCompleted) {
         mutableStateOf(progress?.isCompleted ?: false)
     }
@@ -2746,7 +2763,8 @@ private fun LessonDetailPageContent(
                                 lineHeight = 19.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = HomeText,
-                                maxLines = 3,
+                                maxLines = 1,
+                                softWrap = false,
                                 overflow = TextOverflow.Ellipsis
                             )
                         }
@@ -2838,6 +2856,8 @@ private fun LessonDetailPageContent(
                                 ) {
                                     Text(
                                         text = "زیرخط نکات",
+                                        maxLines = 1,
+                                        softWrap = false,
                                         fontSize = 11.sp,
                                         color = if (isUnderlineActive) HomeOnPrimary else HomeText,
                                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
@@ -2855,6 +2875,8 @@ private fun LessonDetailPageContent(
                                 ) {
                                     Text(
                                         text = "هایلایت",
+                                        maxLines = 1,
+                                        softWrap = false,
                                         fontSize = 11.sp,
                                         color = if (isHighlighterActive) HomeOnPrimary else HomeText,
                                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
@@ -2872,6 +2894,8 @@ private fun LessonDetailPageContent(
                                 ) {
                                     Text(
                                         text = if (isClozePracticeActive) "نمایش کلمات" else "تمرین حافظه (محو کلمات)",
+                                        maxLines = 1,
+                                        softWrap = false,
                                         fontSize = 11.sp,
                                         color = if (isClozePracticeActive) HomeOnPrimary else HomeText,
                                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
@@ -2889,6 +2913,8 @@ private fun LessonDetailPageContent(
                                 ) {
                                     Text(
                                         text = "متن ضخیم",
+                                        maxLines = 1,
+                                        softWrap = false,
                                         fontSize = 11.sp,
                                         color = if (isBoldActive) HomeOnPrimary else HomeText,
                                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
@@ -2950,6 +2976,8 @@ private fun LessonDetailPageContent(
                         if (prevLesson != null) {
                             Text(
                                 text = "→ مبحث قبلی",
+                                maxLines = 1,
+                                softWrap = false,
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 color = HomePrimary,
@@ -2968,12 +2996,17 @@ private fun LessonDetailPageContent(
                                 "مبحث ${currentLessonIdx + 1} از ${subjectOrderedLessons.size}"
                             ),
                             fontSize = 11.sp,
-                            color = HomeMuted
+                            color = HomeMuted,
+                            maxLines = 1,
+                            softWrap = false,
+                            overflow = TextOverflow.Ellipsis
                         )
 
                         if (nextLesson != null) {
                             Text(
                                 text = "مبحث بعدی ←",
+                                maxLines = 1,
+                                softWrap = false,
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 color = HomePrimary,
@@ -3012,6 +3045,8 @@ private fun LessonDetailPageContent(
                 fontWeight = FontWeight.SemiBold,
                 color = lessonAccent,
                 maxLines = 1,
+                softWrap = false,
+                overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.testTag("lesson_progress_label")
             )
             Box(
@@ -3110,11 +3145,30 @@ private fun LessonDetailPageContent(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Surface(
+                                shape = CircleShape,
+                                color = Color.White.copy(alpha = 0.22f),
+                                modifier = Modifier.size(34.dp).testTag("lesson_logo_icon")
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        imageVector = LessonLogos1406.iconForLesson(
+                                            enrichedLesson.id,
+                                            enrichedLesson.normalizedSubjectId()
+                                        ),
+                                        contentDescription = null,
+                                        tint = Color.White,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                            }
+                            Surface(
                                 shape = RoundedCornerShape(8.dp),
                                 color = Color.White.copy(alpha = 0.18f)
                             ) {
                                 Text(
                                     text = subject.shortTitle.ifBlank { subject.title },
+                                    softWrap = false,
+                                    overflow = TextOverflow.Ellipsis,
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = Color.White,
@@ -3125,6 +3179,7 @@ private fun LessonDetailPageContent(
                             if (totalLessonSteps > 0) {
                                 Text(
                                     text = "${BidiFormatter.toPersianDigits(totalLessonSteps.toString())} گام",
+                                    softWrap = false,
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.Medium,
                                     color = Color.White.copy(alpha = 0.85f),
@@ -3163,8 +3218,8 @@ private fun LessonDetailPageContent(
                             .testTag("cloze_memory_drill_card")
                     ) {
                         Column(
-                            modifier = Modifier.padding(18.dp),
-                            verticalArrangement = Arrangement.spacedBy(LessonSpacing.paragraph)
+                            modifier = Modifier.padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
@@ -3174,6 +3229,8 @@ private fun LessonDetailPageContent(
                                 Column(modifier = Modifier.weight(1f)) {
                                     Text(
                                         text = "تمرین حافظه فعال: بازیابی کلمات کلیدی",
+                                        softWrap = false,
+                                        overflow = TextOverflow.Ellipsis,
                                         style = MaterialTheme.typography.titleSmall,
                                         fontWeight = FontWeight.Bold,
                                         color = HomePrimary,
@@ -3181,6 +3238,8 @@ private fun LessonDetailPageContent(
                                     )
                                     Text(
                                         text = "کلمات کلیدی محو شده‌اند؛ ابتدا در ذهن پاسخ دهید، سپس روی هر کادر بزنید:",
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
                                         style = MaterialTheme.typography.labelSmall,
                                         color = HomeMuted
                                     )
@@ -3197,6 +3256,7 @@ private fun LessonDetailPageContent(
                                 ) {
                                     Text(
                                         text = if (extractedClozeItems.all { revealedClozeKeys[it.first] == true }) "محو مجدد همه" else "نمایش همه",
+                                        softWrap = false,
                                         style = MaterialTheme.typography.labelSmall,
                                         fontWeight = FontWeight.Bold,
                                         color = HomeOnPrimary,
@@ -3239,6 +3299,8 @@ private fun LessonDetailPageContent(
                                             ) {
                                                 Text(
                                                     text = if (isRevealed) "پاسخ کلیدی: $hiddenWord" else "ضربه بزنید تا کلمه کلیدی نمایش داده شود",
+                                                    softWrap = false,
+                                                    overflow = TextOverflow.Ellipsis,
                                                     style = MaterialTheme.typography.labelSmall,
                                                     fontWeight = FontWeight.Bold,
                                                     color = if (isRevealed) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onPrimaryContainer,
@@ -3291,6 +3353,7 @@ private fun LessonDetailPageContent(
                                     )
                                     Text(
                                         text = "پیش‌نیاز پیشنهادی: ${prerequisiteLinks.first().prerequisiteTitle}",
+                                        softWrap = false,
                                         style = MaterialTheme.typography.labelMedium,
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.onSecondaryContainer,
@@ -3300,6 +3363,8 @@ private fun LessonDetailPageContent(
                                 }
                                 Text(
                                     text = if (prereqExpanded) "بستن ▲" else "مشاهده ◀",
+                                    maxLines = 1,
+                                    softWrap = false,
                                     style = MaterialTheme.typography.labelSmall,
                                     fontWeight = FontWeight.Bold,
                                     color = HomePrimary
@@ -3330,17 +3395,21 @@ private fun LessonDetailPageContent(
                                                         style = MaterialTheme.typography.labelMedium,
                                                         fontWeight = FontWeight.Bold,
                                                         color = HomeText,
-                                                        maxLines = 2
+                                                        maxLines = 1,
+                                                        overflow = TextOverflow.Ellipsis
                                                     )
                                                     Text(
                                                         text = link.note,
                                                         style = MaterialTheme.typography.labelSmall,
                                                         color = HomeMuted,
-                                                        maxLines = 2
+                                                        maxLines = 1,
+                                                        overflow = TextOverflow.Ellipsis
                                                     )
                                                 }
                                                 Text(
                                                     text = "مطالعه ←",
+                                                    maxLines = 1,
+                                                    softWrap = false,
                                                     style = MaterialTheme.typography.labelSmall,
                                                     fontWeight = FontWeight.Bold,
                                                     color = HomePrimary,
@@ -3371,6 +3440,8 @@ private fun LessonDetailPageContent(
                         ) {
                             Text(
                                 text = BidiFormatter.formatMixedPersianText("${enrichedLesson.levelBadge} • ${enrichedLesson.subcategoryFolder().second}"),
+                                softWrap = false,
+                                overflow = TextOverflow.Ellipsis,
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold,
                                 color = lessonAccent,
@@ -3383,9 +3454,10 @@ private fun LessonDetailPageContent(
                                 color = HomeText
                             )
                             if (enrichedLesson.whyStudentsStruggle.isNotBlank() && enrichedLesson.whyStudentsStruggle != enrichedLesson.subtitle) {
-                                Spacer(modifier = Modifier.height(2.dp))
                                 Text(
                                     text = "هدف و کلید یادگیری این درس:",
+                                    maxLines = 1,
+                                    softWrap = false,
                                     style = MaterialTheme.typography.labelMedium,
                                     fontWeight = FontWeight.Bold,
                                     color = lessonAccent
@@ -3398,7 +3470,6 @@ private fun LessonDetailPageContent(
                                 )
                             }
 
-                            Spacer(modifier = Modifier.height(2.dp))
                             Surface(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -3437,6 +3508,8 @@ private fun LessonDetailPageContent(
                                         Spacer(modifier = Modifier.width(8.dp))
                                         Text(
                                             text = if (isBookmarked) "این مبحث در نشان‌شده‌ها ذخیره شده است" else "ذخیره این مبحث در نشان‌شده‌ها برای مرور سریع",
+                                            softWrap = false,
+                                            overflow = TextOverflow.Ellipsis,
                                             style = MaterialTheme.typography.labelSmall,
                                             fontWeight = if (isBookmarked) FontWeight.Bold else FontWeight.Medium,
                                             color = if (isBookmarked) MaterialTheme.colorScheme.onPrimaryContainer else HomeText,
@@ -3469,12 +3542,16 @@ private fun LessonDetailPageContent(
                                 ) {
                                     Text(
                                         text = "منبع رسمی: ${minusZeroGuide.sourceMetadata.textbookTitle}",
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
                                         style = MaterialTheme.typography.labelSmall,
                                         fontWeight = FontWeight.Bold,
                                         color = HomeText
                                     )
                                     Text(
                                         text = "${minusZeroGuide.sourceMetadata.publicationYear} • ${minusZeroGuide.sourceMetadata.yearVerificationNote}",
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
                                         style = MaterialTheme.typography.labelSmall,
                                         color = HomeMuted
                                     )
@@ -3488,6 +3565,8 @@ private fun LessonDetailPageContent(
                                     )
                                     Text(
                                         text = "وضعیت واقعی یادگیری شما: ${masteryStatus.first} — ${masteryStatus.second}",
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
                                         style = MaterialTheme.typography.labelSmall,
                                         fontWeight = FontWeight.Bold,
                                         color = lessonAccent
@@ -3510,9 +3589,9 @@ private fun LessonDetailPageContent(
                     ) {
                         Column(
                             modifier = Modifier
-                                .padding(16.dp)
+                                .padding(14.dp)
                                 .animateContentSize(animationSpec = JellyContentSizeSpring),
-                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
@@ -3522,12 +3601,16 @@ private fun LessonDetailPageContent(
                                 Column(modifier = Modifier.weight(1f)) {
                                     Text(
                                         text = "دستیار آموزش از منفی صفر (کمک‌معلم گام‌به‌گام)",
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
                                         style = MaterialTheme.typography.titleSmall,
                                         fontWeight = FontWeight.Bold,
                                         color = HomeText
                                     )
                                     Text(
                                         text = "یکی را بزن تا همان‌جا ساده‌تر توضیح دهم:",
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
                                         style = MaterialTheme.typography.labelSmall,
                                         color = HomeMuted
                                     )
@@ -3542,6 +3625,8 @@ private fun LessonDetailPageContent(
                                 ) {
                                     Text(
                                         text = if (activeAssistAction == 7) "بستن الگوی ۱۰گانه" else "درس‌نامه ۱۰ مرحله‌ای",
+                                        maxLines = 1,
+                                        softWrap = false,
                                         style = MaterialTheme.typography.labelSmall,
                                         fontWeight = FontWeight.Bold,
                                         color = if (activeAssistAction == 7) HomeOnPrimary else MaterialTheme.colorScheme.onPrimaryContainer,
@@ -3582,6 +3667,8 @@ private fun LessonDetailPageContent(
                                             style = MaterialTheme.typography.labelSmall,
                                             fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
                                             color = if (selected) HomeOnPrimary else HomeText,
+                                            maxLines = 1,
+                                            softWrap = false,
                                             modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
                                         )
                                     }
@@ -3603,6 +3690,8 @@ private fun LessonDetailPageContent(
                                             0 -> {
                                                 Text(
                                                     text = "۱. توضیح به زبان فوق‌العاده ساده و خودمانی:",
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis,
                                                     style = MaterialTheme.typography.labelLarge,
                                                     fontWeight = FontWeight.Bold,
                                                     color = lessonAccent
@@ -3614,6 +3703,8 @@ private fun LessonDetailPageContent(
                                                 HorizontalDivider(thickness = 1.dp, color = HomeBorder)
                                                 Text(
                                                     text = "معنی واژه‌های تخصصی این درس به زبان ساده:",
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis,
                                                     style = MaterialTheme.typography.labelMedium,
                                                     fontWeight = FontWeight.Bold,
                                                     color = HomeText
@@ -3628,6 +3719,8 @@ private fun LessonDetailPageContent(
                                             1 -> {
                                                 Text(
                                                     text = "۲. نمایش تصویری، نمودار و انیمیشن گام‌به‌گام مبحث:",
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis,
                                                     style = MaterialTheme.typography.labelLarge,
                                                     fontWeight = FontWeight.Bold,
                                                     color = lessonAccent
@@ -3645,6 +3738,8 @@ private fun LessonDetailPageContent(
                                             2 -> {
                                                 Text(
                                                     text = "۳. مثال ملموس دیگر از زندگی روزمره:",
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis,
                                                     style = MaterialTheme.typography.labelLarge,
                                                     fontWeight = FontWeight.Bold,
                                                     color = lessonAccent
@@ -3657,6 +3752,8 @@ private fun LessonDetailPageContent(
                                             3 -> {
                                                 Text(
                                                     text = "۴. شروع از پایه‌ترین نقطه (پیش‌نیازهای منفی صفر):",
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis,
                                                     style = MaterialTheme.typography.labelLarge,
                                                     fontWeight = FontWeight.Bold,
                                                     color = lessonAccent
@@ -3668,6 +3765,8 @@ private fun LessonDetailPageContent(
                                                 if (prerequisiteLinks.isNotEmpty()) {
                                                     Text(
                                                         text = "برای مطالعه درس پیش‌نیاز قبلی روی دکمه زیر بزنید:",
+                                                        maxLines = 1,
+                                                        overflow = TextOverflow.Ellipsis,
                                                         style = MaterialTheme.typography.labelSmall,
                                                         color = HomeMuted
                                                     )
@@ -3676,13 +3775,20 @@ private fun LessonDetailPageContent(
                                                         onClick = { onNavigateToLesson(firstPre.prerequisiteLessonId) },
                                                         shape = RoundedCornerShape(10.dp)
                                                     ) {
-                                                        Text("رفتن به پیش‌نیاز: ${firstPre.prerequisiteTitle}")
+                                                        Text(
+                                                            text = "رفتن به پیش‌نیاز: ${firstPre.prerequisiteTitle}",
+                                                            maxLines = 1,
+                                                            softWrap = false,
+                                                            overflow = TextOverflow.Ellipsis
+                                                        )
                                                     }
                                                 }
                                             }
                                             4 -> {
                                                 Text(
                                                     text = "۵. حل مرحله‌به‌مرحله و بدون پرش مثال پایه:",
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis,
                                                     style = MaterialTheme.typography.labelLarge,
                                                     fontWeight = FontWeight.Bold,
                                                     color = lessonAccent
@@ -3702,6 +3808,8 @@ private fun LessonDetailPageContent(
                                             5 -> {
                                                 Text(
                                                     text = "۶. تمرین کوچک هدایت‌شده (با تشخیص گام اشتباه):",
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis,
                                                     style = MaterialTheme.typography.labelLarge,
                                                     fontWeight = FontWeight.Bold,
                                                     color = lessonAccent
@@ -3762,6 +3870,8 @@ private fun LessonDetailPageContent(
                                             6 -> {
                                                 Text(
                                                     text = "۷. مرور سریع، خلاصه نکات و جلوگیری از اشتباه رایج:",
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis,
                                                     style = MaterialTheme.typography.labelLarge,
                                                     fontWeight = FontWeight.Bold,
                                                     color = lessonAccent
@@ -3781,6 +3891,8 @@ private fun LessonDetailPageContent(
                                             7 -> {
                                                 Text(
                                                     text = "الگوی کامل ۱۰ مرحله‌ای آموزش از منفی صفر:",
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis,
                                                     style = MaterialTheme.typography.titleSmall,
                                                     fontWeight = FontWeight.Bold,
                                                     color = lessonAccent
@@ -3788,28 +3900,68 @@ private fun LessonDetailPageContent(
                                                 BiDiText(text = "۱. این موضوع درباره چیست؟ ${minusZeroGuide.oneSentenceWhatIsIt}", style = MaterialTheme.typography.bodySmall)
                                                 BiDiText(text = "۲. کاربرد در زندگی واقعی: ${minusZeroGuide.realLifeApplication}", style = MaterialTheme.typography.bodySmall)
                                                 BiDiText(text = "۳. تصویر ذهنی ساده: ${minusZeroGuide.simpleVisualBlueprint}", style = MaterialTheme.typography.bodySmall)
-                                                Text(text = "۴. توضیح قدم‌به‌قدم به زبان ساده:", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = HomeText)
+                                                Text(
+                                                    text = "۴. توضیح قدم‌به‌قدم به زبان ساده:",
+                                                    style = MaterialTheme.typography.labelMedium,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = HomeText,
+                                                    maxLines = 1,
+                                                    softWrap = false,
+                                                    overflow = TextOverflow.Ellipsis
+                                                )
                                                 minusZeroGuide.stepByStepSimpleExplanation.forEach { s ->
                                                     BiDiText(text = "• $s", style = MaterialTheme.typography.bodySmall)
                                                 }
                                                 BiDiText(text = "۵. مثال آسان: ${minusZeroGuide.superEasyExampleQuestion}", style = MaterialTheme.typography.bodySmall)
-                                                Text(text = "۶. حل مرحله‌به‌مرحله مثال:", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = HomeText)
+                                                Text(
+                                                    text = "۶. حل مرحله‌به‌مرحله مثال:",
+                                                    style = MaterialTheme.typography.labelMedium,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = HomeText,
+                                                    maxLines = 1,
+                                                    softWrap = false,
+                                                    overflow = TextOverflow.Ellipsis
+                                                )
                                                 minusZeroGuide.superEasyExampleSteps.forEach { s ->
                                                     BiDiText(text = "• $s", style = MaterialTheme.typography.bodySmall)
                                                 }
                                                 BiDiText(text = "۸. اشتباه رایج و راه جلوگیری: ${minusZeroGuide.commonMistakeAndPrevention}", style = MaterialTheme.typography.bodySmall)
                                                 BiDiText(text = "۱۰. بررسی فهم مطلب: ${minusZeroGuide.checkUnderstandingQuestion}\n${minusZeroGuide.checkUnderstandingAnswer}", style = MaterialTheme.typography.bodySmall)
                                                 HorizontalDivider(thickness = 1.dp, color = HomeBorder)
-                                                Text(text = "سؤال تشریحی امتحان نهایی و پاسخ استاندارد:", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = lessonAccent)
+                                                Text(
+                                                    text = "سؤال تشریحی امتحان نهایی و پاسخ استاندارد:",
+                                                    style = MaterialTheme.typography.labelMedium,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = lessonAccent,
+                                                    maxLines = 1,
+                                                    softWrap = false,
+                                                    overflow = TextOverflow.Ellipsis
+                                                )
                                                 BiDiText(text = minusZeroGuide.finalExamWrittenQuestion, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)
                                                 BiDiText(text = minusZeroGuide.finalExamStandardAnswer, style = MaterialTheme.typography.bodySmall)
                                                 HorizontalDivider(thickness = 1.dp, color = HomeBorder)
-                                                Text(text = "نکات کنکوری و دام‌های تستی:", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = lessonAccent)
+                                                Text(
+                                                    text = "نکات کنکوری و دام‌های تستی:",
+                                                    style = MaterialTheme.typography.labelMedium,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = lessonAccent,
+                                                    maxLines = 1,
+                                                    softWrap = false,
+                                                    overflow = TextOverflow.Ellipsis
+                                                )
                                                 minusZeroGuide.konkoorTipsAndTraps.forEach { tip ->
                                                     BiDiText(text = "• $tip", style = MaterialTheme.typography.bodySmall)
                                                 }
                                                 HorizontalDivider(thickness = 1.dp, color = HomeBorder)
-                                                Text(text = "مسیر ۹ سطحی پیشرفت در این مبحث (از سطح ۰ تا سطح ۸):", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = lessonAccent)
+                                                Text(
+                                                    text = "مسیر ۹ سطحی پیشرفت در این مبحث (از سطح ۰ تا سطح ۸):",
+                                                    style = MaterialTheme.typography.labelMedium,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = lessonAccent,
+                                                    maxLines = 1,
+                                                    softWrap = false,
+                                                    overflow = TextOverflow.Ellipsis
+                                                )
                                                 nineLevelPath.forEach { (levelTitle, levelDetail) ->
                                                     BiDiText(
                                                         text = "• $levelTitle: $levelDetail",
@@ -3895,6 +4047,7 @@ private fun LessonDetailPageContent(
                                         Spacer(modifier = Modifier.width(10.dp))
                                         BiDiText(
                                             text = "گام ${step.stepNumber}: ${step.title}",
+                                            maxLines = 1,
                                             style = MaterialTheme.typography.titleMedium,
                                             fontWeight = FontWeight.Bold,
                                             color = HomeText,
@@ -3912,6 +4065,7 @@ private fun LessonDetailPageContent(
                                         ) {
                                             Text(
                                                 text = if (isStepMasked) "نمایش کلمات" else "محو کلمات",
+                                                softWrap = false,
                                                 style = MaterialTheme.typography.labelSmall,
                                                 fontWeight = FontWeight.Bold,
                                                 color = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -3966,6 +4120,8 @@ private fun LessonDetailPageContent(
                                             ) {
                                                 Text(
                                                     text = "مثال کاربردی مرتبط با گام ${BidiFormatter.toPersianDigits(step.stepNumber.toString())}",
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis,
                                                     style = MaterialTheme.typography.labelMedium,
                                                     fontWeight = FontWeight.Bold,
                                                     color = lessonAccent
@@ -3978,6 +4134,8 @@ private fun LessonDetailPageContent(
                                                 ) {
                                                     Text(
                                                         text = if (showInlineSolution) "بستن پاسخ" else "مشاهده پاسخ تشریحی",
+                                                        maxLines = 1,
+                                                        softWrap = false,
                                                         style = MaterialTheme.typography.labelSmall,
                                                         fontWeight = FontWeight.Bold,
                                                         color = if (showInlineSolution) HomeOnPrimary else lessonAccent,
@@ -4034,12 +4192,16 @@ private fun LessonDetailPageContent(
                                         Column(modifier = Modifier.weight(1f)) {
                                             Text(
                                                 text = "شبیه‌ساز و نمودار تعاملی این مبحث",
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis,
                                                 style = MaterialTheme.typography.labelLarge,
                                                 fontWeight = FontWeight.Bold,
                                                 color = HomeText
                                             )
                                             Text(
                                                 text = "مشاهده گام‌به‌گام و تعاملی مفهوم تدریس‌شده در همین بخش",
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis,
                                                 style = MaterialTheme.typography.labelSmall,
                                                 color = HomeMuted
                                             )
@@ -4051,6 +4213,8 @@ private fun LessonDetailPageContent(
                                         ) {
                                             Text(
                                                 text = if (showInlineInteractive) "بستن شبیه‌ساز" else "اجرای شبیه‌ساز",
+                                                maxLines = 1,
+                                                softWrap = false,
                                                 style = MaterialTheme.typography.labelSmall,
                                                 fontWeight = FontWeight.Bold,
                                                 color = if (showInlineInteractive) HomeOnPrimary else MaterialTheme.colorScheme.onPrimaryContainer,
@@ -4094,6 +4258,8 @@ private fun LessonDetailPageContent(
                                     Spacer(modifier = Modifier.width(6.dp))
                                     Text(
                                         text = "فرمول‌ها و قواعد اصلی درس",
+                                        maxLines = 1,
+                                        softWrap = false,
                                         style = MaterialTheme.typography.titleSmall,
                                         fontWeight = FontWeight.Bold,
                                         color = lessonAccent
@@ -4134,6 +4300,8 @@ private fun LessonDetailPageContent(
                             ) {
                                 Text(
                                     text = BidiFormatter.formatMixedPersianText("مثال حل‌شده ${exIndex + 1}:"),
+                                    maxLines = 1,
+                                    softWrap = false,
                                     style = MaterialTheme.typography.labelLarge,
                                     fontWeight = FontWeight.Bold,
                                     color = lessonAccent
@@ -4148,6 +4316,8 @@ private fun LessonDetailPageContent(
                                 ) {
                                     Text(
                                         text = if (isDiagramExpanded) "▲ بستن نمودار" else "▼ مشاهده نمودار",
+                                        maxLines = 1,
+                                        softWrap = false,
                                         style = MaterialTheme.typography.labelSmall,
                                         fontWeight = FontWeight.SemiBold,
                                         color = lessonAccent,
@@ -4184,6 +4354,8 @@ private fun LessonDetailPageContent(
                                         ) {
                                             Text(
                                                 text = "نمودار درختی و کالبدشکافی ساختار این مثال:",
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis,
                                                 style = MaterialTheme.typography.labelSmall,
                                                 fontWeight = FontWeight.Bold,
                                                 color = lessonAccent
@@ -4210,6 +4382,8 @@ private fun LessonDetailPageContent(
 
                             Text(
                                 text = "گام‌های حل تشریحی:",
+                                maxLines = 1,
+                                softWrap = false,
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold,
                                 color = lessonAccent
@@ -4254,6 +4428,8 @@ private fun LessonDetailPageContent(
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Text(
                                     text = "سوال خودآزمایی انتهای درس:",
+                                    maxLines = 1,
+                                    softWrap = false,
                                     style = MaterialTheme.typography.titleSmall,
                                     fontWeight = FontWeight.Bold,
                                     color = HomeText
@@ -4319,6 +4495,8 @@ private fun LessonDetailPageContent(
                                                 if ((showMiniAnswer || selectedMiniOption != -1) && isCorrect) {
                                                     Text(
                                                         text = "✓ پاسخ صحیح",
+                                                        maxLines = 1,
+                                                        softWrap = false,
                                                         style = MaterialTheme.typography.labelSmall,
                                                         fontWeight = FontWeight.Bold,
                                                         color = HomeGreen
@@ -4343,6 +4521,8 @@ private fun LessonDetailPageContent(
                                     if (selectedMiniOption != -1 && selectedMiniOption != mini.correctIndex) {
                                         Text(
                                             text = "تحلیل مرحله‌ای علت اشتباه (آموزش مجدد بدون سرزنش):",
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
                                             style = MaterialTheme.typography.labelMedium,
                                             fontWeight = FontWeight.Bold,
                                             color = MaterialTheme.colorScheme.error
@@ -4358,6 +4538,8 @@ private fun LessonDetailPageContent(
                                     }
                                     Text(
                                         text = "پاسخ تشریحی و دلیل علمی:",
+                                        maxLines = 1,
+                                        softWrap = false,
                                         style = MaterialTheme.typography.labelMedium,
                                         fontWeight = FontWeight.Bold,
                                         color = lessonAccent
@@ -4383,19 +4565,23 @@ private fun LessonDetailPageContent(
                     modifier = Modifier.fillMaxWidth().testTag("more_lesson_cards_toggle")
                 ) {
                     Row(
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 text = if (showMoreLessonCards) "بستن ابزارها" else "ابزارها",
+                                maxLines = 1,
+                                softWrap = false,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontWeight = FontWeight.Bold,
                                 color = lessonAccent
                             )
                             Text(
                                 text = "یادداشت، کارگاه، نکات تستی، روش مطالعه",
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
                                 style = MaterialTheme.typography.labelSmall,
                                 color = HomeMuted
                             )
@@ -4441,6 +4627,8 @@ private fun LessonDetailPageContent(
                             ) {
                                 Text(
                                     text = "جدول کامل و استاندارد ۱۴ صیغه عربی (تطبیق ضمیر، ماضی، مضارع و معنی دقیق):",
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
                                     style = MaterialTheme.typography.titleSmall,
                                     fontWeight = FontWeight.Bold,
                                     color = lessonAccent
@@ -4535,6 +4723,7 @@ private fun LessonDetailPageContent(
                                 Spacer(modifier = Modifier.width(6.dp))
                                 BiDiText(
                                     text = advancedMethod.methodTitle,
+                                    maxLines = 1,
                                     style = MaterialTheme.typography.titleSmall,
                                     fontWeight = FontWeight.Bold,
                                     color = lessonAccent,
@@ -4583,6 +4772,8 @@ private fun LessonDetailPageContent(
                                     ) {
                                         Text(
                                             text = "رمزیادگیری علمی ۶بخشی و روش جایگزین بدون حفظ کردن:",
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
                                             style = MaterialTheme.typography.labelMedium,
                                             fontWeight = FontWeight.Bold,
                                             color = lessonAccent
@@ -4628,6 +4819,8 @@ private fun LessonDetailPageContent(
                     ) {
                         Text(
                             text = "یادداشت شخصی من برای این درس:",
+                            maxLines = 1,
+                            softWrap = false,
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.Bold,
                             color = HomeText
@@ -4672,7 +4865,10 @@ private fun LessonDetailPageContent(
                             Text(
                                 text = if (isCompleted) "این درس کامل مطالعه شد (ذخیره یادداشت)" else "ثبت مطالعه کامل این درس و ذخیره یادداشت",
                                 style = MaterialTheme.typography.labelLarge,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
+                                maxLines = 1,
+                                softWrap = false,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
                     }
