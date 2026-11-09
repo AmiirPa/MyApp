@@ -1221,6 +1221,266 @@ private fun ExpressiveHeroStudyCard(
 }
 
 @Composable
+
+/**
+ * دکمه‌های قدم‌به‌قدم زیر هر بخش درس: «یاد گرفتم» بخش بعد را باز می‌کند،
+ * «یاد نگرفتم» همان بخش را برای دوباره‌خواندن نشان می‌دهد.
+ */
+@Composable
+private fun StepLearnGateCard(
+    stepNumber: Int,
+    totalSteps: Int,
+    accentColor: Color,
+    onLearned: () -> Unit,
+    onNotLearned: () -> Unit
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        color = HomeSurface(),
+        border = BorderStroke(1.dp, accentColor.copy(alpha = 0.45f))
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Text(
+                text = "بخش " + BidiFormatter.toPersianDigits(stepNumber.toString()) +
+                    " از " + BidiFormatter.toPersianDigits(totalSteps.toString()) + " تمام شد — یاد گرفتی؟",
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                color = HomeText
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Button(
+                    onClick = onLearned,
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = accentColor,
+                        contentColor = Color.White
+                    )
+                ) {
+                    Text(
+                        text = "یاد گرفتم",
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        softWrap = false
+                    )
+                }
+                OutlinedButton(
+                    onClick = onNotLearned,
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(
+                        text = "یاد نگرفتم",
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        softWrap = false
+                    )
+                }
+            }
+        }
+    }
+}
+
+/** همهٔ بخش‌های درس یاد گرفته شد — رفتن به مثال و تست. */
+@Composable
+private fun StepsCompletedCard(
+    accentColor: Color,
+    onGoToPractice: () -> Unit
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        color = HomeSurface(),
+        border = BorderStroke(1.dp, accentColor.copy(alpha = 0.45f))
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "آفرین! همهٔ بخش‌های این درس را یاد گرفتی.",
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                color = HomeText
+            )
+            Button(
+                onClick = onGoToPractice,
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = accentColor,
+                    contentColor = Color.White
+                )
+            ) {
+                Text(
+                    text = "رفتن به مثال و تست",
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    softWrap = false
+                )
+            }
+        }
+    }
+}
+
+/** نکات کلیدی همین درس: فرمول‌ها و قواعد اصلی + رمز هر گام. */
+@Composable
+private fun LessonOwnKeyPointsCard(
+    lesson: ZeroLesson,
+    accentColor: Color
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        color = HomeSurface(),
+        border = BorderStroke(1.dp, HomeBorder)
+    ) {
+        Column(
+            modifier = Modifier.padding(18.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Default.Star,
+                    contentDescription = null,
+                    tint = accentColor,
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                    text = "نکات کلیدی این درس",
+                    maxLines = 1,
+                    softWrap = false,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = accentColor
+                )
+            }
+            if (lesson.goldenFormulas.isNotEmpty()) {
+                SmartDiagramAndFormulaBlock(
+                    rawText = lesson.goldenFormulas.joinToString("\n"),
+                    accentColor = accentColor
+                )
+            }
+            lesson.steps.forEach { step ->
+                if (step.memoryTrick.isNotBlank()) {
+                    GoldenKeyPointCalloutCard(
+                        keyPointText = step.memoryTrick,
+                        title = "رمز گام ${step.stepNumber}",
+                        level = GoldenPointLevel.autoDetect(step.memoryTrick)
+                    )
+                }
+            }
+        }
+    }
+}
+
+/**
+ * نکات کلیدی کتاب — سر جای خودش (صفحهٔ کتاب). راهنماهای تصویری کلی هر موضوع
+ * که قبلاً داخل هر درس تکرار می‌شدند، حالا فقط اینجا هستند.
+ */
+@Composable
+private fun SubjectBookKeyPointsCard(
+    subjectId: String,
+    accentColor: Color
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        color = HomeSurface(),
+        border = BorderStroke(1.dp, HomeBorder)
+    ) {
+        Column(
+            modifier = Modifier.padding(18.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Default.MenuBook,
+                    contentDescription = null,
+                    tint = accentColor,
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                    text = "نکات کلیدی کتاب",
+                    maxLines = 1,
+                    softWrap = false,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = accentColor
+                )
+            }
+            when (subjectId) {
+                "arabic" -> {
+                    com.example.ui.components.ArabicZeroToMasterVisualGuide(
+                        accentColor = accentColor
+                    )
+                    Text(
+                        text = "جدول کامل و استاندارد ۱۴ صیغه عربی (تطبیق ضمیر، ماضی، مضارع و معنی دقیق):",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = accentColor
+                    )
+                    com.example.ui.components.EducationalStructuredTable(
+                        rows = MinusZeroLearningEngine.arabic14ConjugationGuideRows,
+                        accentColor = accentColor
+                    )
+                }
+                "english" -> {
+                    com.example.ui.components.EnglishZeroToMasterVisualGuide(
+                        accentColor = accentColor
+                    )
+                }
+                "math" -> {
+                    com.example.ui.components.MathDeepMasteryVisualGuide(
+                        accentColor = accentColor
+                    )
+                }
+                "fonoon" -> {
+                    com.example.ui.components.FonoonAndAroozVisualGuide(
+                        accentColor = accentColor
+                    )
+                }
+                "arooz" -> {
+                    com.example.ui.components.FonoonAndAroozVisualGuide(
+                        accentColor = accentColor
+                    )
+                    com.example.ui.components.AroozMasteryInteractiveTrainer(
+                        accentColor = accentColor
+                    )
+                }
+                "history" -> {
+                    com.example.ui.components.HistoryDynastyMemoryVault(
+                        accentColor = accentColor
+                    )
+                }
+                "economics" -> {
+                    com.example.ui.components.EconomicsMathAndConceptsVisualGuide(
+                        accentColor = accentColor
+                    )
+                }
+                "philosophy", "logic" -> {
+                    com.example.ui.components.PhilosophyAndLogicVisualGuide(
+                        accentColor = accentColor
+                    )
+                }
+            }
+        }
+    }
+}
+
 private fun LearningPathHeroCard(
     stepNumber: Int,
     stepTitle: String,
@@ -1237,8 +1497,11 @@ private fun LearningPathHeroCard(
     // (تصویر زمینه) می‌آید؛ وقتی خاموش است، همان نارنجی/کهرباییِ گرم می‌ماند.
     val heroScheme = MaterialTheme.colorScheme
     val heroUseDynamic = LocalAppThemeController.current.useDynamicColor
+    // گرادیان داینامیک سیستم (سامسونگ) گاهی خیلی روشن است و متن سفید رویش خوانا نیست؛
+    // رنگ‌ها را به سمت تیره می‌بریم تا کارت همیشه تیره و اشباع بماند.
+    val darkenHero: (Color) -> Color = { c -> Color(c.red * 0.55f, c.green * 0.55f, c.blue * 0.55f, c.alpha) }
     val heroGradientColors = if (heroUseDynamic) {
-        listOf(heroScheme.primary, heroScheme.secondary, heroScheme.tertiary)
+        listOf(darkenHero(heroScheme.primary), darkenHero(heroScheme.secondary), darkenHero(heroScheme.tertiary))
     } else {
         listOf(Color(0xFFEA580C), Color(0xFFF97316), Color(0xFFF59E0B), Color(0xFFFBBF24))
     }
@@ -1327,7 +1590,7 @@ private fun LearningPathHeroCard(
                     Text(
                         text = sectionLabel,
                         fontSize = 11.sp,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        color = Color.White,
                         fontWeight = FontWeight.Medium
                     )
                     Text(
@@ -1336,7 +1599,7 @@ private fun LearningPathHeroCard(
                             ": " + stepTitle,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        color = Color.White,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -1344,7 +1607,7 @@ private fun LearningPathHeroCard(
                         text = BidiFormatter.toPersianDigits(completedSteps.toString()) +
                             " قدم کامل شد",
                         fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        color = Color.White,
                         fontWeight = FontWeight.Medium
                     )
                 }
@@ -2710,6 +2973,16 @@ fun ZeroLessonsScreen(
                                 }
                             }
 
+                            // نکات کلیدی کتاب (سر جای خودش: صفحهٔ کتاب، نه داخل هر درس)
+                            if (currentSubject.id in listOf("arabic", "english", "math", "fonoon", "arooz", "history", "economics", "philosophy", "logic")) {
+                                item(key = "subject_book_key_points") {
+                                    SubjectBookKeyPointsCard(
+                                        subjectId = currentSubject.id,
+                                        accentColor = currentSubject.color
+                                    )
+                                }
+                            }
+
                             item(key = "subject_topic_search") {
                                 OutlinedTextField(
                                     value = lessonSearchQuery,
@@ -2842,6 +3115,11 @@ private fun LessonDetailPageContent(
     var showMiniAnswer by remember(enrichedLesson.id) { mutableStateOf(false) }
     var showPdfDialog by remember(enrichedLesson.id) { mutableStateOf(false) }
     var studySectionFilter by remember(enrichedLesson.id) { mutableIntStateOf(0) }
+    // آموزش قدم‌به‌قدم داخل درس: اول فقط بخش ۱ نشان داده می‌شود؛ بعد از
+    // «یاد گرفتم» بخش بعد باز می‌شود. «نمایش یکجا» (تب ۴) همه را نشان می‌دهد.
+    var revealedStepCount by remember(enrichedLesson.id) { mutableIntStateOf(1) }
+    var allStepsLearned by remember(enrichedLesson.id) { mutableStateOf(false) }
+    var stepRetryHintFor by remember(enrichedLesson.id) { mutableStateOf<Int?>(null) }
 
     var isClozePracticeActive by remember(enrichedLesson.id) { mutableStateOf(false) }
     val revealedClozeKeys = remember(enrichedLesson.id) { androidx.compose.runtime.mutableStateMapOf<String, Boolean>() }
@@ -4313,8 +4591,14 @@ private fun LessonDetailPageContent(
 
             // ۲. گام‌های تدریس مفهومی کتاب درسی (همراه با جدول، مثال کاربردی مرتبط، و انیمیشن/نمودار در همان بخش)
             if (studySectionFilter in listOf(0, 4)) {
+                // قدم‌به‌قدم: در تب درس‌نامه فقط بخش‌های بازشده نشان داده می‌شوند.
+                val visibleSteps = if (studySectionFilter == 0) {
+                    enrichedLesson.steps.take(revealedStepCount.coerceIn(1, enrichedLesson.steps.size.coerceAtLeast(1)))
+                } else {
+                    enrichedLesson.steps
+                }
                 itemsIndexed(
-                    enrichedLesson.steps,
+                    visibleSteps,
                     key = { _, step -> "${enrichedLesson.id}_step_${step.stepNumber}_${step.title.hashCode()}" }
                 ) { stepIdx, step ->
                     val stepMaskKey = "step_body_mask_${step.stepNumber}"
@@ -4411,7 +4695,7 @@ private fun LessonDetailPageContent(
 
                                 BiDiText(
                                     text = displayedStepExplanation,
-                                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 17.sp, lineHeight = 29.sp),
+                                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 17.sp, lineHeight = 32.sp),
                                     isUnderlineEnabled = themeController.isUnderlineKeyPointsEnabled,
                                     isHighlighterEnabled = themeController.isHighlighterEnabled
                                 )
@@ -4431,6 +4715,23 @@ private fun LessonDetailPageContent(
                                         title = "نکته‌سنجی و رمز گام ${step.stepNumber}",
                                         level = GoldenPointLevel.autoDetect(step.memoryTrick)
                                     )
+                                }
+
+                                if (stepRetryHintFor == step.stepNumber) {
+                                    Surface(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        shape = RoundedCornerShape(12.dp),
+                                        color = HomeBackground,
+                                        border = BorderStroke(1.dp, lessonAccent.copy(alpha = 0.45f))
+                                    ) {
+                                        BiDiText(
+                                            text = "اشکالی ندارد! همین بخش را یک بار دیگر آرام بخوان؛ رمز گام را هم دوباره ببین، بعد «یاد گرفتم» را بزن.",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            fontWeight = FontWeight.Bold,
+                                            color = lessonAccent,
+                                            modifier = Modifier.padding(12.dp)
+                                        )
+                                    }
                                 }
 
                                 // مثال کاربردی مرتبط دقیقاً زیر مفهوم همین گام (در تب درس‌نامه)
@@ -4618,6 +4919,41 @@ private fun LessonDetailPageContent(
                                 )
                             }
                         }
+                    }
+                }
+            }
+
+            // آموزش قدم‌به‌قدم: دکمه‌های «یاد گرفتم / یاد نگرفتم» زیر آخرین بخش بازشده (فقط تب درس‌نامه)
+            if (studySectionFilter == 0 && enrichedLesson.steps.isNotEmpty()) {
+                if (revealedStepCount < enrichedLesson.steps.size) {
+                    item(key = "${enrichedLesson.id}_step_gate") {
+                        StepLearnGateCard(
+                            stepNumber = revealedStepCount,
+                            totalSteps = enrichedLesson.steps.size,
+                            accentColor = lessonAccent,
+                            onLearned = {
+                                stepRetryHintFor = null
+                                revealedStepCount = (revealedStepCount + 1).coerceAtMost(enrichedLesson.steps.size)
+                            },
+                            onNotLearned = { stepRetryHintFor = revealedStepCount }
+                        )
+                    }
+                } else if (!allStepsLearned) {
+                    item(key = "${enrichedLesson.id}_step_gate_last") {
+                        StepLearnGateCard(
+                            stepNumber = enrichedLesson.steps.size,
+                            totalSteps = enrichedLesson.steps.size,
+                            accentColor = lessonAccent,
+                            onLearned = { stepRetryHintFor = null; allStepsLearned = true },
+                            onNotLearned = { stepRetryHintFor = enrichedLesson.steps.size }
+                        )
+                    }
+                } else {
+                    item(key = "${enrichedLesson.id}_steps_done") {
+                        StepsCompletedCard(
+                            accentColor = lessonAccent,
+                            onGoToPractice = { studySectionFilter = 1 }
+                        )
                     }
                 }
             }
@@ -4972,90 +5308,20 @@ private fun LessonDetailPageContent(
             if (showMoreLessonCards) {
             // ۴. کارگاه تصویری تعاملی و نمودارها (منحصراً در تب اختصاصی ۲ کارگاه — استفاده از enrichedLesson)
             if (studySectionFilter == 2) {
+                // نکات کلیدی همین درس (اول): فرمول‌ها و قواعد اصلی + رمز هر گام.
+                // راهنماهای کلی کتاب دیگر اینجا نیستند؛ سر جای خودشان (صفحهٔ کتاب) هستند.
+                item(key = "${enrichedLesson.id}_own_key_points") {
+                    LessonOwnKeyPointsCard(
+                        lesson = enrichedLesson,
+                        accentColor = lessonAccent
+                    )
+                }
+
                 item(key = "${enrichedLesson.id}_interactive_visual_card") {
                     LessonInteractiveVisualCard(
                         lesson = enrichedLesson,
                         subjectColor = lessonAccent
                     )
-                }
-
-                // راهنماهای تصویری تخصصی هر درس (منحصراً برای همان درس، بدون تداخل عنوان)
-                val normSubj = enrichedLesson.normalizedSubjectId()
-                if (normSubj == "arabic") {
-                    item(key = "${enrichedLesson.id}_arabic_zero_guide") {
-                        com.example.ui.components.ArabicZeroToMasterVisualGuide(
-                            accentColor = lessonAccent
-                        )
-                    }
-                    item(key = "${enrichedLesson.id}_arabic_14_conjugations_table") {
-                        Surface(
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(18.dp),
-                            color = HomeSurface(),
-                            border = BorderStroke(1.dp, HomeBorder)
-                        ) {
-                            Column(
-                                modifier = Modifier.padding(18.dp),
-                                verticalArrangement = Arrangement.spacedBy(10.dp)
-                            ) {
-                                Text(
-                                    text = "جدول کامل و استاندارد ۱۴ صیغه عربی (تطبیق ضمیر، ماضی، مضارع و معنی دقیق):",
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    style = MaterialTheme.typography.titleSmall,
-                                    fontWeight = FontWeight.Bold,
-                                    color = lessonAccent
-                                )
-                                com.example.ui.components.EducationalStructuredTable(
-                                    rows = MinusZeroLearningEngine.arabic14ConjugationGuideRows,
-                                    accentColor = lessonAccent
-                                )
-                            }
-                        }
-                    }
-                } else if (normSubj == "english") {
-                    item(key = "${enrichedLesson.id}_english_zero_guide") {
-                        com.example.ui.components.EnglishZeroToMasterVisualGuide(
-                            accentColor = lessonAccent
-                        )
-                    }
-                } else if (normSubj == "math") {
-                    item(key = "${enrichedLesson.id}_math_deep_guide") {
-                        com.example.ui.components.MathDeepMasteryVisualGuide(
-                            accentColor = lessonAccent
-                        )
-                    }
-                } else if (normSubj in listOf("fonoon", "arooz")) {
-                    item(key = "${enrichedLesson.id}_fonoon_deep_guide") {
-                        com.example.ui.components.FonoonAndAroozVisualGuide(
-                            accentColor = lessonAccent
-                        )
-                    }
-                    if (normSubj == "arooz") {
-                        item(key = "${enrichedLesson.id}_arooz_interactive_trainer") {
-                            com.example.ui.components.AroozMasteryInteractiveTrainer(
-                                accentColor = lessonAccent
-                            )
-                        }
-                    }
-                } else if (normSubj == "history") {
-                    item(key = "${enrichedLesson.id}_history_dynasty_vault") {
-                        com.example.ui.components.HistoryDynastyMemoryVault(
-                            accentColor = lessonAccent
-                        )
-                    }
-                } else if (normSubj == "economics") {
-                    item(key = "${lesson.id}_economics_deep_guide") {
-                        com.example.ui.components.EconomicsMathAndConceptsVisualGuide(
-                            accentColor = lessonAccent
-                        )
-                    }
-                } else if (normSubj in listOf("philosophy", "logic")) {
-                    item(key = "${lesson.id}_philosophy_logic_deep_guide") {
-                        com.example.ui.components.PhilosophyAndLogicVisualGuide(
-                            accentColor = lessonAccent
-                        )
-                    }
                 }
 
                 item(key = "${lesson.id}_visual_memory_tree_card") {

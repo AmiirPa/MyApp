@@ -1112,15 +1112,28 @@ private fun buildRichHighlightedPersianText(
                         val prefixSub = strippedText.substring(lineStart, colonIdx)
                         // Ensure it's a Persian/educational lead-in, not a time like 12:30 or URL
                         if (prefixSub.any { BidiFormatter.isPersianOrArabicLetterOrPunct(it) }) {
-                            safeSpanAdd(
-                                style = SpanStyle(
-                                    fontWeight = FontWeight.Bold,
-                                    color = effectiveUnderlineOrKeyColor,
-                                    textDecoration = if (isUnderlineMode) TextDecoration.Underline else TextDecoration.None
-                                ),
-                                rawStart = lineStart,
-                                rawEnd = colonIdx + 1
-                            )
+                            if (colonIdx == lineEnd - 1) {
+                                // سرفصل بخش (دو نقطه آخر خط، مثل «📖 آموزش کامل...:»):
+                                // فقط بولد؛ خط زیر آبی و رنگ آبی ندارد تا شبیه لینک نشود.
+                                safeSpanAdd(
+                                    style = SpanStyle(
+                                        fontWeight = FontWeight.Bold,
+                                        textDecoration = TextDecoration.None
+                                    ),
+                                    rawStart = lineStart,
+                                    rawEnd = colonIdx + 1
+                                )
+                            } else {
+                                safeSpanAdd(
+                                    style = SpanStyle(
+                                        fontWeight = FontWeight.Bold,
+                                        color = effectiveUnderlineOrKeyColor,
+                                        textDecoration = if (isUnderlineMode) TextDecoration.Underline else TextDecoration.None
+                                    ),
+                                    rawStart = lineStart,
+                                    rawEnd = colonIdx + 1
+                                )
+                            }
                         }
                     }
                 }

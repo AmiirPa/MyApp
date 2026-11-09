@@ -29,11 +29,26 @@ object LearningPath1406 {
             title = "روش مطالعه از صفر",
             subtitle = "اول یاد بگیر چطور بخوانی، بعد برو سراغ درس ها",
             lessonIds = listOf(
+                // قدم‌به‌قدم، از درس ۱: همهٔ ۱۶ درس پوشهٔ ۱ روش‌های مطالعه،
+                // دقیقاً به همان ترتیبی که برنامه شماره‌گذاری می‌کند (درس ۱ تا ۱۶)، بدون پرش.
+                "study_01_feynman_active_recall_leitner",
+                "study_04_feynman_technique_deep_mastery",
                 "methods1406-01-sq3r",
+                "study_05_daily_weekly_planning",
+                "methods1406-02-memory-palace",
+                "study_06_sleep_focus_phone",
+                "methods1406-03-interleaving",
+                "methods1406-04-arabic-study",
                 "methods1406-05-active-study",
+                "sm-tip-02",
+                "sm-tip-03",
+                "sm-tip-04",
+                "methods1406-08-pomodoro",
+                "sm-tip-05",
+                "methods1406-09-summary-mindmap",
                 "methods1406-10-sleep-energy"
             ),
-            checkLessonId = "methods1406-01-sq3r",
+            checkLessonId = "study_01_feynman_active_recall_leitner",
             status = LearningPathStatus.READY,
             gapNote = ""
         ),
@@ -291,7 +306,7 @@ object LearningPath1406 {
         LearningPathStep(
             stepNumber = 20,
             title = "دینی دهم بخش یک",
-            subtitle = "هدف زندگی و قدرت پرواز و آهنگ سفر، درس یک تا چهار",
+            subtitle = "هدف زندگی و قدرت پرواز و به‌سوی جاودانگی و آینده روشن، درس یک تا چهار",
             lessonIds = listOf(
                 "dini1-01-hadaf-zendegi",
                 "dini1-02-qodrat-parvaz",
@@ -305,7 +320,7 @@ object LearningPath1406 {
         LearningPathStep(
             stepNumber = 21,
             title = "دینی دهم بخش دو",
-            subtitle = "منزلگاه بعد، واقعه بزرگ، فرجام کار و اعتماد، درس پنج تا هشت",
+            subtitle = "منزلگاه بعد و واقعه بزرگ و فرجام کار و آهنگ سفر",
             lessonIds = listOf(
                 "dini1-05-manzelgahe-baad",
                 "dini1-06-vagheye-bozorg",
@@ -319,7 +334,7 @@ object LearningPath1406 {
         LearningPathStep(
             stepNumber = 22,
             title = "دینی دهم بخش سه",
-            subtitle = "یاری از دو یار عزیز و فضیلت آراستگی و پیام پوشش، درس نه تا دوازده",
+            subtitle = "اعتماد بر او و یاری از دو یار عزیز و فضیلت آراستگی و پیام پوشیدگی، درس ده تا سیزده",
             lessonIds = listOf(
                 "dini1-09-etemad-bar-oo",
                 "dini1-10-yari-az-do-yar-aziz",
