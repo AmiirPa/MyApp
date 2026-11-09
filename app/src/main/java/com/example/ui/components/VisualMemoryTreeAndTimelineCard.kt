@@ -216,7 +216,7 @@ fun VisualMemoryTreeAndTimelineCard(
             modifier = modifier
                 .fillMaxWidth()
                 .testTag("visual_memory_tree_card"),
-            shape = RoundedCornerShape(18.dp),
+            shape = RoundedCornerShape(22.dp),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surface
             ),
@@ -251,19 +251,26 @@ fun VisualMemoryTreeAndTimelineCard(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.weight(1f)
                     ) {
-                        Surface(
-                            color = accentColor,
-                            shape = RoundedCornerShape(10.dp),
-                            modifier = Modifier.size(38.dp)
+                        Box(
+                            modifier = Modifier
+                                .size(46.dp)
+                                .background(
+                                    Brush.linearGradient(
+                                        listOf(
+                                            accentColor,
+                                            MaterialTheme.colorScheme.secondaryContainer
+                                        )
+                                    ),
+                                    RoundedCornerShape(14.dp)
+                                ),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Icon(
-                                    imageVector = Icons.Default.AccountTree,
-                                    contentDescription = null,
-                                    tint = Color.White,
-                                    modifier = Modifier.size(22.dp)
-                                )
-                            }
+                            Icon(
+                                imageVector = Icons.Default.AccountTree,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(26.dp)
+                            )
                         }
                         Spacer(modifier = Modifier.width(10.dp))
                         Column {
@@ -294,6 +301,21 @@ fun VisualMemoryTreeAndTimelineCard(
                         tint = accentColor
                     )
                 }
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(4.dp)
+                        .background(
+                            Brush.linearGradient(
+                                listOf(
+                                    accentColor.copy(alpha = 0.4f),
+                                    MaterialTheme.colorScheme.tertiary.copy(alpha = 0.4f)
+                                )
+                            ),
+                            RoundedCornerShape(2.dp)
+                        )
+                )
 
                 AnimatedVisibility(
                     visible = isExpanded,
@@ -801,6 +823,20 @@ private fun InteractiveZoomPanTreeExplorer(
                 modifier = Modifier.padding(10.dp),
                 verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(5.dp)
+                        .background(
+                            Brush.linearGradient(
+                                listOf(
+                                    activeBranch.color.copy(alpha = 0.35f),
+                                    MaterialTheme.colorScheme.tertiary.copy(alpha = 0.35f)
+                                )
+                            ),
+                            RoundedCornerShape(3.dp)
+                        )
+                )
                 BiDiText(
                     text = "🔎 کالبدشکافی شاخه انتخاب‌شده: «${activeBranch.title}» (${activeBranch.badge})",
                     style = MaterialTheme.typography.titleSmall,

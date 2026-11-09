@@ -53,6 +53,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
@@ -547,7 +548,7 @@ fun TopRankersAndSocialTricksHub(
         modifier = modifier
             .fillMaxWidth()
             .testTag("top_rankers_social_tricks_hub"),
-        shape = RoundedCornerShape(18.dp),
+        shape = RoundedCornerShape(22.dp),
         color = MaterialTheme.colorScheme.surface,
         border = BorderStroke(1.2.dp, currentPlaybook.accentColor.copy(alpha = 0.45f)),
         tonalElevation = 2.dp
@@ -568,19 +569,26 @@ fun TopRankersAndSocialTricksHub(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Surface(
-                        color = currentPlaybook.accentColor.copy(alpha = 0.15f),
-                        shape = CircleShape,
-                        modifier = Modifier.size(40.dp)
+                    Box(
+                        modifier = Modifier
+                            .size(48.dp)
+                            .background(
+                                Brush.linearGradient(
+                                    listOf(
+                                        currentPlaybook.accentColor.copy(alpha = 0.22f),
+                                        MaterialTheme.colorScheme.secondaryContainer
+                                    )
+                                ),
+                                CircleShape
+                            ),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Icon(
-                                imageVector = Icons.Default.EmojiEvents,
-                                contentDescription = null,
-                                tint = currentPlaybook.accentColor,
-                                modifier = Modifier.size(22.dp)
-                            )
-                        }
+                        Icon(
+                            imageVector = Icons.Default.EmojiEvents,
+                            contentDescription = null,
+                            tint = currentPlaybook.accentColor,
+                            modifier = Modifier.size(26.dp)
+                        )
                     }
                     Spacer(modifier = Modifier.width(10.dp))
                     Column {
@@ -600,6 +608,21 @@ fun TopRankersAndSocialTricksHub(
                     }
                 }
             }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(4.dp)
+                    .background(
+                        Brush.linearGradient(
+                            listOf(
+                                currentPlaybook.accentColor.copy(alpha = 0.4f),
+                                MaterialTheme.colorScheme.tertiary.copy(alpha = 0.4f)
+                            )
+                        ),
+                        RoundedCornerShape(2.dp)
+                    )
+            )
 
             // 1.5 Search Bar across all 15 playbooks
             androidx.compose.material3.OutlinedTextField(
@@ -672,6 +695,20 @@ fun TopRankersAndSocialTricksHub(
                             modifier = Modifier.padding(12.dp),
                             verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(4.dp)
+                                    .background(
+                                        Brush.linearGradient(
+                                            listOf(
+                                                pb.accentColor.copy(alpha = 0.35f),
+                                                MaterialTheme.colorScheme.tertiary.copy(alpha = 0.35f)
+                                            )
+                                        ),
+                                        RoundedCornerShape(2.dp)
+                                    )
+                            )
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(
                                     imageVector = Icons.Default.Psychology,

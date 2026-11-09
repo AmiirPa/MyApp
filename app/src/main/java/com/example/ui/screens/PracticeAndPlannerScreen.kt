@@ -108,6 +108,7 @@ import com.example.data.curriculum.FlashcardItem
 import com.example.data.curriculum.SubjectCatalog
 import com.example.data.firebase.CloudStudyTask
 import com.example.ui.KonkoorUiState
+import com.example.ui.theme.resolveDynamicAccent
 import com.example.data.curriculum.KonkoorPastExamsArchive
 import com.example.data.curriculum.PastKonkoorExamPaper
 import com.example.data.curriculum.QuizQuestionItem
@@ -287,7 +288,7 @@ private fun LeitnerDeckView(
                         modifier = Modifier
                             .weight(1f)
                             .height(58.dp),
-                        shape = RoundedCornerShape(12.dp),
+                        shape = RoundedCornerShape(16.dp),
                         color = if (boxNum == 5) MaterialTheme.colorScheme.tertiaryContainer
                         else MaterialTheme.colorScheme.surfaceVariant
                     ) {
@@ -326,7 +327,7 @@ private fun LeitnerDeckView(
                         .fillMaxWidth()
                         .clickable { isFlipped = !isFlipped }
                         .testTag("leitner_active_card"),
-                    shape = RoundedCornerShape(14.dp),
+                    shape = RoundedCornerShape(16.dp),
                     colors = CardDefaults.cardColors(
                         containerColor = if (isFlipped) MaterialTheme.colorScheme.primaryContainer
                         else MaterialTheme.colorScheme.surface
@@ -532,7 +533,7 @@ private fun KonkoorQuizEngineView(
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(14.dp),
+                    shape = RoundedCornerShape(16.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f))
                 ) {
                     Column(
@@ -580,7 +581,7 @@ private fun KonkoorQuizEngineView(
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
+                    shape = RoundedCornerShape(16.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     border = androidx.compose.foundation.BorderStroke(0.7.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f)),
                     elevation = CardDefaults.cardElevation(defaultElevation = 0.5.dp)
@@ -739,7 +740,7 @@ private fun KonkoorQuizEngineView(
             items(uiState.examResults, key = { it.id }) { exam ->
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(14.dp),
+                    shape = RoundedCornerShape(16.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                 ) {
                     Row(
@@ -789,6 +790,22 @@ fun StudyPlannerAndFarhangianScreen(
     var showAddDialog by remember { mutableStateOf(false) }
     var plannerTab by remember { mutableIntStateOf(0) } // 0: برنامه روزانه, 1: گزارش پیشرفت, 2: تقویم هوشمند
 
+    // لهجهٔ گرم برنامه‌ریز: داینامیک کالر روشن باشد رنگ اصلی سیستم می‌آید، وگرنه tertiary سیستم.
+    val plannerAccent = resolveDynamicAccent(MaterialTheme.colorScheme.tertiary)
+    val plannerHeaderBrush = Brush.linearGradient(
+        listOf(
+            plannerAccent.copy(alpha = 0.85f),
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.85f),
+            MaterialTheme.colorScheme.tertiary.copy(alpha = 0.85f)
+        )
+    )
+    val plannerBarBrush = Brush.linearGradient(
+        listOf(
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.85f),
+            MaterialTheme.colorScheme.tertiary.copy(alpha = 0.85f)
+        )
+    )
+
     Scaffold(
         containerColor = PlannerBg,
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -813,9 +830,18 @@ fun StudyPlannerAndFarhangianScreen(
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 12.dp),
-                shape = RoundedCornerShape(14.dp),
-                color = PlannerSurface,
+                    .padding(horizontal = 20.dp, vertical = 12.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(
+                        Brush.linearGradient(
+                            listOf(
+                                MaterialTheme.colorScheme.primaryContainer,
+                                MaterialTheme.colorScheme.secondaryContainer
+                            )
+                        )
+                    ),
+                shape = RoundedCornerShape(16.dp),
+                color = Color.Transparent,
                 border = BorderStroke(1.dp, PlannerBorder)
             ) {
                 Row(
@@ -864,10 +890,13 @@ fun StudyPlannerAndFarhangianScreen(
                             val totalCount = uiState.studyTasks.size
                             val pct = if (totalCount > 0) (doneCount * 100) / totalCount else 0
                             Surface(
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(18.dp),
-                                color = PlannerSurface,
-                                border = BorderStroke(1.dp, PlannerBorder)
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(20.dp))
+                                    .background(plannerHeaderBrush),
+                                shape = RoundedCornerShape(20.dp),
+                                color = Color.Transparent,
+                                border = BorderStroke(1.dp, PlannerOnPrimary.copy(alpha = 0.35f))
                             ) {
                                 Column(
                                     modifier = Modifier.padding(18.dp),
@@ -882,13 +911,13 @@ fun StudyPlannerAndFarhangianScreen(
                                             text = "برنامه مطالعاتی من",
                                             fontSize = 17.sp,
                                             fontWeight = FontWeight.Bold,
-                                            color = PlannerText
+                                            color = PlannerOnPrimary
                                         )
                                         Text(
                                             text = BidiFormatter.applyPreferredDigits("$doneCount از $totalCount انجام‌شده"),
                                             fontSize = 12.sp,
                                             fontWeight = FontWeight.SemiBold,
-                                            color = PlannerPrimary
+                                            color = PlannerOnPrimary
                                         )
                                     }
                                     Box(
@@ -896,23 +925,23 @@ fun StudyPlannerAndFarhangianScreen(
                                             .fillMaxWidth()
                                             .height(7.dp)
                                             .clip(CircleShape)
-                                            .background(PlannerBorder)
+                                            .background(PlannerOnPrimary.copy(alpha = 0.30f))
                                     ) {
                                         Box(
                                             modifier = Modifier
                                                 .fillMaxWidth((pct.coerceIn(0, 100)) / 100f)
                                                 .fillMaxSize()
                                                 .clip(CircleShape)
-                                                .background(PlannerGreen)
+                                                .background(Color.White)
                                         )
                                     }
                                     Button(
                                         onClick = { showAddDialog = true },
                                         modifier = Modifier.fillMaxWidth(),
-                                        shape = RoundedCornerShape(12.dp),
+                                        shape = RoundedCornerShape(16.dp),
                                         colors = ButtonDefaults.buttonColors(
-                                            containerColor = PlannerPrimary,
-                                            contentColor = PlannerOnPrimary
+                                            containerColor = PlannerOnPrimary,
+                                            contentColor = PlannerPrimary
                                         )
                                     ) {
                                         Text(
@@ -928,16 +957,41 @@ fun StudyPlannerAndFarhangianScreen(
                         if (uiState.studyTasks.isEmpty()) {
                             item(key = "empty_tasks_state") {
                                 Surface(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(16.dp),
-                                    color = PlannerSurface,
-                                    border = BorderStroke(1.dp, PlannerBorder)
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(RoundedCornerShape(20.dp))
+                                        .background(
+                                            Brush.linearGradient(
+                                                listOf(
+                                                    MaterialTheme.colorScheme.primaryContainer,
+                                                    MaterialTheme.colorScheme.secondaryContainer
+                                                )
+                                            )
+                                        ),
+                                    shape = RoundedCornerShape(20.dp),
+                                    color = Color.Transparent,
+                                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.35f))
                                 ) {
                                     Column(
                                         modifier = Modifier.padding(20.dp),
                                         horizontalAlignment = Alignment.CenterHorizontally,
                                         verticalArrangement = Arrangement.spacedBy(6.dp)
                                     ) {
+                                        // نشان حالت خالی: دایرهٔ گرادیانی گرم با نماد کتاب.
+                                        Box(
+                                            modifier = Modifier
+                                                .size(56.dp)
+                                                .clip(CircleShape)
+                                                .background(plannerBarBrush),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.AutoStories,
+                                                contentDescription = null,
+                                                tint = PlannerOnPrimary,
+                                                modifier = Modifier.size(28.dp)
+                                            )
+                                        }
                                         Text(
                                             text = "هنوز برنامه‌ای برای امروز ثبت نشده است",
                                             fontSize = 15.sp,
@@ -960,8 +1014,8 @@ fun StudyPlannerAndFarhangianScreen(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .testTag("study_task_card_${task.id}"),
-                                    shape = RoundedCornerShape(16.dp),
-                                    color = PlannerSurface,
+                                    shape = RoundedCornerShape(20.dp),
+                                    color = if (task.isCompleted) MaterialTheme.colorScheme.tertiaryContainer else PlannerSurface,
                                     border = BorderStroke(1.dp, PlannerBorder)
                                 ) {
                                     Row(
@@ -1015,10 +1069,13 @@ fun StudyPlannerAndFarhangianScreen(
                         item(key = "progress_report_overview") {
                             val overallPct = (uiState.overallProgressFraction * 100).toInt().coerceIn(0, 100)
                             Surface(
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(18.dp),
-                                color = PlannerSurface,
-                                border = BorderStroke(1.dp, PlannerBorder)
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(20.dp))
+                                    .background(plannerHeaderBrush),
+                                shape = RoundedCornerShape(20.dp),
+                                color = Color.Transparent,
+                                border = BorderStroke(1.dp, PlannerOnPrimary.copy(alpha = 0.35f))
                             ) {
                                 Column(
                                     modifier = Modifier.padding(18.dp),
@@ -1028,29 +1085,57 @@ fun StudyPlannerAndFarhangianScreen(
                                         text = "گزارش کلی مطالعه",
                                         fontSize = 17.sp,
                                         fontWeight = FontWeight.Bold,
-                                        color = PlannerText
+                                        color = PlannerOnPrimary
                                     )
                                     Text(
                                         text = BidiFormatter.applyPreferredDigits(
                                             "${uiState.completedLessonsCount} از ${uiState.totalLessonsCount} مبحث تکمیل‌شده (${overallPct}٪) • ${uiState.masteredFlashcardsCount} فلش‌کارت تثبیت‌شده"
                                         ),
                                         fontSize = 13.sp,
-                                        color = PlannerMuted
+                                        color = PlannerOnPrimary.copy(alpha = 0.85f)
                                     )
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(7.dp)
-                                            .clip(CircleShape)
-                                            .background(PlannerBorder)
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                        verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Box(
                                             modifier = Modifier
-                                                .fillMaxWidth(overallPct / 100f)
-                                                .fillMaxSize()
+                                                .weight(1f)
+                                                .height(7.dp)
                                                 .clip(CircleShape)
-                                                .background(PlannerGreen)
-                                        )
+                                                .background(PlannerOnPrimary.copy(alpha = 0.30f))
+                                        ) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxWidth(overallPct / 100f)
+                                                    .fillMaxSize()
+                                                    .clip(CircleShape)
+                                                    .background(Color.White)
+                                            )
+                                        }
+                                        // حلقهٔ پیشرفت زنده کنار میله.
+                                        Box(
+                                            modifier = Modifier.size(56.dp),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            CircularProgressIndicator(
+                                                progress = { overallPct / 100f },
+                                                modifier = Modifier.fillMaxSize(),
+                                                color = Color.White,
+                                                trackColor = PlannerOnPrimary.copy(alpha = 0.30f),
+                                                strokeWidth = 5.dp,
+                                                strokeCap = StrokeCap.Round
+                                            )
+                                            Text(
+                                                text = BidiFormatter.applyPreferredDigits("$overallPct٪"),
+                                                fontSize = 12.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = PlannerOnPrimary,
+                                                maxLines = 1,
+                                                softWrap = false
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -1061,7 +1146,7 @@ fun StudyPlannerAndFarhangianScreen(
                             val cleanTitle = subject.shortTitle.ifBlank { subject.title.substringAfter(". ") }
                             Surface(
                                 modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(16.dp),
+                                shape = RoundedCornerShape(20.dp),
                                 color = PlannerSurface,
                                 border = BorderStroke(1.dp, PlannerBorder)
                             ) {
@@ -1104,7 +1189,7 @@ fun StudyPlannerAndFarhangianScreen(
                                                 .fillMaxWidth(pct / 100f)
                                                 .fillMaxSize()
                                                 .clip(CircleShape)
-                                                .background(PlannerGreen)
+                                                .background(plannerBarBrush)
                                         )
                                     }
                                 }
@@ -2708,7 +2793,11 @@ private fun KonkoorPastExamsArchiveView(
                                     .fillMaxWidth()
                                     .background(
                                         Brush.linearGradient(
-                                            colors = listOf(emeraldDark, emeraldMid, tealBright)
+                                            colors = listOf(
+                                                emeraldDark.copy(alpha = 0.85f),
+                                                emeraldMid.copy(alpha = 0.85f),
+                                                tealBright.copy(alpha = 0.85f)
+                                            )
                                         )
                                     )
                             ) {

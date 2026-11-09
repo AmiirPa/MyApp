@@ -1,6 +1,7 @@
 package com.example.ui.components
 
 import com.example.data.curriculum.normalizedSubjectId
+import com.example.ui.theme.resolveDynamicAccent
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
@@ -165,40 +166,58 @@ fun LessonInteractiveVisualCard(
         label = "stepProgressAnim"
     )
     val pulseScale = 1f
+    // لهجهٔ قاب/هدر نمودار از scheme می‌آید (داینامیک کالر روشن = primary سیستم)
+    val diagramAccent = resolveDynamicAccent(accentColor)
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(14.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+        border = BorderStroke(
+            1.dp,
+            Brush.linearGradient(
+                listOf(
+                    diagramAccent.copy(alpha = 0.45f),
+                    MaterialTheme.colorScheme.primaryContainer,
+                    diagramAccent.copy(alpha = 0.25f)
+                )
+            )
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(14.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             // Top Title + Interactive Step Pill
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Surface(
-                    color = accentColor,
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.size(30.dp)
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Icon(
-                            imageVector = Icons.Default.AutoAwesome,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onPrimary,
-                            modifier = Modifier.size(16.dp)
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .size(32.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(
+                            Brush.linearGradient(
+                                listOf(
+                                    diagramAccent.copy(alpha = 0.85f),
+                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.85f)
+                                )
+                            )
                         )
-                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.AutoAwesome,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(16.dp)
+                    )
                 }
                 Spacer(modifier = Modifier.width(10.dp))
                 Column(modifier = Modifier.weight(1f)) {
@@ -298,8 +317,16 @@ fun LessonInteractiveVisualCard(
                     // نوار کنترل واقعی انیمیشن: پخش/توقف، شروع مجدد، سرعت، و رد کردن انیمیشن (نمایش متنی)
                     Surface(
                         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f),
-                        shape = RoundedCornerShape(12.dp),
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                        shape = RoundedCornerShape(16.dp),
+                        border = BorderStroke(
+                            1.dp,
+                            Brush.linearGradient(
+                                listOf(
+                                    diagramAccent.copy(alpha = 0.35f),
+                                    MaterialTheme.colorScheme.outlineVariant
+                                )
+                            )
+                        ),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Column(
@@ -449,8 +476,16 @@ fun LessonInteractiveVisualCard(
                         // حالت مطالعه متنی تمام مراحل بدون انیمیشن (برای کسانی که می‌خواهند انیمیشن را رد کنند)
                         Surface(
                             color = MaterialTheme.colorScheme.surface,
-                            shape = RoundedCornerShape(14.dp),
-                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                            shape = RoundedCornerShape(20.dp),
+                            border = BorderStroke(
+                                1.dp,
+                                Brush.linearGradient(
+                                    listOf(
+                                        diagramAccent.copy(alpha = 0.35f),
+                                        MaterialTheme.colorScheme.outlineVariant
+                                    )
+                                )
+                            ),
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Column(
@@ -475,15 +510,23 @@ fun LessonInteractiveVisualCard(
                     } else {
                         Surface(
                             color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.22f),
-                            shape = RoundedCornerShape(16.dp),
-                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                            shape = RoundedCornerShape(20.dp),
+                            border = BorderStroke(
+                                1.dp,
+                                Brush.linearGradient(
+                                    listOf(
+                                        diagramAccent.copy(alpha = 0.35f),
+                                        MaterialTheme.colorScheme.outlineVariant
+                                    )
+                                )
+                            ),
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(12.dp),
-                                verticalArrangement = Arrangement.spacedBy(10.dp)
+                                    .padding(14.dp),
+                                verticalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
                                 // Step Selector Pills (۱ تا ۴)
                                 Row(
@@ -701,7 +744,7 @@ private fun ScientificSubjectCanvasVisualizer(
 
     Surface(
         color = surfaceColor,
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(16.dp),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -1011,11 +1054,11 @@ private fun InteractiveMathVisualAnimator(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(h)
-                                .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp, bottomStart = 6.dp, bottomEnd = 6.dp))
+                                .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomStart = 6.dp, bottomEnd = 6.dp))
                                 .background(
                                     Brush.verticalGradient(
                                         listOf(
-                                            if (isSelected) col else col.copy(alpha = 0.65f),
+                                            if (isSelected) col.copy(alpha = 0.85f) else col.copy(alpha = 0.65f),
                                             col.copy(alpha = 0.35f)
                                         )
                                     )
@@ -1023,7 +1066,7 @@ private fun InteractiveMathVisualAnimator(
                                 .border(
                                     width = if (isSelected) 2.dp else 1.dp,
                                     color = col,
-                                    shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp, bottomStart = 6.dp, bottomEnd = 6.dp)
+                                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomStart = 6.dp, bottomEnd = 6.dp)
                                 ),
                             contentAlignment = Alignment.Center
                         ) {
@@ -5931,7 +5974,7 @@ fun FifteenChartFamiliesGalleryCard(
                                     lineTo(w * 0.95f, h)
                                     close()
                                 }
-                                drawPath(path, Brush.verticalGradient(listOf(c.copy(alpha = 0.8f), c.copy(alpha = 0.1f))))
+                                drawPath(path, Brush.verticalGradient(listOf(c.copy(alpha = 0.65f), c.copy(alpha = 0.1f))))
                             }
                             8 -> { // Radar Chart
                                 val center = Offset(w / 2f, h / 2f)

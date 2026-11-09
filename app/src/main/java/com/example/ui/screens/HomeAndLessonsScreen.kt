@@ -160,6 +160,7 @@ import androidx.compose.material3.TextButton
 import com.example.data.curriculum.AdvancedMnemonicEngine
 import com.example.ui.components.InAppTextbookPdfViewerDialog
 import com.example.ui.components.LessonInteractiveVisualCard
+import com.example.ui.components.LessonVectorIllustration
 import com.example.ui.components.OfficialTextbookPdf
 import com.example.ui.components.SimpleJargonDictionaryCard
 import com.example.ui.components.SlowLearnerSuperMethodCard
@@ -3256,7 +3257,20 @@ private fun LessonDetailPageContent(
                     }
                 }
 
-                HorizontalDivider(thickness = 1.dp, color = HomeBorder)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .background(
+                            Brush.horizontalGradient(
+                                listOf(
+                                    lessonAccent.copy(alpha = 0.0f),
+                                    lessonAccent.copy(alpha = 0.55f),
+                                    lessonAccent.copy(alpha = 0.0f)
+                                )
+                            )
+                        )
+                )
             }
         }
 
@@ -3347,7 +3361,8 @@ private fun LessonDetailPageContent(
                             Brush.linearGradient(
                                 colors = listOf(
                                     lessonAccent,
-                                    lerp(lessonAccent, Color.Black, 0.25f)
+                                    lerp(lessonAccent, MaterialTheme.colorScheme.tertiary, 0.45f),
+                                    lerp(lessonAccent, Color.Black, 0.22f)
                                 )
                             )
                         )
@@ -3371,7 +3386,7 @@ private fun LessonDetailPageContent(
                         )
                     }
                     Column(
-                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp),
+                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 20.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Row(
@@ -3381,7 +3396,7 @@ private fun LessonDetailPageContent(
                             Surface(
                                 shape = CircleShape,
                                 color = Color.White.copy(alpha = 0.22f),
-                                modifier = Modifier.size(34.dp).testTag("lesson_logo_icon")
+                                modifier = Modifier.size(48.dp).testTag("lesson_logo_icon")
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Icon(
@@ -3391,7 +3406,7 @@ private fun LessonDetailPageContent(
                                         ),
                                         contentDescription = null,
                                         tint = Color.White,
-                                        modifier = Modifier.size(20.dp)
+                                        modifier = Modifier.size(30.dp)
                                     )
                                 }
                             }
@@ -3436,6 +3451,25 @@ private fun LessonDetailPageContent(
                                 color = Color.White.copy(alpha = 0.92f)
                             )
                         }
+                        // تصویر برداری اختصاصی همین درس — قاب قصه‌ای نرم: گوشه‌های گرد، سایهٔ ملایم و لهجهٔ ملایم‌شده تا با گرادیان هدر یکی شود، نه مستطیل تند و پررنگ.
+                        LessonVectorIllustration(
+                            lessonId = enrichedLesson.id,
+                            subjectId = enrichedLesson.normalizedSubjectId(),
+                            accent = lessonAccent.copy(alpha = 0.88f),
+                            firstDiagramTitle = enrichedLesson.steps
+                                .firstOrNull { it.visualDiagramText.isNotBlank() }
+                                ?.visualDiagramText
+                                ?.lineSequence()
+                                ?.firstOrNull { it.isNotBlank() }
+                                ?.trim()
+                                ?.takeIf { it.isNotEmpty() }
+                                ?: enrichedLesson.title,
+                            lessonTitle = enrichedLesson.title,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp)
+                                .shadow(6.dp, RoundedCornerShape(24.dp))
+                        )
                     }
                 }
             }
@@ -3934,7 +3968,20 @@ private fun LessonDetailPageContent(
                                                     text = minusZeroGuide.extraSimpleExplanation,
                                                     style = MaterialTheme.typography.bodyMedium
                                                 )
-                                                HorizontalDivider(thickness = 1.dp, color = HomeBorder)
+                                                Box(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .height(1.dp)
+                                                        .background(
+                                                            Brush.horizontalGradient(
+                                                                listOf(
+                                                                    lessonAccent.copy(alpha = 0.0f),
+                                                                    lessonAccent.copy(alpha = 0.55f),
+                                                                    lessonAccent.copy(alpha = 0.0f)
+                                                                )
+                                                            )
+                                                        )
+                                                )
                                                 Text(
                                                     text = "معنی واژه‌های تخصصی این درس به زبان ساده:",
                                                     maxLines = 1,
@@ -4116,7 +4163,20 @@ private fun LessonDetailPageContent(
                                                         style = MaterialTheme.typography.bodySmall
                                                     )
                                                 }
-                                                HorizontalDivider(thickness = 1.dp, color = HomeBorder)
+                                                Box(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .height(1.dp)
+                                                        .background(
+                                                            Brush.horizontalGradient(
+                                                                listOf(
+                                                                    lessonAccent.copy(alpha = 0.0f),
+                                                                    lessonAccent.copy(alpha = 0.55f),
+                                                                    lessonAccent.copy(alpha = 0.0f)
+                                                                )
+                                                            )
+                                                        )
+                                                )
                                                 BiDiText(
                                                     text = "هشدار اشتباه رایج: ${minusZeroGuide.commonMistakeAndPrevention}",
                                                     style = MaterialTheme.typography.bodySmall
@@ -4161,7 +4221,20 @@ private fun LessonDetailPageContent(
                                                 }
                                                 BiDiText(text = "۸. اشتباه رایج و راه جلوگیری: ${minusZeroGuide.commonMistakeAndPrevention}", style = MaterialTheme.typography.bodySmall)
                                                 BiDiText(text = "۱۰. بررسی فهم مطلب: ${minusZeroGuide.checkUnderstandingQuestion}\n${minusZeroGuide.checkUnderstandingAnswer}", style = MaterialTheme.typography.bodySmall)
-                                                HorizontalDivider(thickness = 1.dp, color = HomeBorder)
+                                                Box(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .height(1.dp)
+                                                        .background(
+                                                            Brush.horizontalGradient(
+                                                                listOf(
+                                                                    lessonAccent.copy(alpha = 0.0f),
+                                                                    lessonAccent.copy(alpha = 0.55f),
+                                                                    lessonAccent.copy(alpha = 0.0f)
+                                                                )
+                                                            )
+                                                        )
+                                                )
                                                 Text(
                                                     text = "سؤال تشریحی امتحان نهایی و پاسخ استاندارد:",
                                                     style = MaterialTheme.typography.labelMedium,
@@ -4173,7 +4246,20 @@ private fun LessonDetailPageContent(
                                                 )
                                                 BiDiText(text = minusZeroGuide.finalExamWrittenQuestion, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)
                                                 BiDiText(text = minusZeroGuide.finalExamStandardAnswer, style = MaterialTheme.typography.bodySmall)
-                                                HorizontalDivider(thickness = 1.dp, color = HomeBorder)
+                                                Box(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .height(1.dp)
+                                                        .background(
+                                                            Brush.horizontalGradient(
+                                                                listOf(
+                                                                    lessonAccent.copy(alpha = 0.0f),
+                                                                    lessonAccent.copy(alpha = 0.55f),
+                                                                    lessonAccent.copy(alpha = 0.0f)
+                                                                )
+                                                            )
+                                                        )
+                                                )
                                                 Text(
                                                     text = "نکات کنکوری و دام‌های تستی:",
                                                     style = MaterialTheme.typography.labelMedium,
@@ -4186,7 +4272,20 @@ private fun LessonDetailPageContent(
                                                 minusZeroGuide.konkoorTipsAndTraps.forEach { tip ->
                                                     BiDiText(text = "• $tip", style = MaterialTheme.typography.bodySmall)
                                                 }
-                                                HorizontalDivider(thickness = 1.dp, color = HomeBorder)
+                                                Box(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .height(1.dp)
+                                                        .background(
+                                                            Brush.horizontalGradient(
+                                                                listOf(
+                                                                    lessonAccent.copy(alpha = 0.0f),
+                                                                    lessonAccent.copy(alpha = 0.55f),
+                                                                    lessonAccent.copy(alpha = 0.0f)
+                                                                )
+                                                            )
+                                                        )
+                                                )
                                                 Text(
                                                     text = "مسیر ۹ سطحی پیشرفت در این مبحث (از سطح ۰ تا سطح ۸):",
                                                     style = MaterialTheme.typography.labelMedium,
@@ -4318,11 +4417,12 @@ private fun LessonDetailPageContent(
                                 )
 
                                 if (step.visualDiagramText.isNotBlank()) {
-                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Spacer(modifier = Modifier.height(10.dp))
                                     SmartDiagramAndFormulaBlock(
                                         rawText = step.visualDiagramText,
                                         accentColor = lessonAccent
                                     )
+                                    Spacer(modifier = Modifier.height(10.dp))
                                 }
 
                                 if (step.memoryTrick.isNotBlank()) {
@@ -4385,7 +4485,20 @@ private fun LessonDetailPageContent(
                                             )
                                             if (showInlineSolution) {
                                                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                                                    HorizontalDivider(thickness = 1.dp, color = HomeBorder)
+                                                    Box(
+                                                        modifier = Modifier
+                                                            .fillMaxWidth()
+                                                            .height(1.dp)
+                                                            .background(
+                                                                Brush.horizontalGradient(
+                                                                    listOf(
+                                                                        lessonAccent.copy(alpha = 0.0f),
+                                                                        lessonAccent.copy(alpha = 0.55f),
+                                                                        lessonAccent.copy(alpha = 0.0f)
+                                                                    )
+                                                                )
+                                                            )
+                                                    )
                                                     SmartDiagramAndFormulaBlock(
                                                         rawText = pairedExample.stepByStepSolution,
                                                         accentColor = lessonAccent
@@ -4612,7 +4725,20 @@ private fun LessonDetailPageContent(
                                 }
                             }
 
-                            HorizontalDivider(thickness = 1.dp, color = HomeBorder)
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(1.dp)
+                                    .background(
+                                        Brush.horizontalGradient(
+                                            listOf(
+                                                lessonAccent.copy(alpha = 0.0f),
+                                                lessonAccent.copy(alpha = 0.55f),
+                                                lessonAccent.copy(alpha = 0.0f)
+                                            )
+                                        )
+                                    )
+                            )
 
                             Text(
                                 text = "گام‌های حل تشریحی:",
@@ -4768,7 +4894,20 @@ private fun LessonDetailPageContent(
                                             text = diagText,
                                             style = MaterialTheme.typography.bodySmall
                                         )
-                                        HorizontalDivider(thickness = 1.dp, color = HomeBorder)
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(1.dp)
+                                                .background(
+                                                    Brush.horizontalGradient(
+                                                        listOf(
+                                                            lessonAccent.copy(alpha = 0.0f),
+                                                            lessonAccent.copy(alpha = 0.55f),
+                                                            lessonAccent.copy(alpha = 0.0f)
+                                                        )
+                                                    )
+                                                )
+                                        )
                                     }
                                     Text(
                                         text = "پاسخ تشریحی و دلیل علمی:",
