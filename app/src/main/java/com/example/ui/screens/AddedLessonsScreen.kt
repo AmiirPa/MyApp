@@ -160,21 +160,24 @@ fun AddedLessonsScreen(
                 modifier = Modifier.padding(top = 16.dp)
             )
         } else {
+            // رنگ هر موضوع یک‌بار در بدنهٔ Composable حساب می‌شود (حلقهٔ for
+            // ساده بافت Composable است) و داخل LazyColumn فقط از روی نقشه
+            // خوانده می‌شود؛ چون resolveDynamicAccent یک Composable است و در
+            // اسکوپ غیر Composable ‏LazyColumn قابل فراخوانی نیست.
+            val subjectDotColors = mutableMapOf<String, Color>()
+            for (subjectId in grouped.keys) {
+                subjectDotColors[subjectId] = resolveDynamicAccent(
+                    SubjectCatalog.getSubjectById(subjectId).color
+                )
+            }
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
                 grouped.forEach { (subjectId, lessons) ->
                     val subjectTitle = subjectTitleById[subjectId] ?: subjectId
+                    val subjectDotColor = subjectDotColors[subjectId]
+                        ?: SubjectCatalog.getSubjectById(subjectId).color
                     item(key = "header-$subjectId") {
-                        // رنگ موضوع از SubjectCatalog با resolveDynamicAccent —
-                        // همان لهجه‌ای که سربرگ درس در خانه استفاده می‌کند؛ وقتی
-                        // داینامیک کالر روشن است، رنگ سیستم می‌آید.
-                        // (داخل item فراخوانی می‌شود چون resolveDynamicAccent یک
-                        // Composable است و بیرون از item، در scope غیر Composable
-                        // ‏LazyColumn، قابل فراخوانی نیست.)
-                        val subjectDotColor = resolveDynamicAccent(
-                            SubjectCatalog.getSubjectById(subjectId).color
-                        )
                         // سربرگ گروه: گرادیان ملایم رنگ همان موضوع (نه رنگ تخت) —
                         // متن و شمارش گروه دقیقاً همان قبلی، تک‌خطی.
                         Box(
