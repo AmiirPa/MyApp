@@ -21,7 +21,6 @@
 
 [مشاهده وضعیت ساخت و خروجی‌های موقت (GitHub Actions)](https://github.com/AmiirPa/MyApp/actions/workflows/build-apk.yml)
 
-[📦 فایل APK داخل مخزن (پوشه apk)](https://github.com/AmiirPa/MyApp/blob/main/apk/Sefr_Ta_Farhangian_v3.6.apk)
 
 </div>
 
