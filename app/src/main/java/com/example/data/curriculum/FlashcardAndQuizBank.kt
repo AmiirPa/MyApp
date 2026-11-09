@@ -269,6 +269,17 @@ object FlashcardAndQuizBank {
             addAll(ElementaryE57Completion1406.lessons)
             addAll(ElementaryE58Completion1406.lessons)
             addAll(SocialHumanitiesTipsCompletion1406.lessons)
+            addAll(GapKarafariniPart1Completion1406.lessons)
+            addAll(GapKarafariniPart2Completion1406.lessons)
+            addAll(GapKarafariniPart3Completion1406.lessons)
+            addAll(GapKarafariniPart4Completion1406.lessons)
+            addAll(GapFamilyBoysPart1Completion1406.lessons)
+            addAll(GapFamilyBoysPart2Completion1406.lessons)
+            addAll(GapFamilyBoysPart3Completion1406.lessons)
+            addAll(GapResanehPart1Completion1406.lessons)
+            addAll(GapResanehPart2Completion1406.lessons)
+            addAll(GapResanehPart3Completion1406.lessons)
+            addAll(GapArabicLesson8Completion1406.lessons)
         }
             .distinctBy { it.id }
             .map { it.copy(subjectId = it.normalizedSubjectId()) }
