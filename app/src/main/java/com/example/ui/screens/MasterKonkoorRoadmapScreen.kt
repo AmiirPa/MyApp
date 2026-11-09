@@ -74,11 +74,14 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ui.AppTab
 import com.example.ui.KonkoorUiState
 import com.example.ui.components.BidiFormatter
+import com.example.data.curriculum.LearningPath1406
+import com.example.data.curriculum.LearningPathStatus
 import com.example.ui.theme.SubjectArabicColor
 import com.example.ui.theme.SubjectAroozColor
 import com.example.ui.theme.SubjectEnglishColor
@@ -167,6 +170,17 @@ fun MasterKonkoorRoadmapScreen(
         }
     }
 
+    // داده‌های جادهٔ روشن (مسیر ۱ تا ۱۰۰) — بیرون از شاخهٔ تب، چون
+    // remember داخل شاخهٔ when در LazyColumn کامپایل نمی‌شود.
+    val roadSteps = LearningPath1406.steps
+    val roadProgress = uiState.lessonProgressMap
+    val roadLessonById = remember(uiState.allLessons) {
+        uiState.allLessons.associateBy { it.id }
+    }
+    val roadCurrent = remember(roadProgress) {
+        currentLearningPathStep(uiState, roadSteps)
+    }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -178,7 +192,7 @@ fun MasterKonkoorRoadmapScreen(
         item {
             var isRoadmapMenuExpanded by remember { mutableStateOf(false) }
             val roadmapNavItems = listOf(
-                Triple(0, "🎯 ۱. مسیر مرحله‌بندی شده کنکور ۱۴۰۶ (۵ درس)", "ادبیات، عربی، معارف، روان‌شناسی و جامعه‌شناسی (۸۰ ایستگاه)"),
+                Triple(0, "🎯 ۱. جادهٔ روشن — مسیر ۱ تا ۱۰۰", "فهرست دروس به ترتیب، از درس ۱؛ زدن روی هر قدم، درسنامه‌اش را باز می‌کند"),
                 Triple(1, "🌳 ۲. درختواره پیش‌نیازها و روابط دروس", "ارتباط درختی دروس دهم، یازدهم و دوازدهم"),
                 Triple(2, "🧭 ۳. نقشه ترتیبی و گام‌به‌گام کل دروس", "اول چی بخونیم؟ بعدش چی؟ از زیر صفر تا رتبه‌برتری"),
                 Triple(3, "🔍 ۴. رادار عیب‌یاب و درمان ضعف‌ها", "اگر تستی را متوجه نمی‌شوی، کجای پیش‌نیاز لنگ می‌زند؟"),
@@ -322,11 +336,112 @@ fun MasterKonkoorRoadmapScreen(
         // TAB CONTENT
         when (selectedMainTab) {
             0 -> {
-                // TAB 0: STAGED LEARNING PATH FOR 1406 (مسیر مرحله‌بندی شده ۵ درس کنکور ۱۴۰۶)
-                item {
-                    com.example.ui.components.StagedLearningPathView(
-                        onOpenLesson = { lessonId -> onOpenLesson(lessonId) }
-                    )
+                // TAB 0: جادهٔ روشن — فهرست دروس به ترتیب (مسیر ۱ تا ۱۰۰).
+                // مسیر مرحله‌بندی شدهٔ قدیمی برداشته شد: مفاهیم (مثل بحر رمل)
+                // را جدا از درس خودشان نشان می‌داد و لینک درس همهٔ ایستگاه‌هایش
+                // خراب بود؛ حالا هر مفهوم فقط زیرمجموعهٔ درس خودش است و از همین
+                // فهرست باز می‌شود.
+                items(roadSteps, key = { it.stepNumber }) { step ->
+                    val isCurrent = step.stepNumber == roadCurrent.stepNumber
+                    val isDone = step.status == LearningPathStatus.READY &&
+                        step.lessonIds.isNotEmpty() &&
+                        step.lessonIds.all { roadProgress[it]?.isCompleted == true }
+                    val nextId = nextUnfinishedPathLessonId(step, roadProgress, roadLessonById)
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                val target = nextId ?: step.lessonIds.firstOrNull()
+                                if (target != null) onOpenLesson(target)
+                            }
+                            .testTag("roadmap_road_step_${step.stepNumber}"),
+                        shape = RoundedCornerShape(16.dp),
+                        color = if (isCurrent) {
+                            MaterialTheme.colorScheme.primaryContainer
+                        } else {
+                            MaterialTheme.colorScheme.surface
+                        },
+                        border = BorderStroke(
+                            1.dp,
+                            if (isCurrent) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.outlineVariant
+                            }
+                        )
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 14.dp, vertical = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            if (isDone) {
+                                Icon(
+                                    imageVector = Icons.Default.CheckCircle,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.tertiary,
+                                    modifier = Modifier.size(28.dp)
+                                )
+                            } else {
+                                Box(
+                                    modifier = Modifier
+                                        .size(28.dp)
+                                        .clip(CircleShape)
+                                        .background(
+                                            if (isCurrent) {
+                                                MaterialTheme.colorScheme.primary
+                                            } else {
+                                                MaterialTheme.colorScheme.surfaceVariant
+                                            }
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = BidiFormatter.toPersianDigits(step.stepNumber.toString()),
+                                        color = if (isCurrent) {
+                                            MaterialTheme.colorScheme.onPrimary
+                                        } else {
+                                            MaterialTheme.colorScheme.onSurfaceVariant
+                                        },
+                                        style = MaterialTheme.typography.labelMedium,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+                            Column(
+                                modifier = Modifier.weight(1f),
+                                verticalArrangement = Arrangement.spacedBy(2.dp)
+                            ) {
+                                Text(
+                                    text = "قدم " + BidiFormatter.toPersianDigits(step.stepNumber.toString()) +
+                                        " از " + BidiFormatter.toPersianDigits(roadSteps.size.toString()),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Text(
+                                    text = step.title,
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                                Text(
+                                    text = BidiFormatter.toPersianDigits(step.lessonIds.size.toString()) + " درس",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    }
                 }
             }
 

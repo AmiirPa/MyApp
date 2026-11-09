@@ -890,7 +890,7 @@ object NativeTextbookPdfGenerator {
     ): File {
         val dir = File(context.filesDir, "textbooks_pdf")
         if (!dir.exists()) dir.mkdirs()
-        val outFile = File(dir, "${book.bookId}_v5.pdf")
+        val outFile = File(dir, "${book.bookId}_v6.pdf")
         if (outFile.exists() && outFile.length() > 2048L) {
             return outFile
         }
@@ -902,40 +902,41 @@ object NativeTextbookPdfGenerator {
         val contentMargin = 38f
         val contentWidth = (pageWidth - contentMargin * 2).toInt()
 
-        val vazirRegular = runCatching {
-            ResourcesCompat.getFont(context, R.font.vazirmatn)
+        // فونت کتاب گرافیکی دقیقاً همان فونت برنامه (ایران‌سنس‌ایکس) باشد، نه وزیرمتن.
+        val appRegular = runCatching {
+            ResourcesCompat.getFont(context, R.font.iransansx)
         }.getOrNull() ?: Typeface.DEFAULT
 
-        val vazirBold = runCatching {
-            ResourcesCompat.getFont(context, R.font.vazirmatn_bold)
-        }.getOrNull() ?: Typeface.create(vazirRegular, Typeface.BOLD)
+        val appBold = runCatching {
+            ResourcesCompat.getFont(context, R.font.iransansx_bold)
+        }.getOrNull() ?: Typeface.create(appRegular, Typeface.BOLD)
 
         val pdfDocument = PdfDocument()
 
         val titlePaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
             color = AndroidColor.rgb(17, 62, 122)
             textSize = 14.5f
-            typeface = vazirBold
+            typeface = appBold
         }
         val subtitlePaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
             color = AndroidColor.rgb(30, 58, 138)
             textSize = 11.2f
-            typeface = vazirBold
+            typeface = appBold
         }
         val bodyPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
             color = AndroidColor.rgb(24, 27, 35)
             textSize = 10.2f
-            typeface = vazirRegular
+            typeface = appRegular
         }
         val formulaPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
             color = AndroidColor.rgb(6, 95, 70)
             textSize = 10.5f
-            typeface = vazirBold
+            typeface = appBold
         }
         val footerPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
             color = AndroidColor.rgb(100, 116, 139)
             textSize = 9f
-            typeface = vazirBold
+            typeface = appBold
         }
         val outerFramePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = AndroidColor.rgb(37, 99, 235)
@@ -980,7 +981,7 @@ object NativeTextbookPdfGenerator {
         val whiteTitlePaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
             color = AndroidColor.WHITE
             textSize = 13.5f
-            typeface = vazirBold
+            typeface = appBold
         }
 
         var pageNumber = 1
@@ -1074,7 +1075,7 @@ object NativeTextbookPdfGenerator {
                 val rTextPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
                     color = AndroidColor.WHITE
                     textSize = 10f
-                    typeface = vazirBold
+                    typeface = appBold
                 }
                 val rLayout = buildRtlLayout(headerRibbonTitle, rTextPaint, innerW)
                 canvas.save()
@@ -1156,7 +1157,7 @@ object NativeTextbookPdfGenerator {
                 val nPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
                     color = nodeColors[i]
                     textSize = 8.8f
-                    typeface = vazirBold
+                    typeface = appBold
                 }
                 val nLayout = buildRtlLayout(label, nPaint, (singleW - 10f).toInt(), Layout.Alignment.ALIGN_CENTER)
                 canvas.save()
