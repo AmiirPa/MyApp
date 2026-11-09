@@ -170,6 +170,17 @@ fun MasterKonkoorRoadmapScreen(
         }
     }
 
+    // داده‌های جادهٔ روشن (مسیر ۱ تا ۱۰۰) — بیرون از شاخهٔ تب، چون
+    // remember داخل شاخهٔ when در LazyColumn کامپایل نمی‌شود.
+    val roadSteps = LearningPath1406.steps
+    val roadProgress = uiState.lessonProgressMap
+    val roadLessonById = remember(uiState.allLessons) {
+        uiState.allLessons.associateBy { it.id }
+    }
+    val roadCurrent = remember(roadProgress) {
+        currentLearningPathStep(uiState, roadSteps)
+    }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -330,14 +341,6 @@ fun MasterKonkoorRoadmapScreen(
                 // را جدا از درس خودشان نشان می‌داد و لینک درس همهٔ ایستگاه‌هایش
                 // خراب بود؛ حالا هر مفهوم فقط زیرمجموعهٔ درس خودش است و از همین
                 // فهرست باز می‌شود.
-                val roadSteps = LearningPath1406.steps
-                val roadProgress = uiState.lessonProgressMap
-                val roadLessonById = remember(uiState.allLessons) {
-                    uiState.allLessons.associateBy { it.id }
-                }
-                val roadCurrent = remember(roadProgress) {
-                    currentLearningPathStep(uiState, roadSteps)
-                }
                 items(roadSteps, key = { it.stepNumber }) { step ->
                     val isCurrent = step.stepNumber == roadCurrent.stepNumber
                     val isDone = step.status == LearningPathStatus.READY &&

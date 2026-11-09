@@ -1220,8 +1220,6 @@ private fun ExpressiveHeroStudyCard(
     }
 }
 
-@Composable
-
 /**
  * دکمه‌های قدم‌به‌قدم زیر هر بخش درس: «یاد گرفتم» بخش بعد را باز می‌کند،
  * «یاد نگرفتم» همان بخش را برای دوباره‌خواندن نشان می‌دهد.
@@ -1470,6 +1468,7 @@ private fun SubjectBookKeyPointsCard(
     }
 }
 
+@Composable
 private fun LearningPathHeroCard(
     stepNumber: Int,
     stepTitle: String,
@@ -5984,7 +5983,6 @@ fun OfficialSourceLinksCard() {
 // DEDICATED SUBJECT HUB SUB-VIEWS
 // ==========================================
 
-@Composable
 /**
  * سربرگ یک بخش از صفحهٔ کتاب (عمودی): تیتر + رنگ موضوع.
  */
@@ -6015,6 +6013,7 @@ private fun BookPageSectionHeader(
     }
 }
 
+@Composable
 fun SubjectTestBankView(
     subjectId: String,
     subjectTitle: String,
