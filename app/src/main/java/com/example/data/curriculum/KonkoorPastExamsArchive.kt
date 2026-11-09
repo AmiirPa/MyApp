@@ -1218,11 +1218,21 @@ object KonkoorPastExamsArchive {
         baseQuestions.groupBy { it.subjectId }
     }
 
+    // الگوهای regex یک‌بار کامپایل می‌شوند؛ پیش از این هر فراخوانیِ
+    // stripOtherYearTags و هر سؤالِ شماره‌گذاری‌شده Regex تازه می‌ساخت
+    // (هزاران کامپایل در اولین ساخت آرشیو روی نخ اصلی).
+    private val yearTagRegex =
+        Regex("کنکور\\s*(سراسری|انسانی|فرهنگیان)?\\s*(اردیبهشت|تیر|دی)?\\s*[۱1][۳۴34][۹۰90][۰-۹0-9]")
+    private val printYearRegex =
+        Regex("چاپ\\s*[۱1][۴4][۰0][۰-۹0-9](\\s*تا\\s*[۱1][۴4][۰0][۰-۹0-9])?")
+    private val lessonParenRegex = Regex("\\(\\s*درس\\s*[\\d۰-۹]+\\s*•[^)]*\\)")
+    private val leadingQuestionNumberRegex = Regex("^سوال\\s*[\\d۰-۹]+\\s*[:\\-•]\\s*")
+
     private fun stripOtherYearTags(rawTag: String, targetPersianYear: String): String {
         val cleaned = rawTag
-            .replace(Regex("کنکور\\s*(سراسری|انسانی|فرهنگیان)?\\s*(اردیبهشت|تیر|دی)?\\s*[۱1][۳۴34][۹۰90][۰-۹0-9]"), "کنکور سراسری $targetPersianYear")
-            .replace(Regex("چاپ\\s*[۱1][۴4][۰0][۰-۹0-9](\\s*تا\\s*[۱1][۴4][۰0][۰-۹0-9])?"), "کنکور $targetPersianYear")
-            .replace(Regex("\\(\\s*درس\\s*[\\d۰-۹]+\\s*•[^)]*\\)"), "")
+            .replace(yearTagRegex, "کنکور سراسری $targetPersianYear")
+            .replace(printYearRegex, "کنکور $targetPersianYear")
+            .replace(lessonParenRegex, "")
             .trim()
         return if (cleaned.isBlank()) "کنکور سراسری $targetPersianYear" else cleaned
     }
@@ -1241,8 +1251,12 @@ object KonkoorPastExamsArchive {
 
         targetSequence.forEachIndexed { subjIdx, (subjId, sectionLabel) ->
             val ownList = paperOwnBySubject[subjId].orEmpty()
+            // مجموعهٔ متن‌های trimشدهٔ سؤال‌های خود دفترچه، یک‌بار در هر درس؛
+            // پیش از این فیلتر برای هر کاندید، همهٔ ownList را با trim تازه
+            // مقایسه می‌کرد (O(pool × own) با تخصیص رشته در هر مقایسه).
+            val ownTrimmedTexts = ownList.map { it.questionText.trim() }.toSet()
             val poolList = masterQuestionPoolBySubject[subjId].orEmpty()
-                .filter { cand -> ownList.none { it.questionText.trim() == cand.questionText.trim() } }
+                .filter { cand -> cand.questionText.trim() !in ownTrimmedTexts }
 
             // Select a deterministic, year-specific subset per subject so each year has its own dedicated exam
             val rotatedPool = if (poolList.size > 1) {
@@ -1275,7 +1289,7 @@ object KonkoorPastExamsArchive {
 
         val numberedQuestions = assembled.mapIndexed { idx, q ->
             val qNum = com.example.ui.components.BidiFormatter.toPersianDigits((idx + 1).toString())
-            val cleanQuestion = q.questionText.replace(Regex("^سوال\\s*[\\d۰-۹]+\\s*[:\\-•]\\s*"), "").trim()
+            val cleanQuestion = q.questionText.replace(leadingQuestionNumberRegex, "").trim()
             q.copy(
                 questionText = "سوال $qNum: $cleanQuestion"
             )

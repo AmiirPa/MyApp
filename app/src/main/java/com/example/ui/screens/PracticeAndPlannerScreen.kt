@@ -67,6 +67,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.ui.res.painterResource
 import com.example.R
@@ -1482,13 +1483,27 @@ private fun KonkoorPastExamsArchiveView(
         }
     }
 
-    val allPapers = remember { KonkoorPastExamsArchive.getAllExamPapers() }
-    val standaloneYearlyPapers = remember { KonkoorPastExamsArchive.standaloneYearlyAllSubjectsPapers }
+    // ساخت فهرست دفترچه‌ها سنگین است (ساخت استخر سؤال از ۲٬۴۲۷ درس + چرخش و
+    // بازنویسیٔ هر دفترچه در KonkoorPastExamsArchive) و پیش از این همگام روی
+    // نخ اصلی در اولین ترکیب اجرا می‌شد — همان قفل چندثانیه‌ای تب «آزمون‌ها».
+    // پس بارگذاری به نخ پس‌زمینه منتقل شد؛ تا آماده‌شدن فهرست، نشانگر
+    // بارگذاری نمایش داده می‌شود و تب فوراً باز می‌شود.
+    var allPapers by remember { mutableStateOf<List<PastKonkoorExamPaper>?>(null) }
+    var standaloneYearlyPapers by remember { mutableStateOf<List<PastKonkoorExamPaper>?>(null) }
+    LaunchedEffect(Unit) {
+        val loaded = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) {
+            KonkoorPastExamsArchive.getAllExamPapers() to
+                KonkoorPastExamsArchive.standaloneYearlyAllSubjectsPapers
+        }
+        allPapers = loaded.first
+        standaloneYearlyPapers = loaded.second
+    }
     val filteredPapers = remember(selectedYearFilter, allPapers) {
+        val papers = allPapers.orEmpty()
         when (selectedYearFilter) {
-            0 -> allPapers
-            -1 -> allPapers.filter { it.isFarhangianSpecial }
-            else -> allPapers.filter { it.year == selectedYearFilter && !it.isFarhangianSpecial }
+            0 -> papers
+            -1 -> papers.filter { it.isFarhangianSpecial }
+            else -> papers.filter { it.year == selectedYearFilter && !it.isFarhangianSpecial }
         }
     }
 
@@ -1509,6 +1524,12 @@ private fun KonkoorPastExamsArchiveView(
         val questions = remember(allPaperQuestions, selectedBookletSubject) {
             if (selectedBookletSubject == "all") allPaperQuestions
             else allPaperQuestions.filter { it.subjectId == selectedBookletSubject }
+        }
+        // شمارش سؤال‌های هر بخش فقط یک‌بار در هر فهرست سؤال؛ پیش از این
+        // questions.count { ... } داخل آیتم هر سؤال اجرا می‌شد (O(n) در هر
+        // آیتم، O(n²) در هر recomposition — مثلاً با هر پاسخ یا تیک تایمر).
+        val questionCountBySubject = remember(questions) {
+            questions.groupingBy { it.subjectId }.eachCount()
         }
 
         // Archive exam results are stored exactly once per attempt. All three
@@ -1872,7 +1893,7 @@ private fun KonkoorPastExamsArchiveView(
 
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         if (isNewSubjectSection) {
-                            val sectionCount = questions.count { it.subjectId == q.subjectId }
+                            val sectionCount = questionCountBySubject[q.subjectId] ?: 0
                             Surface(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -2355,6 +2376,28 @@ private fun KonkoorPastExamsArchiveView(
                 }
             }
         }
+    } else if (allPapers == null) {
+        // فهرست دفترچه‌ها هنوز در نخ پس‌زمینه ساخته می‌شود؛ تب فوراً باز
+        // می‌شود و این نشانگر به‌جای قفل چندثانیه‌ای نمایش داده می‌شود.
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.padding(24.dp)
+            ) {
+                CircularProgressIndicator(color = PlannerPrimary)
+                Text(
+                    text = "در حال آماده‌سازی دفترچه‌های کنکور…",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = PlannerText,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
     } else {
         // Main Archive Listing View
         LazyColumn(
@@ -2535,7 +2578,7 @@ private fun KonkoorPastExamsArchiveView(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             contentPadding = PaddingValues(horizontal = 2.dp)
                         ) {
-                            items(standaloneYearlyPapers, key = { it.id }) { yearlyPaper ->
+                            items(standaloneYearlyPapers.orEmpty(), key = { it.id }) { yearlyPaper ->
                                 val persianYr = BidiFormatter.toPersianDigits(yearlyPaper.year.toString())
                                 val qCount = BidiFormatter.toPersianDigits(yearlyPaper.questions.size.toString())
                                 Surface(
