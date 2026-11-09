@@ -63,6 +63,7 @@ import com.example.data.curriculum.ZeroStep
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material3.Icon
 import androidx.compose.ui.geometry.CornerRadius
@@ -2698,15 +2699,48 @@ fun SmartDiagramAndFormulaBlock(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.surfaceContainerLow)
+            .background(
+                Brush.linearGradient(
+                    colors = listOf(
+                        accentColor.copy(alpha = 0.14f),
+                        accentColor.copy(alpha = 0.06f),
+                        MaterialTheme.colorScheme.surfaceContainerLow
+                    )
+                )
+            )
             .border(
                 width = 1.dp,
-                color = MaterialTheme.colorScheme.outlineVariant,
+                color = accentColor.copy(alpha = 0.35f),
                 shape = RoundedCornerShape(16.dp)
             )
             .padding(horizontal = 12.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(28.dp)
+                    .clip(CircleShape)
+                    .background(accentColor.copy(alpha = 0.16f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.AutoAwesome,
+                    contentDescription = null,
+                    tint = accentColor,
+                    modifier = Modifier.size(16.dp)
+                )
+            }
+            BiDiText(
+                text = "نمودار",
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
         segments.forEach { segment ->
             when (segment) {
                 is DiagramBlockSegment.TableSegment -> {
