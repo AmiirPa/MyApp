@@ -2,6 +2,9 @@ package com.example.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,6 +28,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -98,12 +103,41 @@ fun AddedLessonsScreen(
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface
             )
-            Text(
-                text = BidiFormatter.toPersianDigits(totalCount.toString()) + " درس",
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
+            // کارت شمارش: گرادیان ملایم primary + عدد بزرگ و تمیز — همان
+            // «N درس» قبلی، فقط به‌شکل کارت؛ متن تازه‌ای اضافه نشده است.
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(
+                        brush = Brush.linearGradient(
+                            listOf(
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.16f),
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.05f)
+                            )
+                        ),
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    .padding(horizontal = 12.dp, vertical = 4.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(
+                        text = BidiFormatter.toPersianDigits(totalCount.toString()),
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Text(
+                        text = "درس",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
         }
 
         OutlinedTextField(
@@ -134,19 +168,42 @@ fun AddedLessonsScreen(
                     // برای این موضوع استفاده می‌کند.
                     val subjectDotColor = SubjectCatalog.getSubjectById(subjectId).color
                     item(key = "header-$subjectId") {
-                        Text(
-                            text = subjectTitle + " (" +
-                                BidiFormatter.toPersianDigits(lessons.size.toString()) +
-                                " درس)",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
-                        )
+                        // سربرگ گروه: گرادیان ملایم رنگ همان موضوع (نه رنگ تخت) —
+                        // متن و شمارش گروه دقیقاً همان قبلی، تک‌خطی.
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 16.dp, bottom = 4.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(
+                                    brush = Brush.horizontalGradient(
+                                        listOf(
+                                            subjectDotColor.copy(alpha = 0.20f),
+                                            subjectDotColor.copy(alpha = 0.05f),
+                                            subjectDotColor.copy(alpha = 0.12f)
+                                        )
+                                    ),
+                                    shape = RoundedCornerShape(10.dp)
+                                )
+                                .padding(horizontal = 12.dp, vertical = 8.dp)
+                        ) {
+                            Text(
+                                text = subjectTitle + " (" +
+                                    BidiFormatter.toPersianDigits(lessons.size.toString()) +
+                                    " درس)",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
                     }
                     items(lessons, key = { it.id }) { lesson ->
+                        // هاله لمس: فقط وقتی ردیف لمس/فشرده می‌شود، یک گرادیان
+                        // خیلی ملایم از رنگ موضوع پشت ردیف ظاهر می‌شود.
+                        val rowInteractionSource = remember { MutableInteractionSource() }
+                        val isRowPressed by rowInteractionSource.collectIsPressedAsState()
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -155,8 +212,27 @@ fun AddedLessonsScreen(
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clickable { onOpenLesson(lesson.id) }
-                                    .padding(vertical = 12.dp),
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(
+                                        brush = if (isRowPressed) {
+                                            Brush.horizontalGradient(
+                                                listOf(
+                                                    subjectDotColor.copy(alpha = 0.14f),
+                                                    subjectDotColor.copy(alpha = 0.03f)
+                                                )
+                                            )
+                                        } else {
+                                            Brush.horizontalGradient(
+                                                listOf(Color.Transparent, Color.Transparent)
+                                            )
+                                        },
+                                        shape = RoundedCornerShape(8.dp)
+                                    )
+                                    .clickable(
+                                        interactionSource = rowInteractionSource,
+                                        onClick = { onOpenLesson(lesson.id) }
+                                    )
+                                    .padding(vertical = 12.dp, horizontal = 8.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(10.dp)
                             ) {

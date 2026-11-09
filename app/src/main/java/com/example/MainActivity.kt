@@ -701,7 +701,8 @@ private fun MoreSectionScreen(
                 .padding(horizontal = 20.dp, vertical = 12.dp),
             shape = RoundedCornerShape(14.dp),
             color = surfaceColor,
-            border = BorderStroke(1.dp, borderColor)
+            border = BorderStroke(1.dp, borderColor),
+            shadowElevation = 2.dp
         ) {
             Column(
                 modifier = Modifier
@@ -733,11 +734,27 @@ private fun MoreSectionScreen(
                                         else -> "more_group_resources"
                                     }
                                 ),
-                            color = if (isGroupSelected) primaryColor else Color.Transparent,
-                            shape = RoundedCornerShape(10.dp)
+                            color = Color.Transparent,
+                            shape = RoundedCornerShape(10.dp),
+                            shadowElevation = if (isGroupSelected) 3.dp else 1.dp
                         ) {
                             Box(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(
+                                        if (isGroupSelected) {
+                                            androidx.compose.ui.graphics.Brush.horizontalGradient(
+                                                listOf(primaryColor, primaryColor.copy(alpha = 0.82f))
+                                            )
+                                        } else {
+                                            androidx.compose.ui.graphics.Brush.horizontalGradient(
+                                                listOf(
+                                                    MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f),
+                                                    surfaceColor
+                                                )
+                                            )
+                                        }
+                                    ),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
@@ -756,29 +773,84 @@ private fun MoreSectionScreen(
             }
         }
 
-        // فهرست ساده مقصدهای گروه فعال: فقط نام مقصد، بدون آیکون و توضیح؛
+        // فهرست ساده مقصدهای گروه فعال: آیکون کوچک + فقط نام مقصد، بدون توضیح؛
         // با همان testTagهای قبلی، پس هر مقصد با یک ضربه از همین‌جا در دسترس است.
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 2.dp)
+                .padding(horizontal = 20.dp, vertical = 2.dp),
+            verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             activeGroupItems.forEach { (idx, label, tag) ->
                 val isSelected = activeSection == idx
-                Text(
-                    text = BidiFormatter.applyPreferredDigits(label),
-                    fontSize = 15.sp,
-                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                    color = if (isSelected) primaryColor else mutedColor,
-                    maxLines = 1,
-                    softWrap = false,
+                val destinationIcon = when (idx) {
+                    0 -> Icons.Default.Explore
+                    1 -> Icons.Default.Quiz
+                    2 -> Icons.Default.Bookmark
+                    9 -> Icons.Default.BookmarkBorder
+                    3 -> Icons.Default.MenuBook
+                    4 -> Icons.Default.LightMode
+                    5 -> Icons.Default.Bookmark
+                    6 -> Icons.Default.CalendarMonth
+                    7 -> Icons.Default.BrightnessAuto
+                    else -> Icons.Default.MenuBook
+                }
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(10.dp))
+                        .then(
+                            if (isSelected) {
+                                Modifier.background(
+                                    androidx.compose.ui.graphics.Brush.horizontalGradient(
+                                        listOf(
+                                            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.55f),
+                                            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.30f)
+                                        )
+                                    )
+                                )
+                            } else {
+                                Modifier
+                            }
+                        )
                         .clickable { activeSection = idx }
                         .testTag(tag)
-                        .padding(horizontal = 4.dp, vertical = 11.dp)
-                )
+                        .padding(horizontal = 8.dp, vertical = 7.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(30.dp)
+                            .clip(CircleShape)
+                            .background(
+                                if (isSelected) {
+                                    androidx.compose.ui.graphics.Brush.horizontalGradient(
+                                        listOf(primaryColor, primaryColor.copy(alpha = 0.82f))
+                                    )
+                                } else {
+                                    MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f)
+                                }
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = destinationIcon,
+                            contentDescription = null,
+                            tint = if (isSelected) onPrimaryColor else primaryColor.copy(alpha = 0.75f),
+                            modifier = Modifier.size(17.dp)
+                        )
+                    }
+                    Text(
+                        text = BidiFormatter.applyPreferredDigits(label),
+                        fontSize = 15.sp,
+                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                        color = if (isSelected) primaryColor else mutedColor,
+                        maxLines = 1,
+                        softWrap = false,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
             }
         }
 
