@@ -1973,7 +1973,10 @@ fun InAppTextbookPdfViewerDialog(
                                                                 text = BidiFormatter.formatMixedPersianText("🎯 چکیده و هدف این فصل از کتاب:"),
                                                                 style = MaterialTheme.typography.titleSmall,
                                                                 fontWeight = FontWeight.ExtraBold,
-                                                                color = accentColor
+                                                                color = accentColor,
+                                                                maxLines = 1,
+                                                                overflow = TextOverflow.Ellipsis,
+                                                                modifier = Modifier.weight(1f)
                                                             )
                                                             OutlinedButton(
                                                                 onClick = {
@@ -1987,7 +1990,9 @@ fun InAppTextbookPdfViewerDialog(
                                                                     text = "ورود به کارگاه تست درس",
                                                                     style = MaterialTheme.typography.labelSmall,
                                                                     fontWeight = FontWeight.Bold,
-                                                                    color = accentColor
+                                                                    color = accentColor,
+                                                                    maxLines = 1,
+                                                                    softWrap = false
                                                                 )
                                                             }
                                                         }

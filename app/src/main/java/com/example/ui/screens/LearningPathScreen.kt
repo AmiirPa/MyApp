@@ -11,8 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -176,9 +176,12 @@ fun LearningPathScreen(
     var expandedStep by remember(selectedSection) {
         mutableStateOf<Int?>(currentStep.stepNumber)
     }
-    val listState = rememberLazyListState()
-    LaunchedEffect(selectedSection) {
-        listState.scrollToItem((currentStep.stepNumber - 1).coerceAtLeast(0))
+    // وضعیت اسکرول به‌ازای هر مسیر جداست تا با عوض شدن بخش، موقعیت کهنهٔ
+    // مسیر قبلی نماند و کارت اول نیمه‌بریده دیده نشود؛ هر مسیر از قدم فعلی‌اش شروع می‌شود.
+    val listState = remember(selectedSection) {
+        LazyListState(
+            firstVisibleItemIndex = (currentStep.stepNumber - 1).coerceAtLeast(0)
+        )
     }
 
     Column(
@@ -188,8 +191,8 @@ fun LearningPathScreen(
             .testTag("learning_path_root")
     ) {
         // انتخاب‌گر سه‌تایی مسیر — به همان سبک چیپ‌های سه‌گانهٔ بخش
-        // «بیشتر» (سه دکمه هم‌اندازه، فعال با رنگ primary). برچسب سوم
-        // بلند است، پس متن چیپ‌ها دو خطه و وسط‌چین است تا بریده نشود.
+        // «بیشتر» (سه دکمه هم‌اندازه، فعال با رنگ primary). برچسب‌ها کوتاه‌اند
+        // تا هر سه چیپ یک‌خطی شوند؛ «متوسطه دوم و فرهنگیان» کاملش در زیرتیتر صفحه است.
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
@@ -218,7 +221,7 @@ fun LearningPathScreen(
                     ),
                     Triple(
                         LearningPathSection.HIGH,
-                        "متوسطه دوم و فرهنگیان",
+                        "متوسطه دوم",
                         "learning_path_section_high"
                     )
                 ).forEach { (section, label, tag) ->
@@ -255,7 +258,8 @@ fun LearningPathScreen(
                                 } else {
                                     MaterialTheme.colorScheme.onSurfaceVariant
                                 },
-                                maxLines = 2,
+                                maxLines = 1,
+                                softWrap = false,
                                 textAlign = TextAlign.Center,
                                 lineHeight = 15.sp
                             )
@@ -300,19 +304,34 @@ fun LearningPathScreen(
                     .testTag("learning_path_next_lesson_btn"),
                 shape = RoundedCornerShape(14.dp)
             ) {
-                Icon(
-                    imageVector = Icons.Default.PlayArrow,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp)
-                )
-                Text(
-                    text = "درس بعدی: " + nextLesson.title,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(start = 6.dp)
-                )
+                // دوخطی: خط کوچک «درس بعدی» + تیتر درس با سه‌نقطه — تیتر دیگر بریده نمی‌شود.
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.PlayArrow,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Text(
+                            text = "درس بعدی",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier.padding(start = 4.dp)
+                        )
+                    }
+                    Text(
+                        text = nextLesson.title,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             }
         } else if (allReadyDone) {
             Text(
@@ -378,6 +397,7 @@ fun LearningPathScreen(
                         verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         Row(
+                            modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
