@@ -55,6 +55,7 @@ import com.example.data.firebase.CloudLessonProgress
 import com.example.data.local.LearningPathPreference
 import com.example.ui.KonkoorUiState
 import com.example.ui.components.BidiFormatter
+import com.example.ui.theme.resolveDynamicAccent
 
 /**
  * قدم فعلی مسیر: اولین قدمی که همه درس‌هایش کامل نشده‌اند.
@@ -204,7 +205,7 @@ fun LearningPathScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 10.dp),
-            shape = RoundedCornerShape(14.dp),
+            shape = RoundedCornerShape(16.dp),
             color = MaterialTheme.colorScheme.surface,
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
         ) {
@@ -283,20 +284,23 @@ fun LearningPathScreen(
         // قدم + تیتر درس + «قدم X از N کامل شد» + نوار پیشرفت. تیتر مسیر
         // هم داخل همین کارت است تا صفحه خلوت‌تر شود. زدن کارت درس را باز می‌کند.
         if (nextLesson != null) {
+            // گرادیان کارت از رنگ‌های scheme (همان گرادیان گرم خانه در
+            // حالت داینامیک): لهجهٔ اول با resolveDynamicAccent از رنگ
+            // سیستم می‌آید و دو توقف بعدی secondary و tertiary هستند —
+            // دیگر نارنجی هاردکد ندارد.
+            val heroAccent = resolveDynamicAccent(MaterialTheme.colorScheme.primary)
+            val heroGradientColors = listOf(
+                heroAccent.copy(alpha = 0.85f),
+                MaterialTheme.colorScheme.secondary.copy(alpha = 0.85f),
+                MaterialTheme.colorScheme.tertiary.copy(alpha = 0.85f)
+            )
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 10.dp)
                     .clip(RoundedCornerShape(20.dp))
                     .background(
-                        Brush.linearGradient(
-                            listOf(
-                                Color(0xFFEA580C),
-                                Color(0xFFF97316),
-                                Color(0xFFF59E0B),
-                                Color(0xFFFBBF24)
-                            )
-                        )
+                        Brush.linearGradient(heroGradientColors)
                     )
                     .clickable { onOpenLesson(nextLesson.id) }
                     .testTag("learning_path_next_lesson_btn"),
@@ -422,7 +426,7 @@ fun LearningPathScreen(
                             expandedStep = if (isExpanded) null else step.stepNumber
                         }
                         .testTag(stepTagPrefix + step.stepNumber),
-                    shape = RoundedCornerShape(14.dp),
+                    shape = RoundedCornerShape(16.dp),
                     color = if (isCurrent) {
                         MaterialTheme.colorScheme.primaryContainer
                     } else {
@@ -594,6 +598,8 @@ fun LearningPathScreen(
                                                 text = lesson.title,
                                                 fontSize = 13.sp,
                                                 color = MaterialTheme.colorScheme.onSurface,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis,
                                                 modifier = Modifier.weight(1f)
                                             )
                                             Text(

@@ -77,6 +77,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ui.AppTab
+import com.example.ui.theme.resolveDynamicAccent
 
 /**
  * مدل داده هر منبع آموزشی، تستی یا رسمی
@@ -151,11 +152,24 @@ fun ComprehensiveStudyResourcesHubCard(
             modifier = Modifier.padding(14.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // هدر طلایی بخش منابع
+            // هدر گرادیانی بخش منابع — هم‌خانوادهٔ سربرگ‌های بقیهٔ اپ
+            // (فقط ظاهر؛ گرادیان از رنگ‌های scheme می‌آید).
             Surface(
-                shape = RoundedCornerShape(16.dp),
-                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
-                modifier = Modifier.fillMaxWidth()
+                shape = RoundedCornerShape(20.dp),
+                color = Color.Transparent,
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.20f)),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        brush = Brush.linearGradient(
+                            listOf(
+                                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.85f),
+                                MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.70f),
+                                MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.70f)
+                            )
+                        ),
+                        shape = RoundedCornerShape(20.dp)
+                    )
             ) {
                 Row(
                     modifier = Modifier.padding(14.dp),
@@ -164,14 +178,14 @@ fun ComprehensiveStudyResourcesHubCard(
                 ) {
                     Surface(
                         shape = CircleShape,
-                        color = MaterialTheme.colorScheme.primary,
+                        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
                         modifier = Modifier.size(44.dp)
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.MenuBook,
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onPrimary,
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer,
                                 modifier = Modifier.size(24.dp)
                             )
                         }
@@ -202,7 +216,7 @@ fun ComprehensiveStudyResourcesHubCard(
                 divider = {},
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(14.dp))
+                    .clip(RoundedCornerShape(16.dp))
             ) {
                 resourceCategoryTabs.forEachIndexed { index, title ->
                     val isSelected = selectedCategoryTab == index
@@ -238,7 +252,7 @@ fun ComprehensiveStudyResourcesHubCard(
                     )
                 },
                 singleLine = true,
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(16.dp)
             )
 
             // توضیح سربرگ فعال
@@ -251,7 +265,7 @@ fun ComprehensiveStudyResourcesHubCard(
             }
             Surface(
                 color = MaterialTheme.colorScheme.surfaceContainer,
-                shape = RoundedCornerShape(10.dp),
+                shape = RoundedCornerShape(12.dp),
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable { tabNoticeExpanded = !tabNoticeExpanded }
@@ -318,7 +332,7 @@ private fun resourceCardGradient(badgeColor: Color, base: Color, isExpanded: Boo
     if (isExpanded) {
         Brush.verticalGradient(
             listOf(
-                badgeColor.copy(alpha = 0.16f),
+                badgeColor.copy(alpha = 0.12f),
                 badgeColor.copy(alpha = 0.07f),
                 base
             )
@@ -334,7 +348,7 @@ private fun resourceCardGradient(badgeColor: Color, base: Color, isExpanded: Boo
     }
 
 /** گرادیان ملایم چیپ (ضریب / نویسنده‌وناشر / دکمهٔ تهیهٔ کتاب) — هم‌خانوادهٔ رنگ accent. */
-private fun softChipGradient(accent: Color, fromAlpha: Float = 0.24f, toAlpha: Float = 0.08f): Brush =
+private fun softChipGradient(accent: Color, fromAlpha: Float = 0.20f, toAlpha: Float = 0.08f): Brush =
     Brush.horizontalGradient(
         listOf(accent.copy(alpha = fromAlpha), accent.copy(alpha = toAlpha))
     )
@@ -349,8 +363,11 @@ private fun ResourceItemCard(
     onToggleOwned: () -> Unit,
     onOpenLesson: (String) -> Unit
 ) {
+    // لهجهٔ آیکون‌های کارت: وقتی رنگ پویا روشن است از رنگ سیستم (تصویر زمینه)
+    // می‌آید؛ وقتی خاموش است همان رنگ موضوع منبع می‌ماند (الگوی Home).
+    val cardAccent = resolveDynamicAccent(item.badgeColor)
     Card(
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(20.dp),
         // پس‌زمینهٔ گرادیانی روی خود کارت می‌نشیند، پس رنگ یکدست کارت شفاف است
         // تا گرادیان دیده شود؛ رنگ پایهٔ گرادیان همان surfaceContainerLow قبلی است.
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
@@ -368,7 +385,7 @@ private fun ResourceItemCard(
                     base = MaterialTheme.colorScheme.surfaceContainerLow,
                     isExpanded = isExpanded
                 ),
-                shape = RoundedCornerShape(16.dp)
+                shape = RoundedCornerShape(20.dp)
             )
             .clickable { onToggleExpand() }
     ) {
@@ -387,7 +404,7 @@ private fun ResourceItemCard(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.weight(1f)
                 ) {
-                    // دایرهٔ شمارهٔ فارسی — گرادیان ملایم هم‌خانوادهٔ رنگ موضوع
+                    // دایرهٔ شمارهٔ فارسی — گرادیان ملایم هم‌خانوادهٔ لهجهٔ کارت
                     // (اندازه ۳۴dp، شکل دایره و متن داخلش دست نخورده‌اند.)
                     Box(
                         contentAlignment = Alignment.Center,
@@ -396,8 +413,8 @@ private fun ResourceItemCard(
                             .background(
                                 brush = Brush.linearGradient(
                                     listOf(
-                                        item.badgeColor.copy(alpha = 0.30f),
-                                        item.badgeColor.copy(alpha = 0.10f)
+                                        cardAccent.copy(alpha = 0.30f),
+                                        cardAccent.copy(alpha = 0.10f)
                                     )
                                 ),
                                 shape = CircleShape
@@ -407,7 +424,7 @@ private fun ResourceItemCard(
                             text = BidiFormatter.toPersianDigits((listIndex + 1).toString()),
                             style = MaterialTheme.typography.labelLarge,
                             fontWeight = FontWeight.Black,
-                            color = item.badgeColor
+                            color = cardAccent
                         )
                     }
 
@@ -433,7 +450,7 @@ private fun ResourceItemCard(
                         modifier = Modifier
                             .size(28.dp)
                             .background(
-                                color = item.badgeColor.copy(alpha = 0.08f),
+                                color = cardAccent.copy(alpha = 0.08f),
                                 shape = CircleShape
                             )
                     ) {
@@ -454,7 +471,7 @@ private fun ResourceItemCard(
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                     modifier = Modifier.padding(top = 4.dp)
                 ) {
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
+                    HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f))
 
                     // نویسنده/ناشر، ضریب و خلاصه — فقط در نمای بازشده
                     // چیپ نویسنده/ناشر: گرادیان خیلی ملایم هم‌خانوادهٔ رنگ موضوع
@@ -525,7 +542,7 @@ private fun ResourceItemCard(
                             modifier = Modifier
                                 .background(
                                     brush = if (isOwned) {
-                                        softChipGradient(Color(0xFF10B981), fromAlpha = 0.32f, toAlpha = 0.12f)
+                                        softChipGradient(MaterialTheme.colorScheme.primary, fromAlpha = 0.32f, toAlpha = 0.12f)
                                     } else {
                                         softChipGradient(item.badgeColor, fromAlpha = 0.16f, toAlpha = 0.05f)
                                     },
@@ -533,7 +550,7 @@ private fun ResourceItemCard(
                                 )
                                 .border(
                                     width = 1.dp,
-                                    color = if (isOwned) Color(0xFF059669).copy(alpha = 0.45f)
+                                    color = if (isOwned) MaterialTheme.colorScheme.primary.copy(alpha = 0.45f)
                                     else item.badgeColor.copy(alpha = 0.30f),
                                     shape = RoundedCornerShape(10.dp)
                                 )
@@ -548,13 +565,13 @@ private fun ResourceItemCard(
                                 Icon(
                                     imageVector = if (isOwned) Icons.Default.CheckCircle else Icons.Default.Bookmark,
                                     contentDescription = null,
-                                    tint = if (isOwned) Color(0xFF059669) else MaterialTheme.colorScheme.onSurfaceVariant,
+                                    tint = if (isOwned) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.size(14.dp)
                                 )
                                 Text(
                                     text = if (isOwned) "تهیه کرده‌ام ✓" else "علامت‌گذاری تهیه کتاب",
                                     style = MaterialTheme.typography.labelSmall,
-                                    color = if (isOwned) Color(0xFF059669) else MaterialTheme.colorScheme.onSurfaceVariant,
+                                    color = if (isOwned) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                                     fontWeight = FontWeight.Bold
                                 )
                             }
@@ -572,7 +589,7 @@ private fun ResourceItemCard(
                                         MaterialTheme.colorScheme.surface
                                     )
                                 ),
-                                shape = RoundedCornerShape(10.dp)
+                                shape = RoundedCornerShape(12.dp)
                             )
                     ) {
                         Column(
@@ -596,15 +613,18 @@ private fun ResourceItemCard(
                         }
                     }
 
-                    // استراتژی مطالعه رتبه‌ها — گرادیان سبز خیلی ملایم
+                    // استراتژی مطالعه رتبه‌ها — گرادیان ملایم secondaryContainer
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(
                                 brush = Brush.verticalGradient(
-                                    listOf(Color(0xFFF0FDF4), Color(0xFFDCFCE7).copy(alpha = 0.55f))
+                                    listOf(
+                                        MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.45f),
+                                        MaterialTheme.colorScheme.surface
+                                    )
                                 ),
-                                shape = RoundedCornerShape(10.dp)
+                                shape = RoundedCornerShape(12.dp)
                             )
                     ) {
                         Column(
@@ -615,26 +635,29 @@ private fun ResourceItemCard(
                                 text = "💡 شیوه و استراتژی مطالعه پیشنهادی رتبه‌های تک‌رقمی:",
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF15803D)
+                                color = MaterialTheme.colorScheme.onSecondaryContainer
                             )
                             Text(
                                 text = item.studyStrategy,
                                 style = MaterialTheme.typography.bodySmall,
-                                color = Color(0xFF14532D),
+                                color = MaterialTheme.colorScheme.onSurface,
                                 lineHeight = 18.sp
                             )
                         }
                     }
 
-                    // نکته طلایی و دامی کنکور — گرادیان کهربایی خیلی ملایم
+                    // نکته طلایی و دامی کنکور — گرادیان ملایم tertiaryContainer
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(
                                 brush = Brush.verticalGradient(
-                                    listOf(Color(0xFFFFFBEB), Color(0xFFFEF3C7).copy(alpha = 0.55f))
+                                    listOf(
+                                        MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.45f),
+                                        MaterialTheme.colorScheme.surface
+                                    )
                                 ),
-                                shape = RoundedCornerShape(10.dp)
+                                shape = RoundedCornerShape(12.dp)
                             )
                     ) {
                         Row(
@@ -645,7 +668,7 @@ private fun ResourceItemCard(
                             Icon(
                                 imageVector = Icons.Default.Lightbulb,
                                 contentDescription = null,
-                                tint = Color(0xFFD97706),
+                                tint = MaterialTheme.colorScheme.tertiary,
                                 modifier = Modifier.size(18.dp)
                             )
                             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -653,12 +676,12 @@ private fun ResourceItemCard(
                                     text = "⚡ نکته کنکوری و تله طراحان آزمون:",
                                     style = MaterialTheme.typography.labelSmall,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color(0xFFB45309)
+                                    color = MaterialTheme.colorScheme.onTertiaryContainer
                                 )
                                 Text(
                                     text = item.goldenTip,
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = Color(0xFF78350F),
+                                    color = MaterialTheme.colorScheme.onSurface,
                                     lineHeight = 18.sp
                                 )
                             }

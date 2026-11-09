@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -148,6 +149,16 @@ fun InteractiveLabsScreen() {
         Triple("۷. فرمول‌های اقتصاد و نکات علوم انسانی", "مسائل سود، مالیات، استهلاک، عرضه و تقاضا و جامعه‌شناسی", primaryColor),
         Triple("۸. تخمین تراز فرهنگیان ۱۴۰۶", "محاسبه تراز کل، سوابق تحصیلی نهایی و دفترچه فرهنگیان", primaryColor)
     )
+    val labIcons = listOf(
+        Icons.Default.School,
+        Icons.Default.MusicNote,
+        Icons.Default.Calculate,
+        Icons.Default.Translate,
+        Icons.Default.Translate,
+        Icons.Default.GraphicEq,
+        Icons.Default.Calculate,
+        Icons.Default.School
+    )
 
     if (selectedLabIndex < 0) {
         LazyColumn(
@@ -160,7 +171,7 @@ fun InteractiveLabsScreen() {
         ) {
             item(key = "labs_header") {
                 Surface(
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(20.dp),
                     color = MaterialTheme.colorScheme.surface,
                     border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
                     modifier = Modifier.fillMaxWidth()
@@ -169,6 +180,21 @@ fun InteractiveLabsScreen() {
                         modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(6.dp)
+                                .background(
+                                    Brush.linearGradient(
+                                        listOf(
+                                            MaterialTheme.colorScheme.primary.copy(alpha = 0.35f),
+                                            MaterialTheme.colorScheme.secondary.copy(alpha = 0.35f),
+                                            MaterialTheme.colorScheme.tertiary.copy(alpha = 0.35f)
+                                        )
+                                    ),
+                                    RoundedCornerShape(3.dp)
+                                )
+                        )
                         Text(
                             text = "کارگاه‌های عملی و نمودارهای آموزشی",
                             style = MaterialTheme.typography.titleMedium,
@@ -237,10 +263,10 @@ fun InteractiveLabsScreen() {
                     Surface(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clip(RoundedCornerShape(14.dp))
+                            .clip(RoundedCornerShape(18.dp))
                             .clickable { selectedLabIndex = index }
                             .testTag("lab_tab_$index"),
-                        shape = RoundedCornerShape(14.dp),
+                        shape = RoundedCornerShape(18.dp),
                         color = MaterialTheme.colorScheme.surface,
                         border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
                     ) {
@@ -251,6 +277,28 @@ fun InteractiveLabsScreen() {
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(46.dp)
+                                    .background(
+                                        Brush.linearGradient(
+                                            listOf(
+                                                MaterialTheme.colorScheme.primaryContainer,
+                                                MaterialTheme.colorScheme.secondaryContainer
+                                            )
+                                        ),
+                                        RoundedCornerShape(14.dp)
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = labIcons[index],
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(26.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(10.dp))
                             Column(
                                 modifier = Modifier.weight(1f),
                                 verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -368,13 +416,27 @@ private fun AroozProsodyLabView() {
     ) {
         item {
             Card(
-                shape = RoundedCornerShape(20.dp),
+                shape = RoundedCornerShape(24.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = SubjectAroozColor.copy(alpha = 0.1f)
                 ),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(6.dp)
+                            .background(
+                                Brush.linearGradient(
+                                    listOf(
+                                        SubjectAroozColor.copy(alpha = 0.25f),
+                                        MaterialTheme.colorScheme.tertiary.copy(alpha = 0.25f)
+                                    )
+                                ),
+                                RoundedCornerShape(3.dp)
+                            )
+                    )
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.MusicNote, contentDescription = null, tint = SubjectAroozColor)
                         Spacer(modifier = Modifier.width(8.dp))

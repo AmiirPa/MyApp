@@ -65,26 +65,52 @@ fun ReviewQueueScreen(
 
         when {
             allCards.isEmpty() -> {
-                Text(
-                    text = "داده کافی نیست",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = "هنوز کارتی برای مرور ساخته نشده است. وقتی درسی را کامل کنی یا آزمونی بدهی، کارت مرورش اینجا می‌آید.",
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                // حالت خالی: کارت نرم با رنگ scheme (متن‌ها همان قبلی).
+                Card(
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = "داده کافی نیست",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "هنوز کارتی برای مرور ساخته نشده است. وقتی درسی را کامل کنی یا آزمونی بدهی، کارت مرورش اینجا می‌آید.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
             }
             queue.isEmpty() -> {
-                Text(
-                    text = "مرورهای امروز تمام شد",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = "برای امروز کارت سررسیدشده دیگری نیست؛ فردا کارت‌های تازه می‌آیند.",
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                // حالت خالی: کارت نرم با رنگ scheme (متن‌ها همان قبلی).
+                Card(
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = "مرورهای امروز تمام شد",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "برای امروز کارت سررسیدشده دیگری نیست؛ فردا کارت‌های تازه می‌آیند.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
             }
             else -> {
                 Text(
@@ -102,7 +128,7 @@ fun ReviewQueueScreen(
                         val title = lesson?.title
                             ?: SubjectCatalog.getSubjectById(card.subjectId).title
                         Card(
-                            shape = RoundedCornerShape(12.dp),
+                            shape = RoundedCornerShape(16.dp),
                             colors = CardDefaults.cardColors(
                                 containerColor = MaterialTheme.colorScheme.surfaceVariant
                             ),

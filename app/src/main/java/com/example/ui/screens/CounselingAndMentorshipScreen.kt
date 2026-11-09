@@ -71,6 +71,7 @@ import com.example.ui.AppTab
 import com.example.ui.KonkoorUiState
 import com.example.ui.components.BiDiText
 import com.example.ui.components.BidiFormatter
+import com.example.ui.theme.resolveDynamicAccent
 
 data class CounselingArticle(
     val id: String,
@@ -124,18 +125,57 @@ fun CounselingAndMentorshipScreen(
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         item {
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(
-                    text = "مشاوره و روش مطالعه",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-                Text(
-                    text = "راهنمای علمی مطالعه، مدیریت زمان، و استراتژی آزمون",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        Brush.linearGradient(
+                            listOf(
+                                MaterialTheme.colorScheme.primaryContainer,
+                                MaterialTheme.colorScheme.secondaryContainer
+                            )
+                        ),
+                        RoundedCornerShape(20.dp)
+                    )
+                    .padding(16.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(
+                            text = "مشاوره و روش مطالعه",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = "راهنمای علمی مطالعه، مدیریت زمان، و استراتژی آزمون",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Box(
+                        modifier = Modifier
+                            .size(52.dp)
+                            .background(
+                                MaterialTheme.colorScheme.surface.copy(alpha = 0.65f),
+                                CircleShape
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Psychology,
+                            contentDescription = null,
+                            tint = resolveDynamicAccent(MaterialTheme.colorScheme.primary),
+                            modifier = Modifier.size(28.dp)
+                        )
+                    }
+                }
             }
         }
 
@@ -176,6 +216,24 @@ fun CounselingAndMentorshipScreen(
             }
         }
 
+        item {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(4.dp)
+                    .background(
+                        Brush.linearGradient(
+                            listOf(
+                                resolveDynamicAccent(MaterialTheme.colorScheme.primary).copy(alpha = 0.45f),
+                                MaterialTheme.colorScheme.secondary.copy(alpha = 0.45f),
+                                MaterialTheme.colorScheme.tertiary.copy(alpha = 0.45f)
+                            )
+                        ),
+                        RoundedCornerShape(2.dp)
+                    )
+            )
+        }
+
         if (selectedCategoryTab == 5) {
             item(key = "counseling_resources_hub") {
                 com.example.ui.components.ComprehensiveStudyResourcesHubCard(
@@ -205,10 +263,10 @@ private fun CounselingArticleCard(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(20.dp))
             .clickable { isExpanded = !isExpanded }
             .testTag("counseling_card_${article.id}"),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(20.dp),
         color = MaterialTheme.colorScheme.surface,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
     ) {
@@ -216,6 +274,20 @@ private fun CounselingArticleCard(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(5.dp)
+                    .background(
+                        Brush.linearGradient(
+                            listOf(
+                                MaterialTheme.colorScheme.primaryContainer,
+                                MaterialTheme.colorScheme.secondaryContainer
+                            )
+                        ),
+                        RoundedCornerShape(3.dp)
+                    )
+            )
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,

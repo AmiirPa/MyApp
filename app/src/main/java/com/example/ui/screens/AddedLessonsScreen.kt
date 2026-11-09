@@ -40,6 +40,7 @@ import com.example.data.curriculum.ZeroLesson
 import com.example.data.curriculum.normalizedSubjectId
 import com.example.ui.KonkoorUiState
 import com.example.ui.components.BidiFormatter
+import com.example.ui.theme.resolveDynamicAccent
 
 /**
  * فهرست همه درس‌های برنامه — برای اینکه کاربر خودش ببیند چه درس‌هایی
@@ -107,7 +108,7 @@ fun AddedLessonsScreen(
             // «N درس» قبلی، فقط به‌شکل کارت؛ متن تازه‌ای اضافه نشده است.
             Box(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(12.dp))
+                    .clip(RoundedCornerShape(16.dp))
                     .background(
                         brush = Brush.linearGradient(
                             listOf(
@@ -115,7 +116,7 @@ fun AddedLessonsScreen(
                                 MaterialTheme.colorScheme.primary.copy(alpha = 0.05f)
                             )
                         ),
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(16.dp)
                     )
                     .padding(horizontal = 12.dp, vertical = 4.dp),
                 contentAlignment = Alignment.Center
@@ -164,9 +165,12 @@ fun AddedLessonsScreen(
             ) {
                 grouped.forEach { (subjectId, lessons) ->
                     val subjectTitle = subjectTitleById[subjectId] ?: subjectId
-                    // رنگ موضوع از SubjectCatalog — همان رنگی که برنامه
-                    // برای این موضوع استفاده می‌کند.
-                    val subjectDotColor = SubjectCatalog.getSubjectById(subjectId).color
+                    // رنگ موضوع از SubjectCatalog با resolveDynamicAccent —
+                    // همان لهجه‌ای که سربرگ درس در خانه استفاده می‌کند؛ وقتی
+                    // داینامیک کالر روشن است، رنگ سیستم می‌آید.
+                    val subjectDotColor = resolveDynamicAccent(
+                        SubjectCatalog.getSubjectById(subjectId).color
+                    )
                     item(key = "header-$subjectId") {
                         // سربرگ گروه: گرادیان ملایم رنگ همان موضوع (نه رنگ تخت) —
                         // متن و شمارش گروه دقیقاً همان قبلی، تک‌خطی.
@@ -174,7 +178,7 @@ fun AddedLessonsScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(top = 16.dp, bottom = 4.dp)
-                                .clip(RoundedCornerShape(10.dp))
+                                .clip(RoundedCornerShape(12.dp))
                                 .background(
                                     brush = Brush.horizontalGradient(
                                         listOf(
@@ -183,7 +187,7 @@ fun AddedLessonsScreen(
                                             subjectDotColor.copy(alpha = 0.12f)
                                         )
                                     ),
-                                    shape = RoundedCornerShape(10.dp)
+                                    shape = RoundedCornerShape(12.dp)
                                 )
                                 .padding(horizontal = 12.dp, vertical = 8.dp)
                         ) {
@@ -233,14 +237,15 @@ fun AddedLessonsScreen(
                                         indication = null,
                                         onClick = { onOpenLesson(lesson.id) }
                                     )
-                                    .padding(vertical = 12.dp, horizontal = 8.dp),
+                                    .padding(vertical = 12.dp, horizontal = 12.dp),
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
-                                // نقطه رنگی کوچکِ موضوعِ درس — تیتر تک‌خطی می‌ماند.
+                                // نقطه رنگی موضوعِ درس — کمی بزرگ‌تر و هم‌تراز
+                                // با پدینگ سربرگ گروه؛ تیتر تک‌خطی می‌ماند.
                                 Box(
                                     modifier = Modifier
-                                        .size(8.dp)
+                                        .size(10.dp)
                                         .clip(CircleShape)
                                         .background(subjectDotColor)
                                 )

@@ -86,6 +86,7 @@ import com.example.ui.theme.SubjectFarhangianColor
 import com.example.ui.theme.SubjectFonoonColor
 import com.example.ui.theme.SubjectMathColor
 import com.example.ui.theme.SubjectPhilosophyColor
+import com.example.ui.theme.resolveDynamicAccent
 
 // ==========================================
 // MODELS FOR THE COMPREHENSIVE ROADMAP
@@ -141,6 +142,7 @@ fun MasterKonkoorRoadmapScreen(
     val completedCount = uiState.completedRoadmapSteps.size
     val totalSteps = allSteps.size
     val progressPct = if (totalSteps > 0) (completedCount.toFloat() / totalSteps * 100).toInt() else 0
+    val headerAccent = resolveDynamicAccent(MaterialTheme.colorScheme.primary)
 
     val filteredSteps = remember(selectedStudentLevel, allSteps) {
         when (selectedStudentLevel) {
@@ -185,10 +187,20 @@ fun MasterKonkoorRoadmapScreen(
             val activeNavItem = roadmapNavItems.firstOrNull { it.first == selectedMainTab } ?: roadmapNavItems[0]
 
             Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(14.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.45f))
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        Brush.linearGradient(
+                            listOf(
+                                headerAccent.copy(alpha = 0.16f),
+                                MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.28f)
+                            )
+                        ),
+                        RoundedCornerShape(16.dp)
+                    ),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.30f))
             ) {
                 Column(modifier = Modifier.padding(12.dp)) {
                     Row(
@@ -365,7 +377,7 @@ fun MasterKonkoorRoadmapScreen(
                     item {
                         Card(
                             modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(16.dp),
+                            shape = RoundedCornerShape(20.dp),
                             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
                         ) {
                             Column(
@@ -429,10 +441,21 @@ private fun RoadmapHeroProgressCard(
     totalSteps: Int,
     progressPct: Int
 ) {
+    val heroAccent = resolveDynamicAccent(MaterialTheme.colorScheme.primary)
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                Brush.linearGradient(
+                    listOf(
+                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.85f),
+                        MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.70f)
+                    )
+                ),
+                RoundedCornerShape(24.dp)
+            ),
         shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
@@ -478,13 +501,15 @@ private fun RoadmapHeroProgressCard(
                 }
 
                 Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    color = MaterialTheme.colorScheme.primary
+                    shape = RoundedCornerShape(16.dp),
+                    color = heroAccent
                 ) {
                     Text(
                         text = "${BidiFormatter.toPersianDigits(progressPct.toString())}٪ طی شده",
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Black,
+                        maxLines = 1,
+                        softWrap = false,
                         color = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
                     )
@@ -497,7 +522,7 @@ private fun RoadmapHeroProgressCard(
                     .fillMaxWidth()
                     .height(9.dp)
                     .clip(RoundedCornerShape(6.dp)),
-                color = MaterialTheme.colorScheme.primary,
+                color = heroAccent,
                 trackColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
             )
 
@@ -568,8 +593,8 @@ private fun StudentLevelDetectorCard(
                     onClick = { onSelectLevel(1) },
                     label = { Text("🔴 زیرِ زیرِ صفر (همه چی یادم رفته)") },
                     colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = Color(0xFFEF4444).copy(alpha = 0.2f),
-                        selectedLabelColor = Color(0xFFB91C1C)
+                        selectedContainerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.6f),
+                        selectedLabelColor = MaterialTheme.colorScheme.onErrorContainer
                     )
                 )
                 FilterChip(
@@ -577,8 +602,8 @@ private fun StudentLevelDetectorCard(
                     onClick = { onSelectLevel(2) },
                     label = { Text("🟡 متوسط (قواعد رو قاطی می‌کنم)") },
                     colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = Color(0xFFF59E0B).copy(alpha = 0.2f),
-                        selectedLabelColor = Color(0xFFB45309)
+                        selectedContainerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.6f),
+                        selectedLabelColor = MaterialTheme.colorScheme.onTertiaryContainer
                     )
                 )
                 FilterChip(
@@ -586,8 +611,8 @@ private fun StudentLevelDetectorCard(
                     onClick = { onSelectLevel(3) },
                     label = { Text("🟢 هدفم فقط فرهنگیانه") },
                     colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = Color(0xFF10B981).copy(alpha = 0.2f),
-                        selectedLabelColor = Color(0xFF047857)
+                        selectedContainerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f),
+                        selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 )
                 FilterChip(
@@ -595,8 +620,8 @@ private fun StudentLevelDetectorCard(
                     onClick = { onSelectLevel(4) },
                     label = { Text("🟣 دنبال رتبه زیر ۱۰۰ هستم") },
                     colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = Color(0xFF8B5CF6).copy(alpha = 0.2f),
-                        selectedLabelColor = Color(0xFF6D28D9)
+                        selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.6f),
+                        selectedLabelColor = MaterialTheme.colorScheme.onSecondaryContainer
                     )
                 )
             }
@@ -637,7 +662,7 @@ private fun StudentLevelDetectorCard(
 private fun RoadmapGuidanceIntroCard() {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
     ) {
         Row(
@@ -647,7 +672,7 @@ private fun RoadmapGuidanceIntroCard() {
             Icon(
                 Icons.Default.Lightbulb,
                 contentDescription = null,
-                tint = Color(0xFFF59E0B),
+                tint = MaterialTheme.colorScheme.tertiary,
                 modifier = Modifier.size(24.dp)
             )
             Spacer(modifier = Modifier.width(10.dp))
@@ -672,14 +697,21 @@ private fun RoadmapStepCard(
     onSelectSubject: (String) -> Unit,
     onNavigateLab: () -> Unit
 ) {
+    val stepAccent = resolveDynamicAccent(MaterialTheme.colorScheme.primary)
+    val stepBrush = Brush.verticalGradient(
+        listOf(
+            MaterialTheme.colorScheme.surface,
+            if (isCompleted) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+            else MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f)
+        )
+    )
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .background(stepBrush, RoundedCornerShape(20.dp))
             .testTag("step_card_${step.id}"),
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = if (isCompleted) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f) else MaterialTheme.colorScheme.surface
-        ),
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         elevation = CardDefaults.cardElevation(defaultElevation = if (isCompleted) 0.dp else 2.dp)
     ) {
         Column(
@@ -699,7 +731,7 @@ private fun RoadmapStepCard(
                     Icon(
                         imageVector = if (isCompleted) Icons.Default.CheckCircle else Icons.Default.RadioButtonUnchecked,
                         contentDescription = if (isCompleted) "انجام شد" else "انجام نشده",
-                        tint = if (isCompleted) Color(0xFF10B981) else MaterialTheme.colorScheme.outline,
+                        tint = if (isCompleted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
@@ -731,12 +763,36 @@ private fun RoadmapStepCard(
             }
 
             // Step Title
-            Text(
-                text = step.stepTitle,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.ExtraBold,
-                color = if (isCompleted) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f) else MaterialTheme.colorScheme.onSurface
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(36.dp)
+                        .background(
+                            Brush.linearGradient(
+                                listOf(stepAccent.copy(alpha = 0.85f), MaterialTheme.colorScheme.secondary.copy(alpha = 0.85f))
+                            ),
+                            CircleShape
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        Icons.Default.MenuBook,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+                Text(
+                    text = step.stepTitle,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = if (isCompleted) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f) else MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.weight(1f)
+                )
+            }
 
             // Why First? (چرا اول باید اینو بخونی؟)
             Surface(
@@ -773,21 +829,21 @@ private fun RoadmapStepCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color(0xFFEF4444).copy(alpha = 0.08f), RoundedCornerShape(8.dp))
+                    .background(MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.45f), RoundedCornerShape(8.dp))
                     .padding(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     Icons.Default.WarningAmber,
                     contentDescription = null,
-                    tint = Color(0xFFEF4444),
+                    tint = MaterialTheme.colorScheme.error,
                     modifier = Modifier.size(16.dp)
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
                     text = "تله اشتباه داوطلبان: ${step.trapAlert}",
                     style = MaterialTheme.typography.labelSmall,
-                    color = Color(0xFFB91C1C)
+                    color = MaterialTheme.colorScheme.onErrorContainer
                 )
             }
 
@@ -802,29 +858,47 @@ private fun RoadmapStepCard(
                 if (step.targetLessonId != null) {
                     Button(
                         onClick = { onOpenLesson(step.targetLessonId) },
-                        modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(48.dp)
+                            .background(
+                                Brush.linearGradient(
+                                    listOf(stepAccent.copy(alpha = 0.90f), MaterialTheme.colorScheme.secondary.copy(alpha = 0.85f))
+                                ),
+                                RoundedCornerShape(16.dp)
+                            ),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
                     ) {
                         Icon(Icons.Default.MenuBook, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("ورود به این درسنامه", style = MaterialTheme.typography.labelMedium)
+                        Text("ورود به این درسنامه", style = MaterialTheme.typography.labelMedium, maxLines = 1, softWrap = false)
                     }
                 } else {
                     Button(
                         onClick = { onSelectSubject(step.subjectId) },
-                        modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(12.dp)
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(48.dp)
+                            .background(
+                                Brush.linearGradient(
+                                    listOf(stepAccent.copy(alpha = 0.90f), MaterialTheme.colorScheme.secondary.copy(alpha = 0.85f))
+                                ),
+                                RoundedCornerShape(16.dp)
+                            ),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
                     ) {
                         Icon(Icons.Default.MenuBook, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("مشاهده درس‌های ${step.subjectName}", style = MaterialTheme.typography.labelMedium)
+                        Text("مشاهده درس‌های ${step.subjectName}", style = MaterialTheme.typography.labelMedium, maxLines = 1, softWrap = false)
                     }
                 }
 
                 if (step.hasLab) {
                     OutlinedButton(
                         onClick = { onNavigateLab() },
+                        modifier = Modifier.height(48.dp),
                         shape = RoundedCornerShape(12.dp)
                     ) {
                         Icon(Icons.Default.Science, contentDescription = null, modifier = Modifier.size(16.dp))
@@ -835,9 +909,10 @@ private fun RoadmapStepCard(
 
                 OutlinedButton(
                     onClick = { onToggle() },
+                    modifier = Modifier.height(48.dp),
                     shape = RoundedCornerShape(12.dp)
                 ) {
-                    Text(if (isCompleted) "لغو تیک" else "تیک تکمیل", style = MaterialTheme.typography.labelSmall)
+                    Text(if (isCompleted) "لغو تیک" else "تیک تکمیل", style = MaterialTheme.typography.labelSmall, maxLines = 1, softWrap = false)
                 }
             }
         }
@@ -928,9 +1003,18 @@ private fun DiagnosticTroubleCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .background(
+                Brush.verticalGradient(
+                    listOf(
+                        MaterialTheme.colorScheme.surface,
+                        trouble.badgeColor.copy(alpha = 0.12f)
+                    )
+                ),
+                RoundedCornerShape(20.dp)
+            )
             .testTag("diagnostic_card_${trouble.id}"),
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
@@ -1031,45 +1115,51 @@ private fun DiagnosticTroubleCard(
                 if (trouble.targetLessonId != null) {
                     Button(
                         onClick = { onOpenLesson(trouble.targetLessonId) },
-                        modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = trouble.badgeColor)
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(48.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = trouble.badgeColor.copy(alpha = 0.85f))
                     ) {
                         Icon(Icons.Default.MenuBook, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("رفتن به درسنامه این پیش‌نیاز", style = MaterialTheme.typography.labelSmall)
+                        Text("رفتن به درسنامه این پیش‌نیاز", style = MaterialTheme.typography.labelSmall, maxLines = 1, softWrap = false)
                     }
                 } else {
                     Button(
                         onClick = { onSelectSubject(trouble.subjectId) },
-                        modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = trouble.badgeColor)
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(48.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = trouble.badgeColor.copy(alpha = 0.85f))
                     ) {
                         Icon(Icons.Default.MenuBook, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("درس‌های ${trouble.subjectTitle}", style = MaterialTheme.typography.labelSmall)
+                        Text("درس‌های ${trouble.subjectTitle}", style = MaterialTheme.typography.labelSmall, maxLines = 1, softWrap = false)
                     }
                 }
 
                 if (trouble.targetLabTab) {
                     OutlinedButton(
                         onClick = { onNavigateLab() },
+                        modifier = Modifier.height(48.dp),
                         shape = RoundedCornerShape(12.dp)
                     ) {
                         Icon(Icons.Default.Science, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("کارگاه تعاملی", style = MaterialTheme.typography.labelSmall)
+                        Text("کارگاه تعاملی", style = MaterialTheme.typography.labelSmall, maxLines = 1, softWrap = false)
                     }
                 }
 
                 OutlinedButton(
                     onClick = { onNavigatePractice() },
+                    modifier = Modifier.height(48.dp),
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Icon(Icons.Default.Quiz, contentDescription = null, modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("تست", style = MaterialTheme.typography.labelSmall)
+                    Text("تست", style = MaterialTheme.typography.labelSmall, maxLines = 1, softWrap = false)
                 }
             }
         }
@@ -1108,7 +1198,7 @@ private fun TopRankerTransformationFormulaCard(
             // Secret 1
             Surface(
                 color = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.25f),
-                shape = RoundedCornerShape(14.dp),
+                shape = RoundedCornerShape(16.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -1129,7 +1219,7 @@ private fun TopRankerTransformationFormulaCard(
             // Secret 2
             Surface(
                 color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.25f),
-                shape = RoundedCornerShape(14.dp),
+                shape = RoundedCornerShape(16.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -1150,7 +1240,7 @@ private fun TopRankerTransformationFormulaCard(
             // Secret 3
             Surface(
                 color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.25f),
-                shape = RoundedCornerShape(14.dp),
+                shape = RoundedCornerShape(16.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -1171,7 +1261,7 @@ private fun TopRankerTransformationFormulaCard(
             // Secret 4
             Surface(
                 color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.25f),
-                shape = RoundedCornerShape(14.dp),
+                shape = RoundedCornerShape(16.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -1195,17 +1285,21 @@ private fun TopRankerTransformationFormulaCard(
             ) {
                 Button(
                     onClick = { onNavigatePlanner() },
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(12.dp)
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(48.dp),
+                    shape = RoundedCornerShape(16.dp)
                 ) {
-                    Text("تنظیم برنامه‌ریز هوشمند")
+                    Text("تنظیم برنامه‌ریز هوشمند", maxLines = 1, softWrap = false)
                 }
                 OutlinedButton(
                     onClick = { onNavigatePractice() },
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(12.dp)
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(48.dp),
+                    shape = RoundedCornerShape(16.dp)
                 ) {
-                    Text("جعبه لایتنر ابینگهاوس")
+                    Text("جعبه لایتنر ابینگهاوس", maxLines = 1, softWrap = false)
                 }
             }
         }
@@ -1924,7 +2018,7 @@ private fun RoadmapTreeNodeBranchItem(
             .padding(start = indentDp)
     ) {
         Surface(
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(20.dp),
             color = if (isMastered) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f) else MaterialTheme.colorScheme.surfaceContainerLow,
             border = BorderStroke(1.dp, node.badgeColor.copy(alpha = if (depth == 0) 0.5f else 0.25f)),
             modifier = Modifier.fillMaxWidth()
