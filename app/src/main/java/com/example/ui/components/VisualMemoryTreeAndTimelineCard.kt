@@ -97,6 +97,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.curriculum.ZeroLesson
 import com.example.data.curriculum.normalizedSubjectId
+import com.example.ui.theme.LocalAppThemeController
 import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
 
@@ -178,8 +179,10 @@ fun VisualMemoryTreeAndTimelineCard(
     var selectedMainTab by remember(lesson?.id, normalizedSub) { mutableIntStateOf(defaultTab) }
     var isExpanded by remember { mutableStateOf(true) }
 
+    // گیت کاهش حرکت: وقتی reduceMotion روشن است، به‌جای پالس بی‌پایان، فریم اول (۰f) ثابت نشان داده می‌شود
+    val reduceMotionEnabled = LocalAppThemeController.current.reduceMotionEnabled
     val infiniteTransition = rememberInfiniteTransition(label = "visual_tree_pulse")
-    val pulseFraction by infiniteTransition.animateFloat(
+    val animatedPulseFraction by infiniteTransition.animateFloat(
         initialValue = 0f,
         targetValue = 1f,
         animationSpec = infiniteRepeatable(
@@ -188,6 +191,7 @@ fun VisualMemoryTreeAndTimelineCard(
         ),
         label = "pulse_fraction"
     )
+    val pulseFraction = if (reduceMotionEnabled) 0f else animatedPulseFraction
 
     val subjectSpecificTrees = remember(normalizedSub) {
         when (normalizedSub) {
