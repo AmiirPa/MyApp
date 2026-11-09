@@ -2713,14 +2713,47 @@ fun ZeroLessonsScreen(
                 subjectBooks.firstOrNull() ?: TextbookPdfCatalog.getBookForSubjectAndGrade(currentSubject.id, 4)
             }
 
-            var selectedSubTab by remember(currentSubject.id) { mutableIntStateOf(0) }
 
-            Column(modifier = Modifier.fillMaxSize()) {
+            val lessonsByChapter = remember(displayedLessons) {
+                displayedLessons
+                    .sortedWith(
+                        compareBy<ZeroLesson>(
+                            { it.subcategoryFolder().first },
+                            { it.orderIndex }
+                        )
+                    )
+                    .groupBy { lesson ->
+                        val (gradeNum, folderName) = lesson.subcategoryFolder()
+                        folderName.ifBlank {
+                            when (gradeNum) {
+                                1 -> "مبانی پایه و پیش‌نیاز"
+                                2 -> "کتاب پایه دهم"
+                                3 -> "کتاب پایه یازدهم"
+                                4 -> "کتاب پایه دوازدهم"
+                                else -> "سرفصل‌های آموزشی"
+                            }
+                        }
+                    }
+            }
+
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .testTag("lessons_lazy_column"),
+                contentPadding = PaddingValues(
+                    start = 20.dp,
+                    top = 10.dp,
+                    end = 20.dp,
+                    bottom = 88.dp
+                ),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                item(key = "subject_header_card") {
                 // Clean Minimalist Subject Header Card
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 12.dp),
+                        .padding(vertical = 12.dp),
                     color = HomeSurface(),
                     shape = RoundedCornerShape(18.dp),
                     border = BorderStroke(1.dp, HomeBorder)
@@ -2798,211 +2831,166 @@ fun ZeroLessonsScreen(
                         }
                     }
                 }
+                }
 
-                // Minimalist Subject Section Selector
-                Surface(
-                    shape = RoundedCornerShape(14.dp),
-                    color = HomeSurface(),
-                    border = BorderStroke(1.dp, HomeBorder),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 4.dp)
-                ) {
-                    Row(
+                // (0) فصل‌ها و مباحث — زیرمجموعهٔ همین کتاب
+                item(key = "book_section_chapters_header") {
+                    BookPageSectionHeader(
+                        title = "فصل‌ها و مباحث",
+                        accentColor = currentSubject.color
+                    )
+                }
+
+                // کارت شمارش بالای فهرست: «N درس در M فصل» با
+                // گرادیان رنگ موضوع؛ فقط شمارش است و ردیفی
+                // اضافه یا کم نمی‌کند.
+                item(key = "subject_lesson_count_card") {
+                    val chaptersFa = BidiFormatter.toPersianDigits(lessonsByChapter.size.toString())
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .horizontalScroll(rememberScrollState())
-                            .padding(4.dp),
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(
+                                Brush.horizontalGradient(
+                                    listOf(
+                                        currentSubject.color.copy(alpha = 0.16f),
+                                        currentSubject.color.copy(alpha = 0.05f)
+                                    )
+                                )
+                            )
+                            .testTag("subject_lesson_count_card")
+                            .padding(horizontal = 14.dp, vertical = 12.dp)
                     ) {
-                        listOf(
-                            0 to "فصل‌ها و مباحث",
-                            2 to "سوالات تمرینی",
-                            3 to "فلش‌کارت‌ها",
-                            1 to "امتحان نهایی",
-                            4 to "نکات و روش مطالعه"
-                        ).forEach { (tabIdx, tabTitle) ->
-                            val isSelected = selectedSubTab == tabIdx
-                            Surface(
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            Box(
                                 modifier = Modifier
-                                    .clip(RoundedCornerShape(10.dp))
-                                    .clickable { selectedSubTab = tabIdx }
-                                    .testTag("subject_hub_tab_$tabIdx"),
-                                shape = RoundedCornerShape(10.dp),
-                                color = if (isSelected) HomePrimary else Color.Transparent
+                                    .size(36.dp)
+                                    .clip(CircleShape)
+                                    .background(currentSubject.color.copy(alpha = 0.18f)),
+                                contentAlignment = Alignment.Center
                             ) {
-                                Text(
-                                    text = tabTitle,
-                                    fontSize = 12.sp,
-                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                    color = if (isSelected) HomeOnPrimary else HomeMuted,
-                                    maxLines = 1,
-                                    softWrap = false,
-                                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp)
+                                Icon(
+                                    imageVector = Icons.Default.MenuBook,
+                                    contentDescription = null,
+                                    tint = currentSubject.color,
+                                    modifier = Modifier.size(20.dp)
                                 )
                             }
+                            Text(
+                                text = "$countFa درس در $chaptersFa فصل",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = HomeText,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
                         }
                     }
                 }
 
-                when (selectedSubTab) {
-                    1 -> {
-                        SubjectNahaeeExamsView(
+                // نکات کلیدی کتاب (سر جای خودش: صفحهٔ کتاب، نه داخل هر درس)
+                if (currentSubject.id in listOf("arabic", "english", "math", "fonoon", "arooz", "history", "economics", "philosophy", "logic")) {
+                    item(key = "subject_book_key_points") {
+                        SubjectBookKeyPointsCard(
                             subjectId = currentSubject.id,
-                            subjectTitle = cleanSubjectTitle,
-                            accentColor = HomePrimary
+                            accentColor = currentSubject.color
                         )
                     }
-                    2 -> {
-                        SubjectTestBankView(
-                            subjectId = currentSubject.id,
-                            subjectTitle = cleanSubjectTitle,
-                            accentColor = HomePrimary,
-                            lessons = displayedLessons
-                        )
-                    }
-                    3 -> {
-                        SubjectFlashcardsView(
-                            subjectId = currentSubject.id,
-                            subjectTitle = cleanSubjectTitle,
-                            accentColor = HomePrimary
-                        )
-                    }
-                    4 -> {
-                        SubjectStudyMethodView(
-                            subjectId = currentSubject.id,
-                            subjectTitle = cleanSubjectTitle,
-                            accentColor = HomePrimary,
-                            lessons = displayedLessons
-                        )
-                    }
-                    else -> {
-                        val lessonsByChapter = remember(displayedLessons) {
-                            displayedLessons
-                                .sortedWith(
-                                    compareBy<ZeroLesson>(
-                                        { it.subcategoryFolder().first },
-                                        { it.orderIndex }
-                                    )
-                                )
-                                .groupBy { lesson ->
-                                    val (gradeNum, folderName) = lesson.subcategoryFolder()
-                                    folderName.ifBlank {
-                                        when (gradeNum) {
-                                            1 -> "مبانی پایه و پیش‌نیاز"
-                                            2 -> "کتاب پایه دهم"
-                                            3 -> "کتاب پایه یازدهم"
-                                            4 -> "کتاب پایه دوازدهم"
-                                            else -> "سرفصل‌های آموزشی"
-                                        }
-                                    }
-                                }
-                        }
+                }
 
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .testTag("lessons_lazy_column"),
-                            contentPadding = PaddingValues(
-                                start = 20.dp,
-                                top = 10.dp,
-                                end = 20.dp,
-                                bottom = 88.dp
-                            ),
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            // کارت شمارش بالای فهرست: «N درس در M فصل» با
-                            // گرادیان رنگ موضوع؛ فقط شمارش است و ردیفی
-                            // اضافه یا کم نمی‌کند.
-                            item(key = "subject_lesson_count_card") {
-                                val chaptersFa = BidiFormatter.toPersianDigits(lessonsByChapter.size.toString())
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clip(RoundedCornerShape(14.dp))
-                                        .background(
-                                            Brush.horizontalGradient(
-                                                listOf(
-                                                    currentSubject.color.copy(alpha = 0.16f),
-                                                    currentSubject.color.copy(alpha = 0.05f)
-                                                )
-                                            )
-                                        )
-                                        .testTag("subject_lesson_count_card")
-                                        .padding(horizontal = 14.dp, vertical = 12.dp)
-                                ) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                                    ) {
-                                        Box(
-                                            modifier = Modifier
-                                                .size(36.dp)
-                                                .clip(CircleShape)
-                                                .background(currentSubject.color.copy(alpha = 0.18f)),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.Default.MenuBook,
-                                                contentDescription = null,
-                                                tint = currentSubject.color,
-                                                modifier = Modifier.size(20.dp)
-                                            )
-                                        }
-                                        Text(
-                                            text = "$countFa درس در $chaptersFa فصل",
-                                            fontSize = 14.sp,
-                                            fontWeight = FontWeight.Bold,
-                                            color = HomeText,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
-                                    }
-                                }
-                            }
+                item(key = "subject_topic_search") {
+                    OutlinedTextField(
+                        value = lessonSearchQuery,
+                        onValueChange = { lessonSearchQuery = it },
+                        placeholder = {
+                            Text(
+                                BidiFormatter.formatMixedPersianText("جستجوی مبحث در $cleanSubjectTitle..."),
+                                fontSize = 13.sp,
+                                color = HomeMuted
+                            )
+                        },
+                        singleLine = true,
+                        shape = RoundedCornerShape(14.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(HomeSurface(), RoundedCornerShape(14.dp))
+                            .testTag("lessons_search_input")
+                    )
+                }
 
-                            // نکات کلیدی کتاب (سر جای خودش: صفحهٔ کتاب، نه داخل هر درس)
-                            if (currentSubject.id in listOf("arabic", "english", "math", "fonoon", "arooz", "history", "economics", "philosophy", "logic")) {
-                                item(key = "subject_book_key_points") {
-                                    SubjectBookKeyPointsCard(
-                                        subjectId = currentSubject.id,
-                                        accentColor = currentSubject.color
-                                    )
-                                }
-                            }
+                items(lessonsByChapter.keys.toList(), key = { it }) { chapterTitle ->
+                    val chapterLessons = lessonsByChapter[chapterTitle] ?: emptyList()
+                    MinimalBookTocCard(
+                        chapterTitle = chapterTitle,
+                        lessons = chapterLessons,
+                        onSelectLesson = { lesson -> onOpenLesson(lesson.id) },
+                        accentColor = currentSubject.color
+                    )
+                }
 
-                            item(key = "subject_topic_search") {
-                                OutlinedTextField(
-                                    value = lessonSearchQuery,
-                                    onValueChange = { lessonSearchQuery = it },
-                                    placeholder = {
-                                        Text(
-                                            BidiFormatter.formatMixedPersianText("جستجوی مبحث در $cleanSubjectTitle..."),
-                                            fontSize = 13.sp,
-                                            color = HomeMuted
-                                        )
-                                    },
-                                    singleLine = true,
-                                    shape = RoundedCornerShape(14.dp),
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .background(HomeSurface(), RoundedCornerShape(14.dp))
-                                        .testTag("lessons_search_input")
-                                )
-                            }
+                // (2) سوالات تمرینی
+                item(key = "book_section_testbank_header") {
+                    BookPageSectionHeader(
+                        title = "سوالات تمرینی",
+                        accentColor = currentSubject.color
+                    )
+                }
+                item(key = "book_section_testbank") {
+                    SubjectTestBankView(
+                        subjectId = currentSubject.id,
+                        subjectTitle = cleanSubjectTitle,
+                        accentColor = HomePrimary,
+                        lessons = displayedLessons
+                    )
+                }
 
-                            items(lessonsByChapter.keys.toList(), key = { it }) { chapterTitle ->
-                                val chapterLessons = lessonsByChapter[chapterTitle] ?: emptyList()
-                                MinimalBookTocCard(
-                                    chapterTitle = chapterTitle,
-                                    lessons = chapterLessons,
-                                    onSelectLesson = { lesson -> onOpenLesson(lesson.id) },
-                                    accentColor = currentSubject.color
-                                )
-                            }
-                        }
-                    }
+                // (3) فلش‌کارت‌ها
+                item(key = "book_section_flashcards_header") {
+                    BookPageSectionHeader(
+                        title = "فلش‌کارت‌ها",
+                        accentColor = currentSubject.color
+                    )
+                }
+                item(key = "book_section_flashcards") {
+                    SubjectFlashcardsView(
+                        subjectId = currentSubject.id,
+                        subjectTitle = cleanSubjectTitle,
+                        accentColor = HomePrimary
+                    )
+                }
+
+                // (1) امتحان نهایی
+                item(key = "book_section_nahaee_header") {
+                    BookPageSectionHeader(
+                        title = "امتحان نهایی",
+                        accentColor = currentSubject.color
+                    )
+                }
+                item(key = "book_section_nahaee") {
+                    SubjectNahaeeExamsView(
+                        subjectId = currentSubject.id,
+                        subjectTitle = cleanSubjectTitle,
+                        accentColor = HomePrimary
+                    )
+                }
+
+                // (4) نکات و روش مطالعه
+                item(key = "book_section_method_header") {
+                    BookPageSectionHeader(
+                        title = "نکات و روش مطالعه",
+                        accentColor = currentSubject.color
+                    )
+                }
+                item(key = "book_section_method") {
+                    SubjectStudyMethodView(
+                        subjectId = currentSubject.id,
+                        subjectTitle = cleanSubjectTitle,
+                        accentColor = HomePrimary,
+                        lessons = displayedLessons
+                    )
                 }
             }
         }
@@ -5997,6 +5985,36 @@ fun OfficialSourceLinksCard() {
 // ==========================================
 
 @Composable
+/**
+ * سربرگ یک بخش از صفحهٔ کتاب (عمودی): تیتر + رنگ موضوع.
+ */
+@Composable
+private fun BookPageSectionHeader(
+    title: String,
+    accentColor: Color
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .size(width = 4.dp, height = 22.dp)
+                .clip(RoundedCornerShape(2.dp))
+                .background(accentColor)
+        )
+        Spacer(modifier = Modifier.width(10.dp))
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = accentColor,
+            maxLines = 1,
+            softWrap = false
+        )
+    }
+}
+
 fun SubjectTestBankView(
     subjectId: String,
     subjectTitle: String,
@@ -6031,7 +6049,7 @@ fun SubjectTestBankView(
                 )
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
-                    text = "تست‌های خرداد و کنکور این درس به ترتیب در انتهای گام‌های درسنامه قرار دارند. می‌توانید از روی تب «درسنامه‌ها» هر گام را مطالعه و تست مربوطه را حل کنید.",
+                    text = "تست‌های خرداد و کنکور این درس به ترتیب در انتهای گام‌های درسنامه قرار دارند. می‌توانید از روی صفحهٔ درس هر گام را مطالعه و تست مربوطه را حل کنید.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center
@@ -6039,17 +6057,12 @@ fun SubjectTestBankView(
             }
         }
     } else {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(
-                start = responsive.horizontalPadding,
-                top = 6.dp,
-                end = responsive.horizontalPadding,
-                bottom = 88.dp
-            ),
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 6.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            item {
                 Surface(
                     color = accentColor.copy(alpha = 0.08f),
                     shape = RoundedCornerShape(12.dp),
@@ -6081,9 +6094,8 @@ fun SubjectTestBankView(
                         }
                     }
                 }
-            }
 
-            itemsIndexed(quizItems, key = { index, item -> "quiz_${subjectId}_$index" }) { index, (lessonTitle, q) ->
+            quizItems.forEachIndexed { index, (lessonTitle, q) ->
                 var selectedOption by remember("quiz_${subjectId}_$index") { mutableStateOf<Int?>(null) }
                 var showExplanation by remember("quiz_${subjectId}_$index") { mutableStateOf(false) }
 
@@ -6232,24 +6244,17 @@ fun SubjectStudyMethodView(
         }
     }
 
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(
-            start = responsive.horizontalPadding,
-            top = 6.dp,
-            end = responsive.horizontalPadding,
-            bottom = 88.dp
-        ),
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        item(key = "subject_rankers_playbook_$subjectId") {
             com.example.ui.components.TopRankersAndSocialTricksHub(
                 initialSubjectId = subjectId
             )
-        }
 
         if (methodInfo != null) {
-            item {
                 Surface(
                     shape = RoundedCornerShape(16.dp),
                     color = accentColor.copy(alpha = 0.08f),
@@ -6346,17 +6351,14 @@ fun SubjectStudyMethodView(
                         }
                     }
                 }
-            }
         }
 
         val repLesson = lessons.firstOrNull()
         if (repLesson != null) {
-            item {
                 SlowLearnerSuperMethodCard(
                     lesson = repLesson,
                     accentColor = accentColor
                 )
-            }
         }
     }
 }
@@ -6378,17 +6380,12 @@ fun SubjectFlashcardsView(
         }.ifEmpty { FlashcardAndQuizBank.flashcards.take(6) }
     }
 
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(
-            start = responsive.horizontalPadding,
-            top = 6.dp,
-            end = responsive.horizontalPadding,
-            bottom = 88.dp
-        ),
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        item {
             Surface(
                 color = accentColor.copy(alpha = 0.08f),
                 shape = RoundedCornerShape(12.dp),
@@ -6420,9 +6417,8 @@ fun SubjectFlashcardsView(
                     }
                 }
             }
-        }
 
-        items(flashcards, key = { it.id }) { card ->
+        flashcards.forEach { card ->
             var isFlipped by remember(card.id) { mutableStateOf(false) }
 
             Surface(
@@ -6602,18 +6598,13 @@ fun SubjectNahaeeExamsView(
         }
     }
 
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(
-            start = responsive.horizontalPadding,
-            top = 6.dp,
-            end = responsive.horizontalPadding,
-            bottom = 88.dp
-        ),
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         // ۱. کارت هدر ویژه امتحانات نهایی و ترمیم معدل درس
-        item(key = "sub_nahaee_header_$subjectId") {
             Surface(
                 color = MaterialTheme.colorScheme.surfaceContainerHigh,
                 shape = RoundedCornerShape(24.dp),
@@ -6671,10 +6662,9 @@ fun SubjectNahaeeExamsView(
                     )
                 }
             }
-        }
 
         // ۲. بسته جمع‌بندی ۲۰ قطعی شب امتحان این درس
-        items(nightSummaries, key = { "sub_night_${it.subjectId}" }) { pack ->
+        nightSummaries.forEach { pack ->
             Surface(
                 shape = RoundedCornerShape(24.dp),
                 color = MaterialTheme.colorScheme.surface,
@@ -6722,7 +6712,7 @@ fun SubjectNahaeeExamsView(
         }
 
         // ۳. دفترچه کامل ۲۰ نمره‌ای از سوال ۱ تا آخر برای این درس
-        items(fullBooklets, key = { "sub_booklet_${it.id}" }) { booklet ->
+        fullBooklets.forEach { booklet ->
             Surface(
                 shape = RoundedCornerShape(24.dp),
                 color = MaterialTheme.colorScheme.surface,
@@ -6814,7 +6804,7 @@ fun SubjectNahaeeExamsView(
         }
 
         // ۴. سوالات تشریحی پرتکرار خرداد، شهریور و دی این درس
-        items(descriptiveQuestions, key = { "sub_desc_q_${it.id}" }) { q ->
+        descriptiveQuestions.forEach { q ->
             Surface(
                 shape = RoundedCornerShape(22.dp),
                 color = MaterialTheme.colorScheme.surface,
