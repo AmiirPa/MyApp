@@ -121,6 +121,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntSize
@@ -133,8 +134,12 @@ import com.example.data.curriculum.prerequisiteStepOrder
 import com.example.data.curriculum.subcategoryFolder
 import com.example.data.curriculum.normalizedSubjectId
 import com.example.data.curriculum.getPrerequisiteLinks
+import com.example.data.curriculum.LearningPath1406
+import com.example.data.curriculum.LearningPathElementary1406
+import com.example.data.curriculum.LearningPathMiddle1406
 import com.example.data.curriculum.LessonLogos1406
 import com.example.data.curriculum.MinusZeroLearningEngine
+import com.example.data.local.LearningPathPreference
 import com.example.ui.AppTab
 import com.example.ui.KonkoorUiState
 import com.example.ui.components.BiDiText
@@ -791,9 +796,27 @@ fun HomeDashboardScreen(
         nextLesson?.normalizedSubjectId() ?: "fonoon"
     }
 
-    // قدم فعلی مسیر ۱ تا ۱۰۰ برای کارت hero خانه.
-    val pathCurrentStep = remember(uiState.lessonProgressMap) {
-        currentLearningPathStep(uiState)
+    // جادهٔ انتخاب‌شدهٔ خانه (دبستان / متوسطه اول / مسیر ۱ تا ۱۰۰):
+    // از SharedPreferences خوانده می‌شود، پیش‌فرض HIGH. بدون remember
+    // خوانده می‌شود تا اگر بخش در صفحهٔ مسیر عوض شد، برگشت به خانه
+    // همان جادهٔ تازه را نشان بدهد. قدم فعلی، درس بعدی و شمار
+    // کامل‌شده با نسخه‌های دوآرگومانی همان helperها از فهرست قدم‌های
+    // همین بخش حساب می‌شوند — دیگر hardcode مسیر HIGH نیست.
+    val pathSectionName = LearningPathPreference.loadSectionName(LocalContext.current)
+    val pathSteps = when (pathSectionName) {
+        LearningPathPreference.SECTION_ELEMENTARY -> LearningPathElementary1406.steps
+        LearningPathPreference.SECTION_MIDDLE -> LearningPathMiddle1406.steps
+        else -> LearningPath1406.steps
+    }
+    val pathSectionLabel = when (pathSectionName) {
+        LearningPathPreference.SECTION_ELEMENTARY -> "دبستان"
+        LearningPathPreference.SECTION_MIDDLE -> "متوسطه اول"
+        else -> "مسیر یادگیری ۱ تا ۱۰۰"
+    }
+    val pathTotalSteps = pathSteps.size
+    // قدم فعلی جادهٔ انتخاب‌شده برای کارت hero خانه.
+    val pathCurrentStep = remember(uiState.lessonProgressMap, pathSteps) {
+        currentLearningPathStep(uiState, pathSteps)
     }
     // نقشه درس‌ها یک‌بار کش می‌شود (remember روی allLessons) و به
     // nextUnfinishedPathLessonId داده می‌شود تا associateBy روی ۲٬۴۲۷ درس
@@ -811,9 +834,34 @@ fun HomeDashboardScreen(
     val pathNextLessonTitle = remember(uiState.allLessons, pathNextLessonId) {
         uiState.allLessons.find { it.id == pathNextLessonId }?.title
     }
-    val pathCompletedSteps = remember(uiState.lessonProgressMap) {
-        countCompletedPathSteps(uiState)
+    val pathCompletedSteps = remember(uiState.lessonProgressMap, pathSteps) {
+        countCompletedPathSteps(uiState, pathSteps)
     }
+    // درس‌های امروز: از قدم فعلی به بعد، به ترتیب قدم‌ها، درس‌های
+    // خوانده‌نشده (progress کامل نیست) جمع می‌شوند تا ۳ درس؛ هر درس
+    // با شمارهٔ قدمش نگه داشته می‌شود تا کارت «امروز» قدم را هم نشان بدهد.
+    val todayLessonsWithSteps = remember(
+        uiState.lessonProgressMap,
+        pathSteps,
+        pathCurrentStep,
+        pathLessonById
+    ) {
+        val startIndex = pathSteps.indexOf(pathCurrentStep).coerceAtLeast(0)
+        val collected = mutableListOf<Pair<Int, ZeroLesson>>()
+        for (step in pathSteps.drop(startIndex)) {
+            for (lessonId in step.lessonIds) {
+                if (collected.size >= 3) break
+                val lesson = pathLessonById[lessonId] ?: continue
+                if (uiState.lessonProgressMap[lessonId]?.isCompleted != true) {
+                    collected.add(step.stepNumber to lesson)
+                }
+            }
+            if (collected.size >= 3) break
+        }
+        collected.toList()
+    }
+    val todayLessons = todayLessonsWithSteps.map { it.second }
+    val todayLessonStepNumbers = todayLessonsWithSteps.map { it.first }
 
     StudyFirstHomeScreen(
         dateText = BidiFormatter.applyPreferredDigits("کنکور انسانی و فرهنگیان ۱۴۰۶"),
@@ -866,6 +914,10 @@ fun HomeDashboardScreen(
         pathStepTitle = pathCurrentStep.title,
         pathNextLessonTitle = pathNextLessonTitle,
         pathCompletedSteps = pathCompletedSteps,
+        pathSectionLabel = pathSectionLabel,
+        pathTotalSteps = pathTotalSteps,
+        todayLessons = todayLessons,
+        todayLessonStepNumbers = todayLessonStepNumbers,
         onOpenLearningPath = {
             showLearningPath = true
         },
@@ -873,6 +925,9 @@ fun HomeDashboardScreen(
             if (pathNextLessonId != null) {
                 onOpenLesson(pathNextLessonId)
             }
+        },
+        onOpenTodayLesson = { lessonId ->
+            onOpenLesson(lessonId)
         }
     )
 }
@@ -903,9 +958,20 @@ fun StudyFirstHomeScreen(
     pathStepTitle: String = "",
     pathNextLessonTitle: String? = null,
     pathCompletedSteps: Int = 0,
+    pathSectionLabel: String = "مسیر یادگیری ۱ تا ۱۰۰",
+    pathTotalSteps: Int = 100,
+    todayLessons: List<ZeroLesson> = emptyList(),
+    todayLessonStepNumbers: List<Int> = emptyList(),
     onOpenLearningPath: () -> Unit = {},
-    onOpenNextPathLesson: () -> Unit = {}
+    onOpenNextPathLesson: () -> Unit = {},
+    onOpenTodayLesson: (String) -> Unit = {}
 ) {
+    // کارت راهنمای «از کجا شروع کنم؟»: تا وقتی بسته نشده نشان داده
+    // می‌شود؛ بستن در Preference ذخیره می‌شود و دیگر برنمی‌گردد.
+    val guideContext = LocalContext.current
+    var startGuideDismissed by remember {
+        mutableStateOf(LearningPathPreference.isStartGuideDismissed(guideContext))
+    }
     val isDark = androidx.compose.foundation.isSystemInDarkTheme()
     val themeController = LocalAppThemeController.current
     val effectiveDark = themeController.resolveIsDarkTheme(isDark)
@@ -930,6 +996,19 @@ fun StudyFirstHomeScreen(
                 ),
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
+                // 0. کارت راهنمای «از کجا شروع کنم؟» — اولین آیتم خانه،
+                // کوتاه و قابل‌بستن؛ بستن ذخیره می‌شود و کارت برنمی‌گردد.
+                if (!startGuideDismissed) {
+                    item(key = "home_start_guide") {
+                        StartGuideCard(
+                            onDismiss = {
+                                LearningPathPreference.setStartGuideDismissed(guideContext, true)
+                                startGuideDismissed = true
+                            }
+                        )
+                    }
+                }
+
                 // 1. Smart Expressive Header with Monogram and Goal Badge
                 item(key = "home_expressive_header") {
                     ExpressiveSmartHeader(
@@ -938,24 +1017,39 @@ fun StudyFirstHomeScreen(
                     )
                 }
 
-                // 2. Hero مسیر یادگیری ۱ تا ۱۰۰ — قلب خانه (دست نخورد)
+                // 2. Hero جادهٔ انتخاب‌شده — بزرگ‌ترین و تنها شروع خانه
                 item(key = "home_learning_path_hero") {
                     LearningPathHeroCard(
                         stepNumber = pathStepNumber,
                         stepTitle = pathStepTitle,
                         nextLessonTitle = pathNextLessonTitle,
                         completedSteps = pathCompletedSteps,
+                        sectionLabel = pathSectionLabel,
+                        totalSteps = pathTotalSteps,
                         onOpenPath = onOpenLearningPath,
                         onOpenNextLesson = onOpenNextPathLesson
                     )
                 }
 
-                // 2b. نوار «امروز»: یک خط گرم و جمع‌وجور — قدم فعلی مسیر
+                // 2a. «امروز این‌ها را بخوان» — فقط وقتی درس امروزی هست؛
+                // زدن هر ردیف درس را باز می‌کند.
+                if (todayLessons.isNotEmpty()) {
+                    item(key = "home_today_lessons") {
+                        TodayLessonsCard(
+                            lessons = todayLessons,
+                            stepNumbers = todayLessonStepNumbers,
+                            onOpenLesson = onOpenTodayLesson
+                        )
+                    }
+                }
+
+                // 2b. نوار «امروز»: یک خط گرم و جمع‌وجور — قدم فعلی جاده
                 // (همان قدم کارت hero) + تیتر قدم؛ بدون دکمه و بدون بخش تازه.
                 item(key = "home_today_bar") {
                     TodayStepBar(
                         stepNumber = pathStepNumber,
-                        stepTitle = pathStepTitle
+                        stepTitle = pathStepTitle,
+                        totalSteps = pathTotalSteps
                     )
                 }
 
@@ -1131,6 +1225,8 @@ private fun LearningPathHeroCard(
     stepTitle: String,
     nextLessonTitle: String?,
     completedSteps: Int,
+    sectionLabel: String = "مسیر یادگیری ۱ تا ۱۰۰",
+    totalSteps: Int = 100,
     onOpenPath: () -> Unit,
     onOpenNextLesson: () -> Unit
 ) {
@@ -1228,14 +1324,15 @@ private fun LearningPathHeroCard(
                     verticalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
                     Text(
-                        text = "مسیر یادگیری ۱ تا ۱۰۰",
+                        text = sectionLabel,
                         fontSize = 11.sp,
                         color = MaterialTheme.colorScheme.onPrimaryContainer,
                         fontWeight = FontWeight.Medium
                     )
                     Text(
                         text = "قدم " + BidiFormatter.toPersianDigits(stepNumber.toString()) +
-                            " از ۱۰۰: " + stepTitle,
+                            " از " + BidiFormatter.toPersianDigits(totalSteps.toString()) +
+                            ": " + stepTitle,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -1270,7 +1367,7 @@ private fun LearningPathHeroCard(
                     onClick = onOpenNextLesson,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(48.dp)
+                        .height(56.dp)
                         .testTag("home_learning_path_next_lesson_btn"),
                     shape = RoundedCornerShape(14.dp),
                     colors = ButtonDefaults.buttonColors(
@@ -1296,7 +1393,7 @@ private fun LearningPathHeroCard(
                     }
                     Text(
                         text = "درس بعدی: " + nextLessonTitle,
-                        fontSize = 13.sp,
+                        fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -1320,10 +1417,147 @@ private fun LearningPathHeroCard(
  * (همان قدمی که کارت hero نشان می‌دهد) + تیتر قدم. بدون دکمه، بدون
  * بخش تازه؛ گرما از همان نارنجی/کهرباییِ پالت برنامه با آلفای کم می‌آید.
  */
+/**
+ * کارت راهنمای «از کجا شروع کنم؟» — فقط همین ۳ جمله، بیشتر نه؛
+ * دکمهٔ × بستن را در Preference ذخیره می‌کند و کارت برنمی‌گردد.
+ */
+@Composable
+private fun StartGuideCard(
+    onDismiss: () -> Unit
+) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("home_start_guide_card"),
+        shape = RoundedCornerShape(20.dp),
+        color = MaterialTheme.colorScheme.primaryContainer,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.35f))
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.Top,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Text(
+                    text = "۱) این جادهٔ توست — از قدم ۱ شروع کن.",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = "۲) هر روز فقط «درس بعدی» را بخوان.",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = "۳) تست‌ها بعد از هر درس می‌آیند.",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+            IconButton(
+                onClick = onDismiss,
+                modifier = Modifier
+                    .size(32.dp)
+                    .testTag("home_start_guide_dismiss_btn")
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "بستن راهنما",
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+        }
+    }
+}
+
+/**
+ * «امروز این‌ها را بخوان» — ۲ تا ۳ ردیف تک‌خطی (شمارهٔ قدم + تیتر
+ * درس)؛ زدن هر ردیف درس را باز می‌کند. وقتی فهرست خالی است این کارت
+ * اصلا ساخته نمی‌شود (شرط در StudyFirstHomeScreen است).
+ */
+@Composable
+private fun TodayLessonsCard(
+    lessons: List<ZeroLesson>,
+    stepNumbers: List<Int>,
+    onOpenLesson: (String) -> Unit
+) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("home_today_lessons_card"),
+        shape = RoundedCornerShape(20.dp),
+        color = MaterialTheme.colorScheme.surface,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = "امروز این‌ها را بخوان",
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            lessons.forEachIndexed { index, lesson ->
+                val stepNumber = stepNumbers.getOrNull(index)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                        .clickable { onOpenLesson(lesson.id) }
+                        .padding(horizontal = 10.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.PlayArrow,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Text(
+                        text = (if (stepNumber != null) "قدم " +
+                            BidiFormatter.toPersianDigits(stepNumber.toString()) + " — " else "") +
+                            lesson.title,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+        }
+    }
+}
+
 @Composable
 private fun TodayStepBar(
     stepNumber: Int,
-    stepTitle: String
+    stepTitle: String,
+    totalSteps: Int = 100
 ) {
     Box(
         modifier = Modifier
@@ -1343,7 +1577,7 @@ private fun TodayStepBar(
         Text(
             text = "قدم امروز: قدم " +
                 BidiFormatter.toPersianDigits(stepNumber.toString()) +
-                " از ۱۰۰" +
+                " از " + BidiFormatter.toPersianDigits(totalSteps.toString()) +
                 if (stepTitle.isBlank()) "" else " — " + stepTitle,
             fontSize = 13.sp,
             fontWeight = FontWeight.Bold,

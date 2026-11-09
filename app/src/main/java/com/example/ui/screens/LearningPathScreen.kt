@@ -1,6 +1,7 @@
 package com.example.ui.screens
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,7 +22,6 @@ import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.RadioButtonUnchecked
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -36,7 +36,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -49,7 +51,7 @@ import com.example.data.curriculum.LearningPathMiddle1406
 import com.example.data.curriculum.LearningPathStatus
 import com.example.data.curriculum.LearningPathStep
 import com.example.data.curriculum.ZeroLesson
-import com.example.data.firebase.CloudLessonProgress
+import com.example.data.local.LearningPathPreference
 import com.example.ui.KonkoorUiState
 import com.example.ui.components.BidiFormatter
 
@@ -111,7 +113,7 @@ fun countCompletedPathSteps(uiState: KonkoorUiState): Int {
 }
 
 /** سه بخش مسیر یادگیری: دبستان، متوسطه اول، متوسطه دوم و فرهنگیان. */
-private enum class LearningPathSection {
+enum class LearningPathSection {
     ELEMENTARY,
     MIDDLE,
     HIGH
@@ -130,8 +132,17 @@ fun LearningPathScreen(
     uiState: KonkoorUiState,
     onOpenLesson: (String) -> Unit
 ) {
-    // پیش‌فرض: مسیر فعلی (متوسطه دوم و فرهنگیان).
-    var selectedSection by remember { mutableStateOf(LearningPathSection.HIGH) }
+    // بخش ذخیره‌شدهٔ قبلی (پیش‌فرض: مسیر فعلی، متوسطه دوم و فرهنگیان).
+    val context = LocalContext.current
+    var selectedSection by remember {
+        mutableStateOf(
+            runCatching {
+                LearningPathSection.valueOf(
+                    LearningPathPreference.loadSectionName(context)
+                )
+            }.getOrDefault(LearningPathSection.HIGH)
+        )
+    }
     val steps = when (selectedSection) {
         LearningPathSection.ELEMENTARY -> LearningPathElementary1406.steps
         LearningPathSection.MIDDLE -> LearningPathMiddle1406.steps
@@ -141,11 +152,6 @@ fun LearningPathScreen(
         LearningPathSection.ELEMENTARY -> "مسیر دبستان"
         LearningPathSection.MIDDLE -> "مسیر متوسطه اول"
         LearningPathSection.HIGH -> "مسیر یادگیری ۱ تا ۱۰۰"
-    }
-    val pathSubtitle = when (selectedSection) {
-        LearningPathSection.ELEMENTARY,
-        LearningPathSection.MIDDLE -> "اول این را بخوان، بعد آن را — قدم به قدم، پله به پله."
-        LearningPathSection.HIGH -> "از صفر تا کنکور انسانی و فرهنگیان ۱۴۰۶؛ یک قدم در یک زمان."
     }
     // پیشوند یکتای testTag قدم‌ها برای هر مسیر.
     val stepTagPrefix = when (selectedSection) {
@@ -230,7 +236,10 @@ fun LearningPathScreen(
                         modifier = Modifier
                             .weight(1f)
                             .clip(RoundedCornerShape(10.dp))
-                            .clickable { selectedSection = section }
+                            .clickable {
+                                selectedSection = section
+                                LearningPathPreference.saveSectionName(context, section.name)
+                            }
                             .testTag(tag),
                         color = if (isSelected) {
                             MaterialTheme.colorScheme.primary
@@ -268,89 +277,126 @@ fun LearningPathScreen(
                 }
             }
         }
-        Text(
-            text = pathTitle,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        Text(
-            text = pathSubtitle,
-            fontSize = 13.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = 4.dp)
-        )
-        Text(
-            text = BidiFormatter.toPersianDigits(completedSteps.toString()) +
-                " قدم از " + BidiFormatter.toPersianDigits(steps.size.toString()) + " کامل شد",
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(top = 8.dp, bottom = 6.dp)
-        )
-        LinearProgressIndicator(
-            progress = { completedSteps.toFloat() / steps.size },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 10.dp)
-        )
-
+        // قهرمان «درس بعدی»: کارت بزرگ گرادیانی (همان گرادیان گرم خانه)
+        // بلافاصله بعد از چیپ‌ها، در اول صفحه — «درس بعدی» بزرگ + شمارهٔ
+        // قدم + تیتر درس + «قدم X از N کامل شد» + نوار پیشرفت. تیتر مسیر
+        // هم داخل همین کارت است تا صفحه خلوت‌تر شود. زدن کارت درس را باز می‌کند.
         if (nextLesson != null) {
-            Button(
-                onClick = { onOpenLesson(nextLesson.id) },
+            Surface(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 10.dp)
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(
+                        Brush.linearGradient(
+                            listOf(
+                                Color(0xFFEA580C),
+                                Color(0xFFF97316),
+                                Color(0xFFF59E0B),
+                                Color(0xFFFBBF24)
+                            )
+                        )
+                    )
+                    .clickable { onOpenLesson(nextLesson.id) }
                     .testTag("learning_path_next_lesson_btn"),
-                shape = RoundedCornerShape(14.dp)
+                shape = RoundedCornerShape(20.dp),
+                color = Color.Transparent
             ) {
-                // دوخطی: خط کوچک «درس بعدی» + تیتر درس با سه‌نقطه — تیتر دیگر بریده نمی‌شود.
                 Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
+                    Text(
+                        text = pathTitle,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.White.copy(alpha = 0.85f)
+                    )
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
                             imageVector = Icons.Default.PlayArrow,
                             contentDescription = null,
-                            modifier = Modifier.size(18.dp)
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
                         )
                         Text(
                             text = "درس بعدی",
-                            fontSize = 12.sp,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            modifier = Modifier.padding(start = 6.dp)
+                        )
+                        Text(
+                            text = "قدم " + BidiFormatter.toPersianDigits(
+                                currentStep.stepNumber.toString()
+                            ),
+                            fontSize = 13.sp,
                             fontWeight = FontWeight.Medium,
-                            modifier = Modifier.padding(start = 4.dp)
+                            color = Color.White.copy(alpha = 0.9f),
+                            modifier = Modifier.padding(start = 10.dp)
                         )
                     }
                     Text(
                         text = nextLesson.title,
-                        fontSize = 14.sp,
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
-                        maxLines = 1,
+                        color = Color.White,
+                        maxLines = 2,
                         overflow = TextOverflow.Ellipsis
+                    )
+                    Text(
+                        text = BidiFormatter.toPersianDigits(completedSteps.toString()) +
+                            " قدم از " + BidiFormatter.toPersianDigits(steps.size.toString()) + " کامل شد",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                    LinearProgressIndicator(
+                        progress = { completedSteps.toFloat() / steps.size },
+                        color = Color.White,
+                        trackColor = Color.White.copy(alpha = 0.3f),
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
             }
-        } else if (allReadyDone) {
+        } else {
             Text(
-                text = if (selectedSection == LearningPathSection.HIGH) {
-                    "همه قدم‌های آماده کامل شد؛ قدم‌های ۹۹ و ۱۰۰ هنوز ساخته نشده‌اند."
-                } else {
-                    "همه قدم‌های این مسیر کامل شد؛ آفرین، برو سراغ مسیر بعدی."
-                },
-                fontSize = 13.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(bottom = 10.dp)
+                text = BidiFormatter.toPersianDigits(completedSteps.toString()) +
+                    " قدم از " + BidiFormatter.toPersianDigits(steps.size.toString()) + " کامل شد",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(top = 8.dp, bottom = 6.dp)
             )
-        } else if (currentStep.status == LearningPathStatus.GAP) {
-            Text(
-                text = "قدم فعلی هنوز ساخته نشده است.",
-                fontSize = 13.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(bottom = 10.dp)
+            LinearProgressIndicator(
+                progress = { completedSteps.toFloat() / steps.size },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 10.dp)
             )
+            if (allReadyDone) {
+                Text(
+                    text = if (selectedSection == LearningPathSection.HIGH) {
+                        "همه قدم‌های آماده کامل شد؛ قدم‌های ۹۹ و ۱۰۰ هنوز ساخته نشده‌اند."
+                    } else {
+                        "همه قدم‌های این مسیر کامل شد؛ آفرین، برو سراغ مسیر بعدی."
+                    },
+                    fontSize = 13.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(bottom = 10.dp)
+                )
+            } else if (currentStep.status == LearningPathStatus.GAP) {
+                Text(
+                    text = "قدم فعلی هنوز ساخته نشده است.",
+                    fontSize = 13.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(bottom = 10.dp)
+                )
+            }
         }
 
         LazyColumn(
