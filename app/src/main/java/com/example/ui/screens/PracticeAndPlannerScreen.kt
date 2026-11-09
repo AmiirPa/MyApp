@@ -1078,13 +1078,18 @@ fun StudyPlannerAndFarhangianScreen(
                                             text = BidiFormatter.applyPreferredDigits(cleanTitle),
                                             fontSize = 14.sp,
                                             fontWeight = FontWeight.Bold,
-                                            color = PlannerText
+                                            color = PlannerText,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            modifier = Modifier.weight(1f)
                                         )
                                         Text(
                                             text = BidiFormatter.applyPreferredDigits("$pct٪"),
                                             fontSize = 13.sp,
                                             fontWeight = FontWeight.Bold,
-                                            color = PlannerPrimary
+                                            color = PlannerPrimary,
+                                            maxLines = 1,
+                                            softWrap = false
                                         )
                                     }
                                     Box(
@@ -1780,13 +1785,18 @@ private fun KonkoorPastExamsArchiveView(
                                 text = BidiFormatter.formatMixedPersianText("📑 فهرست عمودی دروس دفترچه: $activeSubjectLabel"),
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.Black,
-                                color = MaterialTheme.colorScheme.primary
+                                color = MaterialTheme.colorScheme.primary,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.weight(1f)
                             )
                             Text(
                                 text = if (isSubjectListExpanded) "بستن فهرست ▲" else "انتخاب درس ▼",
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
+                                color = MaterialTheme.colorScheme.primary,
+                                maxLines = 1,
+                                softWrap = false
                             )
                         }
                         if (isSubjectListExpanded) {
@@ -1819,14 +1829,19 @@ private fun KonkoorPastExamsArchiveView(
                                                 text = BidiFormatter.formatMixedPersianText(subjLabel),
                                                 style = MaterialTheme.typography.labelSmall,
                                                 fontWeight = if (isSelected) FontWeight.Black else FontWeight.SemiBold,
-                                                color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+                                                color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis,
+                                                modifier = Modifier.weight(1f)
                                             )
                                             if (isSelected) {
                                                 Text(
                                                     text = "فعال ✓",
                                                     style = MaterialTheme.typography.labelSmall,
                                                     fontWeight = FontWeight.Black,
-                                                    color = MaterialTheme.colorScheme.onPrimary
+                                                    color = MaterialTheme.colorScheme.onPrimary,
+                                                    maxLines = 1,
+                                                    softWrap = false
                                                 )
                                             }
                                         }
@@ -1911,7 +1926,10 @@ private fun KonkoorPastExamsArchiveView(
                                         text = BidiFormatter.formatMixedPersianText("📘 بخش دفترچه: ${subject.title}"),
                                         style = MaterialTheme.typography.titleSmall,
                                         fontWeight = FontWeight.Black,
-                                        color = subject.color
+                                        color = subject.color,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        modifier = Modifier.weight(1f)
                                     )
                                     Surface(
                                         color = subject.color,
@@ -1922,6 +1940,8 @@ private fun KonkoorPastExamsArchiveView(
                                             style = MaterialTheme.typography.labelSmall,
                                             fontWeight = FontWeight.Bold,
                                             color = Color.White,
+                                            maxLines = 1,
+                                            softWrap = false,
                                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
                                         )
                                     }
@@ -2969,66 +2989,78 @@ private fun KonkoorPastExamsArchiveView(
                                 .padding(14.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            // ردیف بسته: فقط شماره + تیتر تک‌خطی؛ بج، سال، توضیح و بودجه‌بندی فقط در نمای بازشده
-                            Row(
+                            // ردیف بسته دوخطی: خط ۱ شماره + تیتر کامل؛ خط ۲ دکمه‌های expand و ورود —
+                            // دکمهٔ «ورود به دفترچه» دیگر جای تیتر را نمی‌گیرد و تیتر بریده نمی‌شود.
+                            Column(
                                 modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                Surface(
-                                    shape = CircleShape,
-                                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
-                                    modifier = Modifier.size(30.dp)
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
-                                    Box(contentAlignment = Alignment.Center) {
-                                        Text(
-                                            text = paperNumber,
-                                            style = MaterialTheme.typography.labelMedium,
-                                            fontWeight = FontWeight.Black,
-                                            color = MaterialTheme.colorScheme.primary
+                                    Surface(
+                                        shape = CircleShape,
+                                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+                                        modifier = Modifier.size(30.dp)
+                                    ) {
+                                        Box(contentAlignment = Alignment.Center) {
+                                            Text(
+                                                text = paperNumber,
+                                                style = MaterialTheme.typography.labelMedium,
+                                                fontWeight = FontWeight.Black,
+                                                color = MaterialTheme.colorScheme.primary
+                                            )
+                                        }
+                                    }
+                                    Text(
+                                        text = paper.title,
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontWeight = FontWeight.Black,
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    IconButton(
+                                        onClick = { expandedPaperMap[paper.id] = !isPaperExpanded },
+                                        modifier = Modifier.size(28.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = if (isPaperExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                                            contentDescription = if (isPaperExpanded) "بستن جزئیات" else "مشاهده جزئیات",
+                                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
                                     }
-                                }
-                                Text(
-                                    text = paper.title,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Black,
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    modifier = Modifier.weight(1f)
-                                )
-                                IconButton(
-                                    onClick = { expandedPaperMap[paper.id] = !isPaperExpanded },
-                                    modifier = Modifier.size(28.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = if (isPaperExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                                        contentDescription = if (isPaperExpanded) "بستن جزئیات" else "مشاهده جزئیات",
-                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                                Button(
-                                    onClick = {
-                                        activePaper = paper
-                                        currentQuestionIdx = 0
-                                        selectedOptionIdx = -1
-                                        correctAnswersCount = 0
-                                        isExamFinished = false
-                                    },
-                                    shape = RoundedCornerShape(50),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = MaterialTheme.colorScheme.primary,
-                                        contentColor = MaterialTheme.colorScheme.onPrimary
-                                    )
-                                ) {
-                                    Text(
-                                        text = "ورود به دفترچه ⟵",
-                                        style = MaterialTheme.typography.labelMedium,
-                                        fontWeight = FontWeight.Bold,
-                                        maxLines = 1,
-                                        softWrap = false
-                                    )
+                                    Button(
+                                        onClick = {
+                                            activePaper = paper
+                                            currentQuestionIdx = 0
+                                            selectedOptionIdx = -1
+                                            correctAnswersCount = 0
+                                            isExamFinished = false
+                                        },
+                                        shape = RoundedCornerShape(50),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = MaterialTheme.colorScheme.primary,
+                                            contentColor = MaterialTheme.colorScheme.onPrimary
+                                        )
+                                    ) {
+                                        Text(
+                                            text = "ورود به دفترچه ⟵",
+                                            style = MaterialTheme.typography.labelMedium,
+                                            fontWeight = FontWeight.Bold,
+                                            maxLines = 1,
+                                            softWrap = false
+                                        )
+                                    }
                                 }
                             }
 
@@ -4585,7 +4617,10 @@ private fun ContentCoverageMatrixView(uiState: KonkoorUiState) {
                             text = "${item.subjectTitle} • ${item.gradeLabel}",
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.Bold,
-                            color = PlannerPrimary
+                            color = PlannerPrimary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f)
                         )
                         Surface(
                             shape = RoundedCornerShape(6.dp),
@@ -4596,6 +4631,8 @@ private fun ContentCoverageMatrixView(uiState: KonkoorUiState) {
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onTertiaryContainer,
+                                maxLines = 1,
+                                softWrap = false,
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
                             )
                         }
