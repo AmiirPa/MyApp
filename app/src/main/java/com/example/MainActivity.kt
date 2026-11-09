@@ -208,7 +208,7 @@ class MainActivity : ComponentActivity() {
                         AppScaffold(
                             viewModel = viewModel,
                             currentUserId = currentUser?.uid,
-                            userDisplayName = currentUser?.displayName ?: currentUser?.email
+                            userDisplayName = "دانش‌آموز عزیز"
                         )
                     }
                 }
