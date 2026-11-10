@@ -52,6 +52,8 @@ object FlashcardAndQuizBank {
             addAll(Farsi2Part5Completion1406.lessons)
             addAll(FarhangianCompletion1406.lessons)
             addAll(FarhangianSourcesCompletion1406.lessons)
+            addAll(Farhangian1406GuideCompletion1406.lessons)
+            addAll(Farhangian1406OtherGroupsCompletion1406.lessons)
             addAll(EconomicsRebuildPart1Completion1406.lessons)
             addAll(EconomicsRebuildPart2Completion1406.lessons)
             addAll(EconQuickMethodsCompletion1406.lessons)
