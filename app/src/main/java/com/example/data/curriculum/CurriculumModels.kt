@@ -1003,7 +1003,7 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "arooz_10_ch1_syllables_and_script",
         "arooz0-khafif",
     "arooz0-radif",
-    "arooz0-ghafieh-letters" -> 1 to "📘 مبانی پایه و علوم و فنون ۱ (چاپ ۱۴۰۳) — بخش کردن کلمات، هجای کوتاه و بلند و خط عروضی"
+    "arooz0-ghafieh-letters" -> 1 to "📘 پیش‌نیاز از منفی صفر — آموزش پله‌به‌پله تمام ۲۴ آرایه ادبی و مبانی عروض"
 
 "arooz_10_ch2_ghafieh_tabsareha" -> 2 to "📗 پایه دهم انسانی (چاپ ۱۴۰۳ ویژه کنکور ۱۴۰۶) — علوم و فنون ادبی ۱ کامل (درس ۱ تا ۱۲)"
 
