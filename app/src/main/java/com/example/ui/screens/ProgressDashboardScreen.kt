@@ -385,7 +385,7 @@ fun ProgressDashboardScreen(
                 verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(10.dp)
             ) {
                 items(rows) { row ->
-                    val value = AdaptiveUiLabels.metricValueOrInsufficient(report!!, row)
+                    val value = report?.let { AdaptiveUiLabels.metricValueOrInsufficient(it, row) }
                     Card(
                         shape = RoundedCornerShape(16.dp),
                         colors = CardDefaults.cardColors(
@@ -444,7 +444,7 @@ fun ProgressDashboardScreen(
                                     style = MaterialTheme.typography.bodyLarge,
                                     fontWeight = FontWeight.Bold
                                 )
-                                val reason = AdaptiveUiLabels.rowInsufficientReason(report!!, row)
+                                val reason = report?.let { AdaptiveUiLabels.rowInsufficientReason(it, row) }
                                 if (reason != null) {
                                     Text(
                                         text = reason,

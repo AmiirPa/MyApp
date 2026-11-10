@@ -187,7 +187,7 @@ fun DailyPlanScreen(
                 Text(text = "ساختن برنامه امروز")
             }
         } else {
-            val items = plan!!.items
+            val items = plan?.items ?: emptyList()
             val doneCount = items.count { isItemDone(it.lessonId, it.kind) }
             val totalMinutes = items.sumOf { it.minutes }
             Text(
@@ -309,9 +309,9 @@ fun DailyPlanScreen(
                 }
             }
             Spacer(modifier = Modifier.height(12.dp))
-            if (replanMessage != null) {
+            replanMessage?.let { message ->
                 Text(
-                    text = replanMessage!!,
+                    text = message,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.primary
                 )

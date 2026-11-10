@@ -2,7 +2,6 @@ package com.example.data.firebase
 
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
-import org.json.JSONArray
 import org.json.JSONObject
 
 enum class OperationType(val value: String) {
@@ -17,19 +16,9 @@ enum class OperationType(val value: String) {
 fun handleFirestoreError(exception: Exception, operationType: OperationType, path: String?): String {
     val currentUser = try { FirebaseAuth.getInstance().currentUser } catch (_: Exception) { null }
 
-    val providerInfoList = currentUser?.providerData?.map { provider ->
-        JSONObject().apply {
-            put("providerId", provider.providerId)
-            put("email", provider.email)
-        }
-    } ?: emptyList()
-
+    // Never log user-identifying data: only whether a user is signed in.
     val authInfoJson = JSONObject().apply {
-        put("userId", currentUser?.uid)
-        put("email", currentUser?.email)
-        put("emailVerified", currentUser?.isEmailVerified)
-        put("tenantId", currentUser?.tenantId)
-        put("providerInfo", JSONArray(providerInfoList))
+        put("signedIn", currentUser != null)
     }
 
     val errorInfoJson = JSONObject().apply {

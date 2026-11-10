@@ -33,6 +33,9 @@ android {
     create("release") {
       val customPath = System.getenv("KEYSTORE_PATH")
       val keystoreFile = if (customPath != null) file(customPath) else file("${rootDir}/my-upload-key.jks")
+      if (gradle.startParameter.taskNames.any { it.contains("Release") } && (!keystoreFile.exists() || System.getenv("STORE_PASSWORD").isNullOrBlank())) {
+        throw GradleException("کلید release تنظیم نشده است؛ APK رسمی با کلید دیباگ ساخته نمی‌شود.")
+      }
       if (keystoreFile.exists() && !System.getenv("STORE_PASSWORD").isNullOrBlank()) {
         storeFile = keystoreFile
         storePassword = System.getenv("STORE_PASSWORD")
@@ -96,6 +99,7 @@ tasks.withType<Test> {
   }
 }
 
+
 // Configure the Secrets Gradle Plugin to use .env and .env.example files
 // to match the convention used in Web projects.
 secrets {
@@ -135,7 +139,7 @@ dependencies {
   implementation(libs.androidx.credentials.play.services)
   implementation(libs.googleid)
   implementation(libs.firebase.appcheck.recaptcha)
-  implementation(libs.firebase.appcheck.debug)
+  debugImplementation(libs.firebase.appcheck.debug)
   implementation(libs.kotlinx.coroutines.android)
   implementation(libs.kotlinx.coroutines.core)
   testImplementation(libs.androidx.compose.ui.test.junit4)
