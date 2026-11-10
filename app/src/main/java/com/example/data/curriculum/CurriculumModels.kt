@@ -1087,6 +1087,11 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "found1406-logic-08-induction-analogy",
     "found1406-logic-09-fallacies",
     "found1406-logic-10-workshop" -> 1 to "📘 پایه دهم (از زیرِ صفر) — تفکر، مفهوم و مصداق، تعریف، قضیه، استدلال و مغالطه"
+    "logic1406-01-definitions-deep",
+    "logic1406-02-propositions-square-conversion",
+    "logic1406-03-syllogism-reasoning",
+    "logic1406-04-fallacies-deep",
+    "logicm1406-01-philosophy-compare",
     "phil_00_khodemoni_logic_10_complete",
     "logic_10_lesson1_2_concepts_terms",
     "logic_10_lesson3_4_relations_five_universals",
