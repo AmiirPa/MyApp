@@ -612,7 +612,14 @@ fun LearningPathScreen(
                                         }
                                     }
                                 }
-                                if (missingCount > 0) {
+                                if (uiState.allLessons.isEmpty()) {
+                                    Text(
+                                        text = "در حال بارگذاری درس‌ها…",
+                                        fontSize = 12.sp,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier.padding(top = 2.dp)
+                                    )
+                                } else if (missingCount > 0) {
                                     Text(
                                         text = BidiFormatter.toPersianDigits(
                                             missingCount.toString()

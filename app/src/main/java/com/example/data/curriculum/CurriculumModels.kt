@@ -1833,6 +1833,15 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "elem5-negaresh-17-kar-talaash" -> 9 to "📗 پایه پنجم دبستان — نگارش (۱۷ درس)"
 
     // 16. Farhangian Exclusive Resources (منابع اختصاصی فرهنگیان ۱۴۰۶)
+    "farh-1406-01",
+    "farh-1406-02",
+    "farh-1406-03",
+    "farh-1406-04",
+    "farh-1406-05",
+    "farh-1406-06",
+    "farh-1406-07",
+    "farh-1406-08",
+    "farh-og-05" -> 2 to "📙 راهنمای کنکور فرهنگیان ۱۴۰۶ — ضرایب، سوابق، ترمیم و کتاب‌ها"
     "far_01_roadmap_1406",
     "far_08_qaraati_teacher_methods_complete",
     "far_02_gharaati_talim",
