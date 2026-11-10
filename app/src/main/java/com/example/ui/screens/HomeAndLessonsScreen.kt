@@ -57,6 +57,8 @@ import androidx.compose.material.icons.filled.EmojiObjects
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.Highlight
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.RadioButtonUnchecked
@@ -3303,6 +3305,7 @@ private fun LessonDetailPageContent(
     var showQuickStyleBar by remember { mutableStateOf(false) }
     // کارت‌های تکمیلی پایین درس پیش‌فرض جمع‌شده‌اند تا متن درس بدون مزاحم خوانده شود
     var showMoreLessonCards by remember(enrichedLesson.id) { mutableStateOf(false) }
+    var showGoldenFormulas by remember(enrichedLesson.id) { mutableStateOf(false) }
     // ورود ملایم کارت‌های گام با فنر ژله‌ای؛ فقط هنگام باز شدن درس، نه هنگام اسکرول برگشتی
     var stepsVisible by remember(enrichedLesson.id) { mutableStateOf(false) }
     LaunchedEffect(enrichedLesson.id) { stepsVisible = true }
@@ -3767,7 +3770,7 @@ private fun LessonDetailPageContent(
                 end = 24.dp,
                 bottom = 96.dp
             ),
-            verticalArrangement = Arrangement.spacedBy(LessonSpacing.table)
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             // سربرگ مصور درس: گرادیان اشباع رنگ موضوع + دایره‌های تزئینی بومی Compose (بدون فایل تصویری)؛ تیتر و زیرتیتر عیناً حفظ شده‌اند.
             item(key = "${enrichedLesson.id}_hero_header") {
@@ -4767,12 +4770,12 @@ private fun LessonDetailPageContent(
                                     } else Modifier
                                 ),
                             shape = RoundedCornerShape(18.dp),
-                            color = HomeSurface(),
+                            color = lerp(HomeSurface(), lessonAccent, 0.08f),
                             border = BorderStroke(1.dp, HomeBorder)
                         ) {
                             Column(
-                                modifier = Modifier.padding(18.dp),
-                                verticalArrangement = Arrangement.spacedBy(LessonSpacing.paragraph)
+                                modifier = Modifier.padding(20.dp),
+                                verticalArrangement = Arrangement.spacedBy(14.dp)
                             ) {
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
@@ -4831,7 +4834,7 @@ private fun LessonDetailPageContent(
 
                                 BiDiText(
                                     text = displayedStepExplanation,
-                                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 17.sp, lineHeight = 32.sp),
+                                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 17.sp, lineHeight = 34.sp),
                                     isUnderlineEnabled = themeController.isUnderlineKeyPointsEnabled,
                                     isHighlighterEnabled = themeController.isHighlighterEnabled
                                 )
@@ -5019,20 +5022,25 @@ private fun LessonDetailPageContent(
                     }
                 }
 
-                // فرمول‌ها و قواعد اصلی درس
+                // فرمول‌ها و قواعد اصلی درس — پیش‌فرض جمع‌شده تا صفحه خلوت‌تر باشد؛ با ضربه باز می‌شود.
                 if (enrichedLesson.goldenFormulas.isNotEmpty()) {
                     item(key = "${enrichedLesson.id}_golden_formulas") {
                         Surface(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { showGoldenFormulas = !showGoldenFormulas },
                             shape = RoundedCornerShape(18.dp),
-                            color = HomeSurface(),
+                            color = lerp(HomeSurface(), lessonAccent, 0.08f),
                             border = BorderStroke(1.dp, HomeBorder)
                         ) {
                             Column(
                                 modifier = Modifier.padding(18.dp),
                                 verticalArrangement = Arrangement.spacedBy(10.dp)
                             ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
                                     Icon(
                                         imageVector = Icons.Default.Star,
                                         contentDescription = null,
@@ -5046,13 +5054,21 @@ private fun LessonDetailPageContent(
                                         softWrap = false,
                                         style = MaterialTheme.typography.titleSmall,
                                         fontWeight = FontWeight.Bold,
-                                        color = lessonAccent
+                                        color = lessonAccent,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    Icon(
+                                        imageVector = if (showGoldenFormulas) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                                        contentDescription = null,
+                                        tint = lessonAccent
                                     )
                                 }
-                                SmartDiagramAndFormulaBlock(
-                                    rawText = enrichedLesson.goldenFormulas.joinToString("\n"),
-                                    accentColor = lessonAccent
-                                )
+                                if (showGoldenFormulas) {
+                                    SmartDiagramAndFormulaBlock(
+                                        rawText = enrichedLesson.goldenFormulas.joinToString("\n"),
+                                        accentColor = lessonAccent
+                                    )
+                                }
                             }
                         }
                     }
