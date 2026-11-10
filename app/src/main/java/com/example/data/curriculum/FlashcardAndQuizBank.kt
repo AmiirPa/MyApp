@@ -36,6 +36,7 @@ object FlashcardAndQuizBank {
             addAll(UltraFastTechniquesEncyclopedia1406.lessons)
             addAll(PsychologyCompletion1406.lessons)
             addAll(PsychologyGapsCompletion1406.lessons)
+            addAll(EduPsychGapCompletion1406.lessons)
             addAll(FarsiCompletion1406.lessons)
             addAll(Farsi3Part1Completion1406.lessons)
             addAll(Farsi3Part2Completion1406.lessons)
