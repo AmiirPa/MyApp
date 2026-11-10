@@ -287,8 +287,6 @@ object FlashcardAndQuizBank {
             addAll(GapResanehPart2Completion1406.lessons)
             addAll(GapResanehPart3Completion1406.lessons)
             addAll(GapArabicLesson8Completion1406.lessons)
-            addAll(GapArabic12AndPsychologyCompletion1406.lessons.filter { it.id == "gap2-ar-tamyiz" || it.id == "gap2-ar-la-nafy-jins" })
-            addAll(GapBatch2Completion1406.lessons.filter { it.id == "gap3-ar-esm-fael" || it.id == "gap3-ar-esm-makan" || it.id == "gap3-ar-esm-tafdil" || it.id == "gap3-ar-afal-naqesa" || it.id == "gap3-neg-sadeh" })
     addAll(GapFamilyGirlsCompletion1406.lessons)
         }
             .distinctBy { it.id }
