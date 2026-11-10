@@ -188,12 +188,14 @@ fun DiagnosticFlowScreen(
         Spacer(modifier = Modifier.height(12.dp))
 
         when {
-            result != null -> DiagnosticResultView(
-                result = result!!,
-                uiState = uiState,
-                onOpenLesson = onOpenLesson,
-                onPickAnother = { resetToPicker() }
-            )
+            result != null -> result?.let { nonNullResult ->
+                DiagnosticResultView(
+                    result = nonNullResult,
+                    uiState = uiState,
+                    onOpenLesson = onOpenLesson,
+                    onPickAnother = { resetToPicker() }
+                )
+            }
             selectedLesson != null && noQuestions -> {
                 Text(
                     text = "داده کافی نیست",
@@ -209,13 +211,15 @@ fun DiagnosticFlowScreen(
                     Text(text = "بازگشت به فهرست درس‌ها")
                 }
             }
-            selectedLesson != null && currentQuestion != null -> DiagnosticQuestionView(
-                question = currentQuestion!!,
-                questionNumber = answers.size + 1,
-                selectedOption = selectedOption,
-                onSelectOption = { selectedOption = it },
-                onConfirm = { confirmAnswer() }
-            )
+            selectedLesson != null && currentQuestion != null -> currentQuestion?.let { question ->
+                DiagnosticQuestionView(
+                    question = question,
+                    questionNumber = answers.size + 1,
+                    selectedOption = selectedOption,
+                    onSelectOption = { selectedOption = it },
+                    onConfirm = { confirmAnswer() }
+                )
+            }
             selectedLesson != null -> {
                 Text(
                     text = "داده کافی نیست",

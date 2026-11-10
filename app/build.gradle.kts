@@ -96,6 +96,16 @@ tasks.withType<Test> {
   }
 }
 
+// Never sign a release APK with the debug keystore: if the release signing
+// password is missing, the signingConfig silently falls back to debug.keystore
+// ("android"). Fail the build instead of shipping a release signed with a
+// publicly known key.
+gradle.taskGraph.whenReady {
+  if (hasTask(":app:assembleRelease") && System.getenv("STORE_PASSWORD").isNullOrBlank()) {
+    throw GradleException("release signing password (STORE_PASSWORD) is not set; refusing to build a release APK")
+  }
+}
+
 // Configure the Secrets Gradle Plugin to use .env and .env.example files
 // to match the convention used in Web projects.
 secrets {
@@ -135,7 +145,7 @@ dependencies {
   implementation(libs.androidx.credentials.play.services)
   implementation(libs.googleid)
   implementation(libs.firebase.appcheck.recaptcha)
-  implementation(libs.firebase.appcheck.debug)
+  debugImplementation(libs.firebase.appcheck.debug)
   implementation(libs.kotlinx.coroutines.android)
   implementation(libs.kotlinx.coroutines.core)
   testImplementation(libs.androidx.compose.ui.test.junit4)

@@ -33,7 +33,11 @@ abstract class FirestoreEmulatorTestBase {
     @Before
     open fun setUpFirebase() {
         val isEmulatorActive = isPortOpen(EMULATOR_HOST, FIRESTORE_PORT)
-        org.junit.Assume.assumeTrue("Firebase emulator daemon is not running on $EMULATOR_HOST:$FIRESTORE_PORT", isEmulatorActive)
+        if (System.getenv("CI") == "true") {
+            org.junit.Assert.assertTrue("Firebase emulator daemon is not running on $EMULATOR_HOST:$FIRESTORE_PORT", isEmulatorActive)
+        } else {
+            org.junit.Assume.assumeTrue("Firebase emulator daemon is not running on $EMULATOR_HOST:$FIRESTORE_PORT", isEmulatorActive)
+        }
 
         val context = ApplicationProvider.getApplicationContext<Context>()
         val resId = context.resources.getIdentifier("firestore_database_id", "string", context.packageName)

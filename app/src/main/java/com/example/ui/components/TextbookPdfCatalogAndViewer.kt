@@ -19,6 +19,7 @@ import android.text.Layout
 import android.text.StaticLayout
 import android.text.TextDirectionHeuristics
 import android.text.TextPaint
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -1474,7 +1475,8 @@ fun InAppTextbookPdfViewerDialog(
                             Toast.LENGTH_LONG
                         ).show()
                     }
-                } catch (_: Exception) {
+                } catch (e: Exception) {
+                    Log.w("TextbookPdf", "Failed to save generated PDF file", e)
                 }
             }
         }
@@ -1492,7 +1494,8 @@ fun InAppTextbookPdfViewerDialog(
                             pdfPageCount = renderer.pageCount.coerceAtLeast(1)
                         }
                     }
-                } catch (_: Exception) {
+                } catch (e: Exception) {
+                    Log.w("TextbookPdf", "Failed to read PDF page count; falling back to 1", e)
                     pdfPageCount = 1
                 }
             }
@@ -1521,7 +1524,8 @@ fun InAppTextbookPdfViewerDialog(
                         }
                     }
                 }
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+                Log.w("TextbookPdf", "Failed to render PDF page bitmap", e)
             }
         }
     }
