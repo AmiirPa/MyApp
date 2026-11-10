@@ -1439,11 +1439,6 @@ private fun SubjectBookKeyPointsCard(
                     com.example.ui.components.FonoonAndAroozVisualGuide(
                         accentColor = accentColor
                     )
-                }
-                "arooz" -> {
-                    com.example.ui.components.FonoonAndAroozVisualGuide(
-                        accentColor = accentColor
-                    )
                     com.example.ui.components.AroozMasteryInteractiveTrainer(
                         accentColor = accentColor
                     )

@@ -78,7 +78,7 @@ object AdvancedMnemonicEngine {
             )
 
             // ======================== علوم و فنون ادبی و عروض ========================
-            subj == "arooz" -> return AdvancedSpeedMethod(
+            lesson.isAroozLesson() -> return AdvancedSpeedMethod(
                 methodTitle = "متد ابداعی «کد ۴ هجای اول مصراع» (تشخیص وزن و بحر در ۵ ثانیه بدون خواندن آوازی)",
                 mnemonicCode = "رمز ۴ هجای اول:\n" +
                     "• [ U — — — ]  مفاعیلن (بحر هزج)\n" +
@@ -140,7 +140,7 @@ object AdvancedMnemonicEngine {
             )
 
             // ======================== فلسفه و منطق ========================
-            subj == "logic" -> return AdvancedSpeedMethod(
+            lesson.isLogicLesson() -> return AdvancedSpeedMethod(
                 methodTitle = "متد ابداعی «کد چهارگوشه مربع تقابل» و «شگرد خط زدن حد وسط در قیاس»",
                 mnemonicCode = "رمز کلیات خمس: «چیستی کامل = نوع | بخش مشترک = جنس | مرز جداکننده = فصل | ویژگی لازم/اتفاقی = عرض خاص و عام»\n" +
                     "رمز عکس مستوی: «موجبه کلی (الف) و موجبه جزئی (ج) هر دو عکسشان می‌شود موجبه جزئی (ج)! سالبه کلی (ب) خودش می‌ماند (ب)؛ سالبه جزئی (د) اصلاً عکس ندارد!»",
