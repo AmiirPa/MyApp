@@ -16,7 +16,7 @@ android {
   defaultConfig {
     applicationId = "com.aistudio.konkoorensani.fhkzqp"
     minSdk = 24
-    versionCode = 15
+    versionCode = (System.getenv("BUILD_NUMBER")?.toIntOrNull() ?: 15)
     versionName = "3.6"
     resourceConfigurations += setOf("fa", "en")
 
