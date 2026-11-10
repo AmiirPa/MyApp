@@ -198,16 +198,6 @@ object SubjectCatalog {
                     zeroReassurance = "تاریخ ادبیات، سبک‌شناسی و آرایه‌ها را با الگوهای چشمی و مفهومی یاد می‌گیری."
                 ),
         SubjectMeta(
-                    id = "arooz",
-                    shortTitle = "عروض و قافیه",
-                    title = "عروض و قافیه (علوم و فنون ادبی ۱، ۲ و ۳)",
-                    subtitle = "موسیقی شعر: هجا، وزن، تقطیع، بحرها و قافیه — اول با گوش و ریتم، بعد با نام‌ها",
-                    konkoorCoefficient = "جزء درس علوم و فنون ادبی (کنکور انسانی + امتحان نهایی)",
-                    targetForZeroStudent = "هدف قطعی: شنیدن وزن هر بیت و تقطیع درست آن",
-                    color = SubjectAroozColor,
-                    zeroReassurance = "وزن شعر را اول با کف‌زدن و ریتم یاد می‌گیری، نه با حفظ نام بحرها!"
-                ),
-        SubjectMeta(
                     id = "negaresh",
                     shortTitle = "نگارش و انشا",
                     title = "نگارش ۱، ۲ و ۳ و قالب آماده نمره ۲۰ امتحان نهایی",
@@ -309,23 +299,13 @@ object SubjectCatalog {
                 ),
         SubjectMeta(
                     id = "philosophy",
-                    shortTitle = "فلسفه",
-                    title = "فلسفه ۱ و ۲ (یازدهم و دوازدهم)",
-                    subtitle = "چیستی فلسفه، معرفت‌شناسی، اصالت وجود، علیت و مکاتب فلسفی",
-                    konkoorCoefficient = "ضریب ۳ کنکور انسانی + امتحان نهایی فلسفه ۲",
-                    targetForZeroStudent = "هدف قطعی: درک عمیق مسائل هستی‌شناسی و نمره ۲۰ نهایی",
+                    shortTitle = "فلسفه و منطق",
+                    title = "فلسفه و منطق (منطق دهم + فلسفه ۱ و ۲)",
+                    subtitle = "منطق دهم (مفهوم، قضیه، استدلال و مغالطه) + چیستی فلسفه، معرفت‌شناسی، اصالت وجود، علیت و مکاتب فلسفی",
+                    konkoorCoefficient = "ضریب ۵ کنکور انسانی (۲۰ سوال) + امتحان نهایی فلسفه ۲ و منطق",
+                    targetForZeroStudent = "هدف قطعی: تسلط بر منطق و درک عمیق مسائل هستی‌شناسی و نمره ۲۰ نهایی",
                     color = SubjectPhilosophyColor,
                     zeroReassurance = "سیر اندیشه فیلسوفان را با مقایسه‌های روشن و دسته‌بندی‌شده فرا بگیر."
-                ),
-        SubjectMeta(
-                    id = "logic",
-                    shortTitle = "منطق",
-                    title = "منطق پایه دهم",
-                    subtitle = "تعریف، نسبت‌های چهارگانه، قضیه حملی و شرطی، قیاس و مغالطات",
-                    konkoorCoefficient = "ضریب ۳ کنکور انسانی (بخش دهم فلسفه و منطق)",
-                    targetForZeroStudent = "هدف قطعی: پاسخگویی به تمام تست‌های منطق و آزمون نهایی",
-                    color = Color(0xFF6366F1),
-                    zeroReassurance = "با یادگیری شرایط انتاج و قواعد عکس مستوی، تست‌های منطق قطعی حل می‌شوند."
                 ),
         SubjectMeta(
                     id = "farhangian",
@@ -489,7 +469,7 @@ object SubjectCatalog {
 }
 
 fun ZeroLesson.normalizedSubjectId(): String = when (id) {
-    // Logic lessons separated into "logic"
+    // Logic lessons — now part of "philosophy" (فلسفه و منطق, one exam subject)
     "phil_00_khodemoni_logic_10_complete",
     "phil_01_logic_concepts_five_universals",
     "phil_02_logic_propositions_square",
@@ -500,7 +480,7 @@ fun ZeroLesson.normalizedSubjectId(): String = when (id) {
     "logic_10_lesson1_2_concepts_terms",
     "logic_10_lesson3_4_relations_five_universals",
     "logic_10_lesson5_definitions",
-    "logic_phil_complete_mastery" -> "logic"
+    "logic_phil_complete_mastery" -> "philosophy"
 
     // History lessons separated into "history"
     "hist_00_elementary_to_9th_zero",
@@ -593,12 +573,15 @@ fun ZeroLesson.normalizedSubjectId(): String = when (id) {
     else -> when {
         id.startsWith("math_") -> "math"
         id.startsWith("fonoon_") -> "fonoon"
-        id.startsWith("arooz_") -> "arooz"
+        id.startsWith("arooz") -> "fonoon"
+        id.startsWith("arozero") -> "fonoon"
         id.startsWith("soc_") -> "sociology"
         id.startsWith("psych_") -> "psychology"
         id.startsWith("econ_") -> "economics"
         id.startsWith("phil_") || id.startsWith("philo_") -> "philosophy"
-        id.startsWith("logic_") -> "logic"
+        id.startsWith("logic") -> "philosophy"
+        id.startsWith("found1406-logic") -> "philosophy"
+        id.startsWith("phil-logic") -> "philosophy"
         id.startsWith("hist_") -> "history"
         id.startsWith("geo_") -> "geography"
         id.startsWith("arabic_") -> "arabic"
@@ -621,6 +604,25 @@ fun ZeroLesson.normalizedSubjectId(): String = when (id) {
         }
     }
 }
+
+/** Whether this lesson is a منطق lesson (by id). Logic now lives under the philosophy subject (فلسفه و منطق), so the subject id alone no longer identifies it. */
+fun ZeroLesson.isLogicLesson(): Boolean {
+    if (id.startsWith("logic") || id.startsWith("found1406-logic")) return true
+    if (id.startsWith("phil-logic-practice-07") || id.startsWith("phil-logic-practice-08") || id.startsWith("phil-logic-practice-09")) return true
+    return id in setOf(
+        "phil_00_khodemoni_logic_10_complete",
+        "phil_01_logic_concepts_five_universals",
+        "phil_02_logic_propositions_square",
+        "phil_03_logic_syllogisms_fallacies",
+        "philo_01_logic_concepts_definitions",
+        "philo_02_logic_propositions_square",
+        "philo_03_logic_syllogism_conditional"
+    )
+}
+
+/** Whether this lesson is an عروض lesson (by id). Arooz now lives under the fonoon subject (علوم و فنون ادبی), so the subject id alone no longer identifies it. */
+fun ZeroLesson.isAroozLesson(): Boolean =
+    id.startsWith("arooz") || id.startsWith("arozero")
 
 /**
  * Organizes every lesson into its official Textbook / Level Subcategory Folder
@@ -994,16 +996,16 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "arooz_02_cutting_u_dash",
     "aroozm1406-01-rhythm-clap",
     "aroozm1406-02-taghtee",
-    "aroozm1406-03-poetry-hook" -> 1 to "📘 مبانی پایه و علوم و فنون ۱ (چاپ ۱۴۰۳) — بخش کردن کلمات، هجای کوتاه و بلند و خط عروضی"
+    "aroozm1406-03-poetry-hook" -> 1 to "📘 پیش‌نیاز از منفی صفر — آموزش پله‌به‌پله تمام ۲۴ آرایه ادبی و مبانی عروض"
 
     "arooz_04_ghafieh_rules",
     "arooz_02_ghafieh_radif",
     "arooz_10_ch1_syllables_and_script",
         "arooz0-khafif",
     "arooz0-radif",
-    "arooz0-ghafieh-letters" -> 1 to "📘 مبانی پایه و علوم و فنون ۱ (چاپ ۱۴۰۳) — بخش کردن کلمات، هجای کوتاه و بلند و خط عروضی"
+    "arooz0-ghafieh-letters" -> 1 to "📘 پیش‌نیاز از منفی صفر — آموزش پله‌به‌پله تمام ۲۴ آرایه ادبی و مبانی عروض"
 
-"arooz_10_ch2_ghafieh_tabsareha" -> 2 to "📗 پایه دهم انسانی (چاپ ۱۴۰۳ ویژه کنکور ۱۴۰۶) — علوم و فنون ادبی ۱ (خط عروضی، هجا، قافیه و ردیف)"
+"arooz_10_ch2_ghafieh_tabsareha" -> 2 to "📗 پایه دهم انسانی (چاپ ۱۴۰۳ ویژه کنکور ۱۴۰۶) — علوم و فنون ادبی ۱ کامل (درس ۱ تا ۱۲)"
 
     "arooz_00_bahr_barcode",
     "arooz_03_samaei_rhythms",
@@ -1011,7 +1013,7 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "arooz_11_lesson3_vocal_bases",
     "arooz_11_lesson6_hamsan_meters",
     "arooz_11_ch2_nahamsan_meters",
-    "arooz_04_mnemonics_mastery" -> 3 to "📙 پایه یازدهم انسانی (چاپ ۱۴۰۴ ویژه کنکور ۱۴۰۶) — علوم و فنون ادبی ۲ (اوزان همسان و دولختی)"
+    "arooz_04_mnemonics_mastery" -> 3 to "📙 پایه یازدهم انسانی (چاپ ۱۴۰۴ ویژه کنکور ۱۴۰۶) — علوم و فنون ادبی ۲ کامل (درس ۱ تا ۱۲)"
 
     "arooz_03b_poetic_licenses",
     "arooz_05_all_16_konkoor_meters",
@@ -1027,10 +1029,10 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "arooz-quick-03",
     "arooz-quick-04",
     "arooz-quick-05",
-    "arooz-quick-06" -> 4 to "📕 پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶) — علوم و فنون ادبی ۳ (اوزان دوری، ۱۶ وزن و اختیارات شاعری)"
+    "arooz-quick-06" -> 4 to "📕 پایه دوازدهم انسانی (چاپ ۱۴۰۵ ویژه کنکور ۱۴۰۶) — علوم و فنون ۳ + کل تاریخ ادبیات و سبک‌شناسی دهم تا دوازدهم"
 
     // 5. Fonoon (زیبایی‌شناسی، تاریخ ادبیات و سبک‌شناسی — علوم و فنون ۱، ۲ و ۳)
-    "fonoon_00_zero_to_100_all_24_arrayeh_step_by_step" -> 1 to "📘 پیش‌نیاز از منفی صفر — آموزش پله‌به‌پله تمام ۲۴ آرایه ادبی از ساده‌ترین تا پیشرفته‌ترین"
+    "fonoon_00_zero_to_100_all_24_arrayeh_step_by_step" -> 1 to "📘 پیش‌نیاز از منفی صفر — آموزش پله‌به‌پله تمام ۲۴ آرایه ادبی و مبانی عروض"
 
     "fonoon_10_ch1_history_khorasani",
     "fonoon_10_ch2_badi_tarsee_movazeneh",
@@ -1085,6 +1087,11 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "found1406-logic-08-induction-analogy",
     "found1406-logic-09-fallacies",
     "found1406-logic-10-workshop" -> 1 to "📘 پایه دهم (از زیرِ صفر) — تفکر، مفهوم و مصداق، تعریف، قضیه، استدلال و مغالطه"
+    "logic1406-01-definitions-deep",
+    "logic1406-02-propositions-square-conversion",
+    "logic1406-03-syllogism-reasoning",
+    "logic1406-04-fallacies-deep",
+    "logicm1406-01-philosophy-compare",
     "phil_00_khodemoni_logic_10_complete",
     "logic_10_lesson1_2_concepts_terms",
     "logic_10_lesson3_4_relations_five_universals",
@@ -4123,7 +4130,7 @@ fun ZeroLesson.getPrerequisiteLinks(allLessons: List<ZeroLesson>): List<LessonPr
     }
 
     if (currentSubjId == "philosophy") {
-        allLessons.find { it.normalizedSubjectId() == "logic" && it.prerequisiteStepOrder() <= 2 }?.let { logicLesson ->
+        allLessons.find { it.isLogicLesson() && it.prerequisiteStepOrder() <= 2 }?.let { logicLesson ->
             results.add(
                 LessonPrerequisiteLink(
                     prerequisiteLessonId = logicLesson.id,
@@ -4134,7 +4141,7 @@ fun ZeroLesson.getPrerequisiteLinks(allLessons: List<ZeroLesson>): List<LessonPr
             )
         }
     }
-    if (currentSubjId in listOf("fonoon", "arooz") && this.id != "arooz_0" && this.id != "fonoon_0") {
+    if (currentSubjId == "fonoon" && this.id != "arooz_0" && this.id != "fonoon_0") {
         allLessons.find { it.id == "arooz_0" || it.id.contains("step01") }?.let { baseArooz ->
             if (baseArooz.id != this.id && !results.any { it.prerequisiteLessonId == baseArooz.id }) {
                 results.add(

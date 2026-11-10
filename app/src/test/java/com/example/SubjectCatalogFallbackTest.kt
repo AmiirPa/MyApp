@@ -1,6 +1,9 @@
 package com.example
 
+import com.example.data.curriculum.FlashcardAndQuizBank
 import com.example.data.curriculum.SubjectCatalog
+import com.example.data.curriculum.isLogicLesson
+import com.example.data.curriculum.normalizedSubjectId
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
@@ -38,12 +41,26 @@ class SubjectCatalogFallbackTest {
     }
 
     @Test
-    fun aroozLessons_resolveToTheirRealCatalogEntry() {
-        // normalizedSubjectId() returns "arooz" for prosody lessons, and the
-        // catalog now has a real "arooz" entry (added 17 Aban 1405), so those
-        // lessons must show عروض و قافیه — not Math and not "unknown".
-        val meta = SubjectCatalog.getSubjectById("arooz")
-        assertEquals("arooz", meta.id)
+    fun aroozLessons_resolveToFonoonCatalogEntry() {
+        // Arooz (prosody) merged into fonoon (19 Aban 1405): prosody lessons
+        // now normalize to "fonoon", and the catalog has the real "fonoon"
+        // entry, so those lessons must show علوم و فنون ادبی — not Math and not "unknown".
+        val meta = SubjectCatalog.getSubjectById("fonoon")
+        assertEquals("fonoon", meta.id)
+        val aroozLesson = FlashcardAndQuizBank.allLessons.firstOrNull { it.id.startsWith("arooz") || it.id.startsWith("arozero") }
+        assertTrue(aroozLesson != null)
+        assertEquals("fonoon", aroozLesson!!.normalizedSubjectId())
+    }
+
+    @Test
+    fun logicLessons_resolveToPhilosophyCatalogEntry() {
+        // Logic merged into philosophy (19 Aban 1405): logic lessons now
+        // normalize to "philosophy" (فلسفه و منطق).
+        val meta = SubjectCatalog.getSubjectById("philosophy")
+        assertEquals("philosophy", meta.id)
+        val logicLesson = FlashcardAndQuizBank.allLessons.firstOrNull { it.isLogicLesson() }
+        assertTrue(logicLesson != null)
+        assertEquals("philosophy", logicLesson!!.normalizedSubjectId())
     }
 
     @Test

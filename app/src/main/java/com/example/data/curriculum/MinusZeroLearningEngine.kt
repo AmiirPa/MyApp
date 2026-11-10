@@ -377,8 +377,7 @@ object MinusZeroLearningEngine {
             "arabic" -> "عربی، زبان قرآن ($gradeLabel - اختصاصی علوم انسانی)"
             "english" -> "زبان انگلیسی (Vision - $gradeLabel)"
             "fonoon", "arooz" -> "علوم و فنون ادبی ($gradeLabel - رشته علوم انسانی)"
-            "philosophy" -> "فلسفه ($gradeLabel - رشته علوم انسانی)"
-            "logic" -> "منطق (پایه دهم - رشته علوم انسانی)"
+            "philosophy" -> "فلسفه و منطق ($gradeLabel - رشته علوم انسانی)"
             "sociology" -> "جامعه‌شناسی ($gradeLabel - رشته علوم انسانی)"
             "history" -> "تاریخ ($gradeLabel - رشته علوم انسانی)"
             "geography" -> "جغرافیای ایران و جهان ($gradeLabel - رشته علوم انسانی)"
@@ -485,7 +484,7 @@ object MinusZeroLearningEngine {
         ),
         DiagnosticQuestion(
             id = "diag_fonoon_1",
-            subjectId = "arooz",
+            subjectId = "fonoon",
             subjectTitle = "علوم و فنون و عروض (سطح منفی صفر)",
             prerequisiteTopic = "شنیدن ضرب‌آهنگ و بخش‌کردن هجاها",
             friendlyPrompt = "۳. وقتی کلمه «باران» را با دست زدن بخش می‌کنی (با + ران)، چند بخش (هجا) از دهان خارج می‌شود؟",
@@ -501,7 +500,7 @@ object MinusZeroLearningEngine {
         ),
         DiagnosticQuestion(
             id = "diag_logic_1",
-            subjectId = "logic",
+            subjectId = "philosophy",
             subjectTitle = "فلسفه و منطق (سطح منفی صفر)",
             prerequisiteTopic = "تفاوت مفهوم و مصداق + ساختار استدلال",
             friendlyPrompt = "۴. وقتی به معنی واژه «کوه» در ذهنت فکر می‌کنی و بعد به «قله دماوند» در دنیای واقعی نگاه می‌کنی، دماوند کدام است؟",
