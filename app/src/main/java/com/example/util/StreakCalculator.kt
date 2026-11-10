@@ -23,18 +23,16 @@ object StreakCalculator {
     /** Epoch day number (days since 1970-01-01) for a local calendar date. */
     fun epochDay(year: Int, month: Int, day: Int): Long {
         val cal = Calendar.getInstance()
-        cal.set(Calendar.YEAR, year)
-        cal.set(Calendar.MONTH, month - 1)
-        cal.set(Calendar.DAY_OF_MONTH, day)
-        cal.set(Calendar.HOUR_OF_DAY, 0)
-        cal.set(Calendar.MINUTE, 0)
-        cal.set(Calendar.SECOND, 0)
+        cal.set(year, month - 1, day, 12, 0, 0)
         cal.set(Calendar.MILLISECOND, 0)
-        return cal.timeInMillis / MILLIS_PER_DAY
+        return epochDayFromMillis(cal.timeInMillis)
     }
 
     /** Epoch day number for a wall-clock instant, in the device's local timezone. */
-    fun epochDayFromMillis(millis: Long): Long = millis / MILLIS_PER_DAY
+    fun epochDayFromMillis(millis: Long): Long {
+        val offset = java.util.TimeZone.getDefault().getOffset(millis).toLong()
+        return Math.floorDiv(millis + offset, MILLIS_PER_DAY)
+    }
 
     /** Today's epoch day number, in the device's local timezone. */
     fun todayEpochDay(): Long = epochDayFromMillis(System.currentTimeMillis())

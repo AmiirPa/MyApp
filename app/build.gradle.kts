@@ -33,6 +33,9 @@ android {
     create("release") {
       val customPath = System.getenv("KEYSTORE_PATH")
       val keystoreFile = if (customPath != null) file(customPath) else file("${rootDir}/my-upload-key.jks")
+      if (gradle.startParameter.taskNames.any { it.contains("Release") } && (!keystoreFile.exists() || System.getenv("STORE_PASSWORD").isNullOrBlank())) {
+        throw GradleException("کلید release تنظیم نشده است؛ APK رسمی با کلید دیباگ ساخته نمی‌شود.")
+      }
       if (keystoreFile.exists() && !System.getenv("STORE_PASSWORD").isNullOrBlank()) {
         storeFile = keystoreFile
         storePassword = System.getenv("STORE_PASSWORD")
@@ -96,15 +99,6 @@ tasks.withType<Test> {
   }
 }
 
-// Never sign a release APK with the debug keystore: if the release signing
-// password is missing, the signingConfig silently falls back to debug.keystore
-// ("android"). Fail the build instead of shipping a release signed with a
-// publicly known key.
-gradle.taskGraph.whenReady {
-  if (hasTask(":app:assembleRelease") && System.getenv("STORE_PASSWORD").isNullOrBlank()) {
-    throw GradleException("release signing password (STORE_PASSWORD) is not set; refusing to build a release APK")
-  }
-}
 
 // Configure the Secrets Gradle Plugin to use .env and .env.example files
 // to match the convention used in Web projects.
