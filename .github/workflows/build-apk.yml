@@ -45,6 +45,9 @@ jobs:
             -dname "CN=Android Debug,O=Android,C=US"
           fi
 
+      - name: Set build number
+        run: echo "BUILD_NUMBER=${{ github.run_number }}" >> $GITHUB_ENV
+
       - name: Run Unit Tests & Build Official Release APK
         env:
           STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
