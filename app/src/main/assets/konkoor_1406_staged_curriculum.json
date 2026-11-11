@@ -37,7 +37,7 @@
               "goldenTechnique": "هر کلمه‌ای که حرف ساکن دارد یا مصوت بلند (آ، او، ای) دارد، هجای بلند است؛ هجای کشیده همیشه در تقطیع دو هجا (- U) حساب می‌شود.",
               "commonMistakeTrap": "نوشتن حروف ناخوانا مثل «خویش»، «خواهر» و «نون ساکن بعد از مصوت بلند (جان، نان)» که در عروض حذف یا کم می‌شوند.",
               "targetExamYield": "پیشنیاز قطعی ۶ تست عروض کنکور سراسری",
-              "targetLessonId": "lesson_arooz_basics_1"
+              "targetLessonId": "arooz_10_ch1_syllables_and_script"
             },
             {
               "id": "lit_p1_s2",
@@ -55,7 +55,7 @@
               "goldenTechnique": "خواندن شعر با ریتم «تَن تَن تَنَن تَن» — در ۲ ثانیه ریتم پایه‌ای و مرز ارکان مشخص می‌شود.",
               "commonMistakeTrap": "شتاب‌زدگی در خواندن شعر و جاانداختن تشدیدها و همزه‌های میانی.",
               "targetExamYield": "صرفه‌جویی ۱۰ دقیقه‌ای در زمان دفترچه ۱ کنکور",
-              "targetLessonId": "lesson_arooz_samaii_mastery"
+              "targetLessonId": "aroozm1406-01-rhythm-clap"
             },
             {
               "id": "lit_p1_s3",
@@ -74,7 +74,7 @@
               "goldenTechnique": "رمزگشایی با مصراع‌های الگو: «بشنو از نی» = فاعلاتن | «دل می‌رود» = مفعول فاعلاتن (دوری با مکث میانی).",
               "commonMistakeTrap": "اشتباه گرفتن فاعلاتن (- U - -) با فعلاتن (U U - -) در ابتدای مصراع.",
               "targetExamYield": "حل مستقیم ۴ تست قطعی عروض در کنکور ۱۴۰۶",
-              "targetLessonId": "lesson_arooz_hamsan_weights"
+              "targetLessonId": "arooz_11_lesson6_hamsan_meters"
             },
             {
               "id": "lit_p1_s4",
@@ -92,7 +92,7 @@
               "goldenTechnique": "اگر هجای اول مصراع ۱ بلند بود و مصراع ۲ کوتاه شد (یا برعکس)، ۱۰۰٪ اختیار شاعری رخ داده است.",
               "commonMistakeTrap": "لحاظ کردن ردیف یا پسوندهای جمع به عنوان حروف اصلی قافیه بدون حذف زواید.",
               "targetExamYield": "۲ سوال فوق‌چالشی و ترازساز کنکور سنجش",
-              "targetLessonId": "lesson_arooz_ekhtiyarat_shaeri"
+              "targetLessonId": "fon3-05-licenses-verbal"
             }
           ]
         },
@@ -119,7 +119,7 @@
               "goldenTechnique": "فرمول طلایی: بین مضاف و مضاف‌الیه کلمه «مانند» بگذار؛ اگر معنی داد = اضافه تشبیهی (مثلاً لبِ لعل = لب مانند لعل است).",
               "commonMistakeTrap": "اشتباه گرفتن اضافه تشبیهی با اضافه استعاری (مثلاً «دستِ روزگار» اضافه استعاری است چون روزگار مانند دست نیست!).",
               "targetExamYield": "۱ الی ۲ سوال در ترکیب آرایه‌ها",
-              "targetLessonId": "lesson_araye_tashbih_advanced"
+              "targetLessonId": "fonoon_11_ch2_tashbih_types"
             },
             {
               "id": "lit_p2_s2",
@@ -137,7 +137,7 @@
               "goldenTechnique": "هر جا شاعر غیرانسان را صدا زد (ای باد، ای دل، ای شب) = بلافاصله تشخیص + منادا + استعاره مکنیه!",
               "commonMistakeTrap": "تصور این‌که هر استعاره مکنیه‌ای تشخیص است (مثلاً «تخم وفا کاشتن» استعاره مکنیه است اما تشخیص نیست).",
               "targetExamYield": "حداقل ۲ سوال اختصاصی در تست‌های ترکیبی فنون",
-              "targetLessonId": "lesson_araye_esteareh_tashkhis"
+              "targetLessonId": "fonoon_11_ch3_estearah_majaz_kenayeh"
             },
             {
               "id": "lit_p2_s3",
@@ -155,7 +155,7 @@
               "goldenTechnique": "اگر کلمه‌ای دو معنی داشت ولی فقط یکی در ترجمه مصراع جا می‌گرفت و معنای دوم با کلمه‌ای دیگر تناسب داشت = ۱۰۰٪ ایهام تناسب!",
               "commonMistakeTrap": "علامت زدن ایهام به جای ایهام تناسب در تست‌های سخت سنجش.",
               "targetExamYield": "۱ الی ۲ سوال با ضریب خطای بالای داوطلبان",
-              "targetLessonId": "lesson_araye_iham_tanasob"
+              "targetLessonId": "fon12-03-iham-tanasob"
             },
             {
               "id": "lit_p2_s4",
@@ -173,7 +173,7 @@
               "goldenTechnique": "اگر توانستی بین مصراع اول و دوم کلمه «همان‌طور که» بگذاری و جای دو مصراع را عوض کنی = ۱۰۰٪ اسلوب معادله!",
               "commonMistakeTrap": "اشتباه گرفتن تمثیل وابسته (که حرف ربط که یا چو دارد) با اسلوب معادله.",
               "targetExamYield": "۲ تست ثابت در کنکور سراسری انسانی",
-              "targetLessonId": "lesson_araye_osloob_moadeleh"
+              "targetLessonId": "fon12-02-oslub-moadele-hosn-talil"
             },
             {
               "id": "lit_p2_s5",
@@ -191,7 +191,7 @@
               "goldenTechnique": "جناس تام: املا و تلفظ کاملاً یکسان + معنی کاملاً متفاوت (مثلاً روان = روح / روان = جاری).",
               "commonMistakeTrap": "شمارش کلمات تکراری با معنی یکسان به عنوان جناس (این تکرار است نه جناس!).",
               "targetExamYield": "۱ سوال لفظی قطعی در دفترچه ۱",
-              "targetLessonId": "lesson_araye_jenas_saj"
+              "targetLessonId": "fonoon_10_ch2_badi_tarsee_movazeneh"
             }
           ]
         },
@@ -217,7 +217,7 @@
               "goldenTechnique": "دیدن لغاتی مثل «ایدون، همی، مر، ابا، اندر» بلافاصله گواه سبک خراسانی است.",
               "commonMistakeTrap": "اشتباه گرفتن شعر ناصرخسرو و سنایی با سبک عراقی محض.",
               "targetExamYield": "۱ الی ۲ تست قطعی سبک‌شناسی سنجش",
-              "targetLessonId": "lesson_sabk_khorasani_comprehensive"
+              "targetLessonId": "fonoon_10_ch1_history_khorasani"
             },
             {
               "id": "lit_p3_s2",
@@ -235,7 +235,7 @@
               "goldenTechnique": "محور عشق، معشوق آسمانی، فراق، می و مستی عرفانی و واژگان عربی زیاد = سبک عراقی.",
               "commonMistakeTrap": "غفلت از تفاوت غزل عاشقانه سعدی با غزل رندانه و دوپهلوی حافظ.",
               "targetExamYield": "۲ تست پرتکرار کنکور سراسری",
-              "targetLessonId": "lesson_sabk_eraghi_mystical"
+              "targetLessonId": "fonoon_11_ch1_history_eraqi"
             },
             {
               "id": "lit_p3_s3",
@@ -253,7 +253,7 @@
               "goldenTechnique": "شعر دارای دو مصراع معادل با مضمون اخلاقی و تمثيل روزمره = سبک هندی (صائب، کلیم، بیدل).",
               "commonMistakeTrap": "اشتباه گرفتن شعر دوره بازگشت با شعر قرن ۵ و ۷ به دلیل شباهت ظاهری واژگان.",
               "targetExamYield": "۲ تست تثبیت‌شده هندی، بازگشت و معاصر",
-              "targetLessonId": "lesson_sabk_hendi_and_bazgasht"
+              "targetLessonId": "fonoon_12_ch1_history_hindi_bazgasht"
             },
             {
               "id": "lit_p3_s4",
@@ -271,7 +271,7 @@
               "goldenTechnique": "کد رمزی: «بیهقی ابوالفضل» ⟵ تاریخ بیهقی | «کلیله نصرالله منشی» ⟵ آغاز نثر فنی در قرن ۶.",
               "commonMistakeTrap": "جابه‌جا زدن قرن تذکرةالاولیای عطار با نفحات‌الانس جامی (قرن ۹).",
               "targetExamYield": "۳ تست حفظی سرعتی با پاسخ‌گویی در زیر ۱۰ ثانیه",
-              "targetLessonId": "lesson_tarikh_adabiat_mnemonics"
+              "targetLessonId": "fonoon_04_mnemonics_final20"
             }
           ]
         },
@@ -298,7 +298,7 @@
               "goldenTechnique": "پیام بیت صورت سوال را در ۳ کلمه خلاصه کن؛ گزینه‌ای که دقیقاً همان پیام را دارد علامت بزن.",
               "commonMistakeTrap": "فریب خوردن از تشابه کلمات ظاهری (مثلاً هر دو بیت کلمه «آینه» دارند اما مفهومشان کاملاً متفاوت است).",
               "targetExamYield": "۴ الی ۶ تست سرنوشت‌ساز در دفترچه کنکور و نهایی",
-              "targetLessonId": "lesson_gherabat_core_concepts"
+              "targetLessonId": "fonoon_07_complete_literary_history_10_11_12"
             },
             {
               "id": "lit_p4_s2",
@@ -372,7 +372,7 @@
               "goldenTechnique": "حروف مضارعه «أتین» در اول فعل می‌آیند؛ اگر اول فعل یـ/تـ/أ/نـ نداشت ۱۰۰٪ ماضی یا امر است.",
               "commonMistakeTrap": "اشتباه گرفتن «تَفعَلُ» (مفرد مذکر مخاطب: تو می‌کنی) با «تَفعَلُ» (مفرد مؤنث غایب: او می‌کند).",
               "targetExamYield": "پایه‌گذار پاسخ به تمام تست‌های ترجمه و قواعد",
-              "targetLessonId": "lesson_arab_14_sighas_mastery"
+              "targetLessonId": "arabic_step03_complete_14_sigha_tables"
             },
             {
               "id": "arab_p1_s2",
@@ -390,7 +390,7 @@
               "goldenTechnique": "فرمول طلایی: اسم + ضمیر = مضاف‌الیه | فعل + ضمیر (ـه، ها، کم، نا) = مفعول‌به!",
               "commonMistakeTrap": "فاعل گرفتن ضمیر «ـه» در کلماتی مانند «خَلَقَهُ اللّهُ» (خدا او را آفرید؛ الله فاعل است و ـه مفعول).",
               "targetExamYield": "حل کلیدی حداقل ۳ تست ترجمه و تحلیل صرفی",
-              "targetLessonId": "lesson_arab_dhamayer_connections"
+              "targetLessonId": "found1406-ar-03-pronouns"
             },
             {
               "id": "arab_p1_s3",
@@ -453,7 +453,7 @@
               "goldenTechnique": "مصدر باب تفعّل و تفاعل با «تَـ» و ضمه ماقبل آخر ساخته می‌شود (تَعَلُّم، تَعاوُن)؛ نه با کسره!",
               "commonMistakeTrap": "اشتباه گرفتن باب «افتعال» با «انفعال» در کلماتی که فاءالفعل آن‌ها نون است (مثل: اِنْتَظَرَ از ریشه ن ظ ر = باب افتعال).",
               "targetExamYield": "۱ الی ۲ تست اختصاصی صرف و مصدرها",
-              "targetLessonId": "lesson_arab_salasi_mazeed_doors"
+              "targetLessonId": "arabic_step06_all_8_abwab_master_table"
             },
             {
               "id": "arab_p2_s2",
@@ -471,7 +471,7 @@
               "goldenTechnique": "مُـ + کسره ماقبل آخر = فاعل (کننده کار) | مُـ + فتحه ماقبل آخر = مفعول!",
               "commonMistakeTrap": "نادیده گرفتن حرکت حرف ماقبل آخر پیش از پسوندهای مثنی و جمع (مثل مُؤمِنینَ که کسره میم نشان اسم فاعل است).",
               "targetExamYield": "۱ سوال مستقیم در بخش تحلیل صرفی",
-              "targetLessonId": "lesson_arab_esme_fael_mafool"
+              "targetLessonId": "arabic_02b_derived_nouns_qaleb"
             },
             {
               "id": "arab_p2_s3",
@@ -489,7 +489,7 @@
               "goldenTechnique": "کلمات «خَیْر» و «شَرّ» به معنی «بهتر/بهترین» و «بدتر/بدترین» پرکاربردترین دام طراح در اسم تفضیل هستند!",
               "commonMistakeTrap": "اشتباه گرفتن «أَفْعَل» در رنگ‌ها و عیب‌ها (مثل أَحْمَر، أَبْکَم که صفت مشبهه هستند) با اسم تفضیل.",
               "targetExamYield": "۱ تست ترکیبی در قواعد و تحلیل صرفی",
-              "targetLessonId": "lesson_arab_moshtaghat_takmili"
+              "targetLessonId": "arabic_11_ch1_tafzeel_makan_zaman"
             }
           ]
         },
@@ -551,7 +551,7 @@
               "goldenTechnique": "اسم بعد از «یا أَیُّها / یا أَیَّتُها» همیشه مرفوع است و منادا خودِ «أیُّ» است نه کلمه بعدش!",
               "commonMistakeTrap": "منادا گرفتن کلمه «النّاسُ» در «یا أَیُّها النّاسُ».",
               "targetExamYield": "۲ تست ترکیبی در ترجمه و قواعد منصوبات",
-              "targetLessonId": "lesson_arab_mansoobat_mafool"
+              "targetLessonId": "arabic_step11_mansoobat_estisna_monada_table"
             },
             {
               "id": "arab_p3_s4",
@@ -568,7 +568,7 @@
               "goldenTechnique": "فرمول طلایی: اسم معرفه + جمله = جمله حالیه | اسم نکره + جمله = جمله وصفیه (صفت)!",
               "commonMistakeTrap": "اشتباه گرفتن حال مفرد با مفعول‌به یا خبر کانَ.",
               "targetExamYield": "۲ تست قطعی و رتبه‌ساز کنکور سراسری انسانی",
-              "targetLessonId": "lesson_arab_hal_and_jomleh"
+              "targetLessonId": "ar12-02-lesson2-hal"
             },
             {
               "id": "arab_p3_s5",
@@ -585,7 +585,7 @@
               "goldenTechnique": "اسم نکره منصوب بلافاصله بعد از اسم تفضیل (أَفْعَل) یا کلمات «کَمْ / کَفی / اِمْتَلَأَ» = ۱۰۰٪ تمییز!",
               "commonMistakeTrap": "منصوب گرفتن کلمه بعد از «إلّا» در استثنای مفرغ (در حالی که باید نقشش در جمله مثل فاعل بررسی شود).",
               "targetExamYield": "۲ تست اختصاصی اعراب در دفترچه ۲",
-              "targetLessonId": "lesson_arab_tamyees_estesna"
+              "targetLessonId": "ar12-03-lesson3-istithna-tamyiz"
             }
           ]
         },
@@ -612,7 +612,7 @@
               "goldenTechnique": "ابتدا افعال جمله را علامت بزن؛ فقط زمان فعل را در ۴ گزینه چک کن ⟵ ۳ گزینه در کمتر از ۵ ثانیه حذف می‌شوند!",
               "commonMistakeTrap": "ترجمه «قَدْ + مضارع» به صورت «قطعاً» به جای «گاهی / شاید».",
               "targetExamYield": "حداقل ۴ تست قطعی با پاسخ‌گویی در زیر ۱۰ ثانیه",
-              "targetLessonId": "lesson_arab_verb_tenses_translation"
+              "targetLessonId": "arabic_05_konkoor_translation_keys"
             },
             {
               "id": "arab_p4_s2",
@@ -646,7 +646,7 @@
               "goldenTechnique": "اسم نکره + فعل مضارع پس از فعل ماضی = مضارع در فارسی به صورت ماضی استمراری ترجمه می‌شود!",
               "commonMistakeTrap": "عدم آوردن حرف ربط «که» بین موصوف نکره و جمله وصفیه.",
               "targetExamYield": "۲ تست ثابت در کنکورهای انسانی",
-              "targetLessonId": "lesson_arab_nakereh_translation"
+              "targetLessonId": "arabic_03b_grade11_shart_naqeseh_vasf"
             },
             {
               "id": "arab_p4_s4",
@@ -735,7 +735,7 @@
               "goldenTechnique": "کلمات «أحد»، «صمد» و «لم یلد و لم یولد» مستقیماً به توحید ذاتی اشاره دارند؛ آیه لو کان فیهما آلهة اثبات توحید افعالی و ذاتی از راه نظم است.",
               "commonMistakeTrap": "اشتباه گرفتن توحید ذاتی با توحید افعالی در آیات خالقیت و تدبیر.",
               "targetExamYield": "۱ سوال قطعی مفهومی در نهایی و فرهنگیان",
-              "targetLessonId": "lesson_dini_tohid_zati_advanced"
+              "targetLessonId": "dini3-02-yegane-bi-hamta"
             },
             {
               "id": "dini_p1_s2",
@@ -752,7 +752,7 @@
               "goldenTechnique": "هر جا سخن از «عدم دوگانگی بین ذات و صفات» یا «کمال مطلق در علم و قدرت» بود = توحید صفاتی.",
               "commonMistakeTrap": "پندار این‌که تعدد نام‌های حسنای الهی باعث تعدد در ذات می‌شود.",
               "targetExamYield": "تست پرتکرار و چالش‌برانگیز معارف",
-              "targetLessonId": "lesson_dini_tohid_sefati_nuance"
+              "targetLessonId": "dini3-02-yegane-bi-hamta"
             },
             {
               "id": "dini_p1_s3",
@@ -770,7 +770,7 @@
               "goldenTechnique": "تدبیر، نزول باران، روزی رساندن و قانون‌گذاری = ربوبیت | آفرینش اولیه = خالقیت.",
               "commonMistakeTrap": "نفی قانون علت و معلول به بهانه توحید افعالی (توحید افعالی علل طبیعی را نفی نمی‌کند بلکه استقلال آن‌ها را نفی می‌کند).",
               "targetExamYield": "حداقل ۲ سوال ثابت در آزمون‌ها",
-              "targetLessonId": "lesson_dini_tohid_afeali_quad"
+              "targetLessonId": "dini3-02-yegane-bi-hamta"
             },
             {
               "id": "dini_p1_s4",
@@ -788,7 +788,7 @@
               "goldenTechnique": "آیه «اتخذ إلهه هواه» (پرستش هوای نفس) مهم‌ترین آیه در بعد فردی توحید عملی است.",
               "commonMistakeTrap": "یکی دانستن توحید نظری (ذاتی، صفاتی، افعالی) با توحید عملی (عبادی و اطاعت).",
               "targetExamYield": "۲ سوال مفهومی در حوزه اخلاص و بندگی",
-              "targetLessonId": "lesson_dini_tohid_ebadi_amali"
+              "targetLessonId": "dini3-03-towhid-va-sabk-zendegi"
             }
           ]
         },
@@ -815,7 +815,7 @@
               "goldenTechnique": "نعمت بعد از فراموشی یاد خدا (فَلَمّا نَسُوا... فَتَحْنا عَلَیْهِمْ أَبْوابَ کُلِّ شَیْءٍ) = ۱۰۰٪ سنت استدراج!",
               "commonMistakeTrap": "اشتباه گرفتن سنت املاء (مهلت دادن) با سنت ابتلا (آزمایش).",
               "targetExamYield": "۲ تست حتمی و قطعی در هر آزمون نهایی و سنجش",
-              "targetLessonId": "lesson_dini_sonan_elahi_mastery"
+              "targetLessonId": "dini3-06-sonnathaye-khodavand-dar-zendegi"
             },
             {
               "id": "dini_p2_s2",
@@ -832,7 +832,7 @@
               "goldenTechnique": "«مهندسی و اندازه‌گیری» = قَدَر | «امضای قطعی و وقوع» = قضا.",
               "commonMistakeTrap": "تصور این‌که علم پیشین خداوند به اعمال ما باعث مجبور بودن ما می‌شود.",
               "targetExamYield": "۱ سوال چالش‌ساز اعتقادی",
-              "targetLessonId": "lesson_dini_ghaza_and_ghadar"
+              "targetLessonId": "dini3-05-qodrat-parvaz"
             },
             {
               "id": "dini_p2_s3",
@@ -850,7 +850,7 @@
               "goldenTechnique": "دیدن کلمه «عبثاً / باطلاً / لاعبین» در آیه = برهان حکمت | دیدن مقایسه مؤمن و مفسد = برهان عدالت!",
               "commonMistakeTrap": "اشتباه گرفتن آیات پاسخ به استبعاد منکران معاد (خلقت نخستین و زنده شدن زمین) با براهین ضرورت معاد.",
               "targetExamYield": "۲ تست مفهومی برهان‌ها و برزخ",
-              "targetLessonId": "lesson_dini_maad_and_barzakh"
+              "targetLessonId": "dini_10_ch2_death_barzakh_hereafter"
             },
             {
               "id": "dini_p2_s4",
@@ -893,7 +893,7 @@
               "goldenTechnique": "پذیرش عمل در درگاه الهی مشروط به جمعِ هم‌زمان «حسن فعلی» و «حسن فاعلی» است.",
               "commonMistakeTrap": "تصور این‌که کار نیک بدون نیت الهی پاداش اخروی دارد.",
               "targetExamYield": "۱ سوال قطعی در امتحان نهایی و کنکور",
-              "targetLessonId": "lesson_dini_ekhlas_and_niyat"
+              "targetLessonId": "dini3-04-faghat-baraye-to"
             },
             {
               "id": "dini_p3_s2",
@@ -910,7 +910,7 @@
               "goldenTechnique": "رکن اصلی توبه «پشیمانی درونی» است و شرط تکمیل آن «جبران حقوق ضایع‌شده» است.",
               "commonMistakeTrap": "بسنده کردن به استغفار لفظی بدون ردّ مظالم و حق‌الناس.",
               "targetExamYield": "۱ الی ۲ تست اخلاقی-اعتقادی با ضریب تکرار بالا",
-              "targetLessonId": "lesson_dini_tobe_and_maghferat"
+              "targetLessonId": "dini3-08-bazgasht"
             },
             {
               "id": "dini_p3_s3",
@@ -988,7 +988,7 @@
               "goldenTechnique": "طبق کتاب مهارت‌های معلمی، بهترین ابزار برای انتقال مفاهیم عقلی به ذهن نوجوان «تمثیل و مثال‌های ملموس حسی» است.",
               "commonMistakeTrap": "تذکر علنی خطای دانش‌آموز در جمع کلاس که خلاف اصل حفظ آبروست.",
               "targetExamYield": "۱۰ تست مستقیم در دفترچه تعلیم و تربیت فرهنگیان",
-              "targetLessonId": "lesson_farhangian_gharaati_skills"
+              "targetLessonId": "far_08_qaraati_teacher_methods_complete"
             },
             {
               "id": "dini_p4_s3",
@@ -1005,7 +1005,7 @@
               "goldenTechnique": "در تست‌های موقعیتی فرهنگیان، گزینه‌ای که بر «گفت‌وگوی فردی، محرمانه، همدلانه و ریشه‌یابی علمی علت رفتار» تأکید دارد همیشه پاسخ صحیح است.",
               "commonMistakeTrap": "انتخاب گزینه‌های تنبیهی فوری، اخراج از کلاس یا ارجاع شتاب‌زده به مدیر.",
               "targetExamYield": "۲۰ سوال دفترچه هوش و استعداد معلمی",
-              "targetLessonId": "lesson_farhangian_scenarios_pedagogy"
+              "targetLessonId": "far_09_teacher_aptitude_reasoning"
             },
             {
               "id": "dini_p4_s4",
@@ -1061,7 +1061,7 @@
               "goldenTechnique": "هر پدیده‌ای که با دوربین فیلم‌برداری قابل ثبت باشد = «رفتار» | هر چه در درون ذهن رخ دهد = «فرایند روانی».",
               "commonMistakeTrap": "اشتباه گرفتن هدف «توصیف» (گزارش ویژگی‌ها) با «تبیین» (بیان چرایی و رابطه علت و معلولی).",
               "targetExamYield": "۱ تست قطعی در آغاز سوالات روان‌شناسی کنکور",
-              "targetLessonId": "lesson_psych_definition_goals"
+              "targetLessonId": "psych_11_ch1_schools_and_development"
             },
             {
               "id": "psy_p1_s2",
@@ -1098,7 +1098,7 @@
               "goldenTechnique": "در جمله «بررسی تأثیر A بر B در بین دانش‌آموزان دختر»: A = متغیر مستقل | B = متغیر وابسته | دختر بودن = متغیر کنترل!",
               "commonMistakeTrap": "نتیجه‌گیری علت و معلولی از پژوهش‌های همبستگی (همبستگی هرگز به معنای علیت نیست!).",
               "targetExamYield": "۲ تست حتمی در کنکور انسانی",
-              "targetLessonId": "lesson_psych_research_variables"
+              "targetLessonId": "psych_11_ch1_schools_and_development"
             }
           ]
         },
@@ -1124,7 +1124,7 @@
               "goldenTechnique": "اگر مهارتی بدون آموزش خاص و با رسیدن به سن معین ظاهر شود و تمرین زودرس اثری بر آن نداشته باشد = ۱۰۰٪ رسش!",
               "commonMistakeTrap": "نادیده گرفتن این اصل که بدون رسیدن به سطح لازم «رسش»، هیچ «یادگیری» و تمرینی مؤثر نخواهد بود.",
               "targetExamYield": "۱ تست مفهومی از فصل رشد",
-              "targetLessonId": "lesson_psych_maturation_growth"
+              "targetLessonId": "psych_11_ch1_schools_and_development"
             },
             {
               "id": "psy_p2_s2",
@@ -1142,7 +1142,7 @@
               "goldenTechnique": "کودکی که فکر می‌کند خورشید دنبال او راه می‌رود = جاندارپنداری (پیش‌عملیاتی) | کودکی که می‌فهمد آب در لیوان باریک و پهن برابر است = نگهداری ذهنی (عملیات عینی).",
               "commonMistakeTrap": "اشتباه گرفتن «خودمداری» کودک پیش‌عملیاتی (ناتوانی در دیدن از زاویه دید دیگران) با «خودخواهی اخلاقی».",
               "targetExamYield": "۲ تست قطعی و ۱۰۰٪ ثابت در هر کنکور سراسری",
-              "targetLessonId": "lesson_psych_piaget_stages"
+              "targetLessonId": "psych_11_ch1_schools_and_development"
             },
             {
               "id": "psy_p2_s3",
@@ -1187,7 +1187,7 @@
               "goldenTechnique": "شنیدن نام خود در میان همهمه شلوغ کلاس = توجه انتخابی | خواندن کلماتی که نقطه‌هایشان افتاده = قانون بستن (تکمیل) گشتالت!",
               "commonMistakeTrap": "اشتباه گرفتن «انطباق حسی» (کاهش حساسیت گیرنده‌ها به محرک یکنواخت مثل بوی عطر) با «آستانه افتراقی».",
               "targetExamYield": "۲ تست قطعی در دفترچه ۱",
-              "targetLessonId": "lesson_psych_sensation_perception"
+              "targetLessonId": "psych_03_perception_attention_gestalt"
             },
             {
               "id": "psy_p3_s2",
@@ -1205,7 +1205,7 @@
               "goldenTechnique": "انتقال از حسی به کوتاه‌مدت = با «توجه» | انتقال از کوتاه‌مدت به بلندمدت = با «مرور و بسط معنایی»!",
               "commonMistakeTrap": "تصور این‌که قطعه‌بندی مدت زمان حافظه کوتاه‌مدت را زیاد می‌کند (قطعه‌بندی ظرفیت را زیاد می‌کند، نه مدت را!).",
               "targetExamYield": "۲ الی ۳ تست بسیار پرتکرار کنکور",
-              "targetLessonId": "lesson_psych_memory_architecture"
+              "targetLessonId": "psych_04_memory_forgetting_strategies"
             },
             {
               "id": "psy_p3_s3",
@@ -1223,7 +1223,7 @@
               "goldenTechnique": "اگر شماره تلفن «جدیدت» را به خاطر شماره «قدیمی» یادت نیاید = تداخل پیش‌گستر | اگر با یادگیری زبان فرانسه، انگلیسیِ قبلی یادت برود = تداخل پس‌گستر!",
               "commonMistakeTrap": "جابه‌جا زدن تداخل پیش‌گستر و پس‌گستر؛ همیشه به کلمه‌ای که فراموش شده نگاه کن: اگر جدید فراموش شده = پیش‌گستر!",
               "targetExamYield": "۲ تست تضمینی در کنکور سراسری",
-              "targetLessonId": "lesson_psych_forgetting_interference"
+              "targetLessonId": "psych_04_memory_forgetting_strategies"
             }
           ]
         },
@@ -1249,7 +1249,7 @@
               "goldenTechnique": "گیر کردن در روش حل قدیمی = آمایه ذهنی | ندیدن کاربرد جدید یک شیء (مثلاً استفاده از سکه به جای پیچ‌گوشتی) = تثبیت کارکردی!",
               "commonMistakeTrap": "اشتباه گرفتن آمایه ذهنی (مربوط به روش و راهبرد) با تثبیت کارکردی (مربوط به ابزار و شیء).",
               "targetExamYield": "۲ تست قطعی در دفترچه ۱ کنکور",
-              "targetLessonId": "lesson_psych_problem_solving"
+              "targetLessonId": "psych_11_ch3_thinking_problem_solving"
             },
             {
               "id": "psy_p4_s2",
@@ -1267,7 +1267,7 @@
               "goldenTechnique": "تعداد زیاد پاسخ = سیالی | تنوع دسته‌ها = انعطاف‌پذیری | غیرمعمول و نادر بودن = ابتکار (اصالت)!",
               "commonMistakeTrap": "اشتباه گرفتن «سیالی» (کمیت ایده‌ها) با «انعطاف‌پذیری» (تغییر زاویه دید و تنوع مقوله‌ها).",
               "targetExamYield": "۱ الی ۲ تست بسیار پرتکرار",
-              "targetLessonId": "lesson_psych_decision_creativity"
+              "targetLessonId": "psych_11_ch3_thinking_problem_solving"
             },
             {
               "id": "psy_p4_s3",
@@ -1285,7 +1285,7 @@
               "goldenTechnique": "جمله «سوالات این آزمونِ ریاضی سخت بود»: اسناد بیرونی (سوالات)، ناپایدار (این آزمون) و اختصاصی (ریاضی)!",
               "commonMistakeTrap": "تشخیص نادرست بعد «پایدار/ناپایدار» از «کلی/اختصاصی» در جملات تستی.",
               "targetExamYield": "۱ الی ۲ تست ثابت کنکور انسانی",
-              "targetLessonId": "lesson_psych_attribution_emotion"
+              "targetLessonId": "psych_11_ch4_stress_mental_health"
             },
             {
               "id": "psy_p4_s4",
@@ -1302,7 +1302,7 @@
               "goldenTechnique": "نسبت دادن عیب خود به دیگران = فرافکنی | خالی کردن خشم رئیس سر خانواده = جابه‌جایی | بهانه‌آوری منطقی برای شکست = دلیل‌تراشی!",
               "commonMistakeTrap": "تصور این‌که مقابله هیجان‌مدار همیشه بد است (در موقعیت‌های غیرقابل تغییر مثل سوگ، هیجان‌مدار ضروری است).",
               "targetExamYield": "۲ تست قطعی و بسیار ساده در کنکور",
-              "targetLessonId": "lesson_psych_stress_coping"
+              "targetLessonId": "psych_11_ch4_stress_mental_health"
             },
             {
               "id": "psy_p4_s5",
@@ -1357,7 +1357,7 @@
               "goldenTechnique": "اگر کاری بدون اراده و آگاهی رخ دهد (مثل تنفس در خواب یا لرزش دست از سرما) = کنش نیست؛ اگر با توجه به دیگران باشد = کنش اجتماعی!",
               "commonMistakeTrap": "پندار این‌که کنش اجتماعی حتماً نیاز به حضور فیزیکی دیگران دارد (امام جماعت که در تنهایی تمرین قرائت برای نماز جماعت می‌کند، کنش اجتماعی انجام می‌دهد).",
               "targetExamYield": "۲ تست قطعی در کنکور سراسری",
-              "targetLessonId": "lesson_soc_human_action"
+              "targetLessonId": "soc_10_ch1_human_social_action"
             },
             {
               "id": "soc_p1_s2",
@@ -1375,7 +1375,7 @@
               "goldenTechnique": "«مطلوب بودنِ علم» = ارزش | «تقلب نکردن در امتحان» = هنجار | «مدرک تحصیلی» = نماد | «دانش‌آموز بودن» = نقش | «مدرسه و دانشگاه» = نهاد!",
               "commonMistakeTrap": "اشتباه گرفتن «ارزش» (کلی و آرمانی) با «هنجار» (قاعده ملموس رفتاری).",
               "targetExamYield": "۲ الی ۳ تست حتمی در کنکور انسانی",
-              "targetLessonId": "lesson_soc_social_phenomena"
+              "targetLessonId": "soc1-02"
             },
             {
               "id": "soc_p1_s3",
@@ -1393,7 +1393,7 @@
               "goldenTechnique": "عقاید و ارزش‌ها = لایه عمیق و کانون فرهنگ | هنجارها و نمادها = لایه سطحی!",
               "commonMistakeTrap": "تکوینی پنداشتنِ «مرز کشورها» یا «ارزش اسکناس» (هر دو اعتباری هستند).",
               "targetExamYield": "۲ تست پرتکرار از جامعه‌شناسی دهم",
-              "targetLessonId": "lesson_soc_social_world_layers"
+              "targetLessonId": "soc1-04"
             },
             {
               "id": "soc_p1_s4",
@@ -1411,7 +1411,7 @@
               "goldenTechnique": "مؤثرترین و کم‌هزینه‌ترین راه حفظ نظم جامعه «جامعه‌پذیری و کنترل درونی» است، نه صرفاً مجازات بیرونی!",
               "commonMistakeTrap": "اشتباه گرفتن تحرک اجتماعی افقی (تغییر شغل بدون تغییر طبقه و منزلت) با تحرک عمودی.",
               "targetExamYield": "۲ تست قطعی در دفترچه ۱",
-              "targetLessonId": "lesson_soc_identity_socialization"
+              "targetLessonId": "soc_01b_grade10_identity_mobility_control"
             }
           ]
         },
@@ -1455,7 +1455,7 @@
               "goldenTechnique": "تسلط از راه سینما، اینترنت و تغییر سبک زندگی بدون لشکرکشی نظامی = استعمار فرانو (امپریالیسم فرهنگی)!",
               "commonMistakeTrap": "اشتباه گرفتن مفهوم استعمار نو (سیاسی-اقتصادی) با استعمار فرانو (فرهنگی-رسانه‌ای).",
               "targetExamYield": "۱ الی ۲ تست قطعی",
-              "targetLessonId": "lesson_soc_colonialism_globalization"
+              "targetLessonId": "soc2-08"
             },
             {
               "id": "soc_p2_s3",
@@ -1473,7 +1473,7 @@
               "goldenTechnique": "دنیاگرایی + انسان‌محوری غیردینی (اومانیسم) + حس‌گرایی (پوزیتیویسم) = ستون‌های فرهنگ مدرن غرب!",
               "commonMistakeTrap": "نسبت دادن «انکار کامل حس و تجربه» به عصر روشنگری (عصر روشنگری برعکس، وحی را کنار گذاشت و به حس و عقل ابزاری بسنده کرد).",
               "targetExamYield": "۲ الی ۳ تست بسیار مهم از یازدهم",
-              "targetLessonId": "lesson_soc_western_modernity"
+              "targetLessonId": "soc2-06"
             }
           ]
         },
@@ -1500,7 +1500,7 @@
               "goldenTechnique": "دیدن کلمات «روش کمّی، مشابهت با علوم طبیعی، واقعیت اجتماعی بیرون از فرد، حفظ نظم موجود، کارکردگرایی» = ۱۰۰٪ جامعه‌شناسی تبیینی!",
               "commonMistakeTrap": "نسبت دادن روش «تفهم و کشف معنای ذهنی کنشگر» به آگوست کنت یا دورکیم.",
               "targetExamYield": "۲ الی ۳ تست قطعی در کنکور و بارم ۴ نمره‌ای در امتحان نهایی دوازدهم",
-              "targetLessonId": "lesson_soc_positivist_sociology"
+              "targetLessonId": "soc_12_ch1_three_approaches_social_sciences"
             },
             {
               "id": "soc_p3_s2",
@@ -1518,7 +1518,7 @@
               "goldenTechnique": "دیدن کلمات «معنای ذهنی، روش کیفی، تفهم، همدلی، قفس آهنین، نسبیت فرهنگی» = ۱۰۰٪ جامعه‌شناسی تفسیری (وبر)!",
               "commonMistakeTrap": "تصور این‌که جامعه‌شناسی تفسیری می‌تواند حق و باطل فرهنگ‌ها را داوری کند (تفسیری ارزش‌ها را می‌فهمد ولی داوری نمی‌کند!).",
               "targetExamYield": "۲ الی ۳ تست قطعی در کنکور و امتحان نهایی",
-              "targetLessonId": "lesson_soc_interpretive_sociology"
+              "targetLessonId": "soc_12_ch1_three_approaches_social_sciences"
             },
             {
               "id": "soc_p3_s3",
@@ -1536,7 +1536,7 @@
               "goldenTechnique": "دیدن کلمات «سلطه، رهایی، استثمار، آگاهی کاذب، صنعت فرهنگ، ردّ بی‌طرفی ارزشی» = ۱۰۰٪ جامعه‌شناسی انتقادی!",
               "commonMistakeTrap": "یکی دانستن دیدگاه کارل مارکس (تأکید صرف بر اقتصاد به عنوان زیربنا) با مکتب فرانکفورت (تأکید بر نقش مستقل فرهنگ و رسانه در تداوم سلطه).",
               "targetExamYield": "۲ الی ۳ تست قطعی کنکور و امتحان نهایی",
-              "targetLessonId": "lesson_soc_critical_sociology"
+              "targetLessonId": "soc_12_ch1_three_approaches_social_sciences"
             },
             {
               "id": "soc_p3_s4",
@@ -1554,7 +1554,7 @@
               "goldenTechnique": "تنها رویکردی که برای ارزش‌های اخلاقی «پشتوانه عقلی و وحیانی» دارد و گرفتار نسبیت نمی‌شود = علوم اجتماعی اسلامی!",
               "commonMistakeTrap": "تصور این‌که جامعه‌شناسی انتقادی توانسته با ابزار حس و تجربه، عدالت را اثبات کند (این تناقض درونی رویکرد انتقادی است).",
               "targetExamYield": "۳ تست ترکیبی فوق‌العاده مهم در کنکور ۱۴۰۶",
-              "targetLessonId": "lesson_soc_three_paradigms_matrix"
+              "targetLessonId": "soc_12_ch1_three_approaches_social_sciences"
             }
           ]
         },
@@ -1581,7 +1581,7 @@
               "goldenTechnique": "کارکردگرایی = اولویت نظم و نفی تضاد | انتقادی = اولویت تضاد و تغییر | اسلامی = نظم بر پایه حق و عدالت!",
               "commonMistakeTrap": "یکسان گرفتن «هرگونه نظم اجتماعی» با «عدالت اجتماعی» (بسیاری از جوامع استبدادی نظم آهنین دارند اما ظالمانه‌اند).",
               "targetExamYield": "۲ تست در کنکور و نهایی دوازدهم",
-              "targetLessonId": "lesson_soc_social_order_conflict"
+              "targetLessonId": "soc3-03"
             },
             {
               "id": "soc_p4_s2",
@@ -1599,7 +1599,7 @@
               "goldenTechnique": "تقسیم نقش «ابزاری پدر و عاطفی مادر» (پارسونز) = رویکرد تبیینی (کارکردگرایی)!",
               "commonMistakeTrap": "نسبت دادن دیدگاه «خانواده به عنوان نهاد سلطه و نابرابری» به رویکرد تبیینی (این دیدگاه متعلق به رویکرد انتقادی است).",
               "targetExamYield": "۱ الی ۲ تست ثابت در کنکور سراسری و نهایی",
-              "targetLessonId": "lesson_soc_family_perspectives"
+              "targetLessonId": "soc_12_ch2_social_order_family_policy"
             },
             {
               "id": "soc_p4_s3",
@@ -1633,7 +1633,7 @@
               "goldenTechnique": "مهم‌ترین علت غافلگیری جامعه‌شناسان غربی در قبال انقلاب ایران = پیش‌فرض ماتریالیستی و سکولار آن‌ها مبنی بر افول دین در جهان مدرن بود!",
               "commonMistakeTrap": "تحلیل انقلاب اسلامی صرفاً بر پایه عوامل اقتصادی و طبقاتی مارکسیستی.",
               "targetExamYield": "۱ الی ۲ سوال قطعی در امتحان نهایی خرداد و کنکور",
-              "targetLessonId": "lesson_soc_islamic_revolution"
+              "targetLessonId": "soc2-14"
             },
             {
               "id": "soc_p4_s5",
