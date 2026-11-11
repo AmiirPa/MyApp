@@ -116,6 +116,13 @@ ksp {
   arg("room.schemaLocation", "$projectDir/schemas")
 }
 
+// kspDebugKotlin and kspReleaseKotlin both read/write the same Room schema JSON in
+// app/schemas; when Gradle runs them in parallel one can read a half-written file
+// ("JsonDecodingException: Expected start of the object '{', but had 'EOF'").
+// Serialize the KSP tasks so the schema file is never read mid-write.
+tasks.matching { it.name == "kspReleaseKotlin" }.configureEach { mustRunAfter("kspDebugKotlin") }
+tasks.matching { it.name == "kspDebugUnitTestKotlin" }.configureEach { mustRunAfter("kspDebugKotlin", "kspReleaseKotlin") }
+
 dependencies {
   implementation(platform(libs.androidx.compose.bom))
   implementation(platform(libs.firebase.bom))
