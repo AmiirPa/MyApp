@@ -396,14 +396,26 @@ object LearningPath1406 {
         LearningPathStep(
             stepNumber = 26,
             title = "فنون دهم",
-            subtitle = "تاریخ ادبیات خراسانی و بدیع و تشبیه و مجاز",
+            subtitle = "۱۲ درس علوم و فنون ادبی ۱ به ترتیب کتاب، بعد درسنامه‌های ترکیبی قدیمی",
             lessonIds = listOf(
+                "fon1-01-mabani-tahlil-matn",
+                "fon1-02-sazeha-avamel-sher",
+                "fon1-03-vajarayi-vazhearayi",
+                "fon1-04-tarikh-adabiat-pish-az-eslam",
+                "fon1-05-hamahangi-pareha-kalam",
+                "fon1-06-saj-anvae",
+                "fon1-07-sabk-khorasani",
+                "fon1-08-vazn-sher-farsi",
+                "fon1-09-movazene-tarsi",
+                "fon1-10-sadehaye-5-6",
+                "fon1-11-ghafieh",
+                "fon1-12-jenas-anvae",
                 "fonoon_10_ch1_history_khorasani",
                 "fonoon_10_ch2_badi_tarsee_movazeneh",
                 "fonoon_10_ch3_tashbih_majaz_10",
                 "fonoon_10_lesson10_sade5_6"
             ),
-            checkLessonId = "fonoon_10_ch1_history_khorasani",
+            checkLessonId = "fon1-12-jenas-anvae",
             status = LearningPathStatus.READY,
             gapNote = ""
         ),
