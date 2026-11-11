@@ -3368,7 +3368,27 @@ private val DIRECT_FOLDER_SUBJECTS = setOf(
     "karfan", "tafakkor", "honar", "defa"
 )
 
-private val ZERO_TRACK_ID_RE = Regex("^(far0|math0|ar0|ar-zero|arooz0|arozero|aroozm1406|en0|eng-zero|english_step|english_00|psych0|eco0|fon0|fonoon_00|arabic_step|arabic_00|math_0|math_000|study_|methods1406|sm-tip|hum-tip|site-)")
+private val ZERO_TRACK_ID_RE = Regex("^(far0|math0|ar0|ar-zero|arooz0|arozero|aroozm1406|en0|eng-zero|english_step|english_00|psych0|eco0|fon0|fonoon_00|arabic_step|arabic_00|math_00|math_01_signs|math_01b_|math_02b_|study_|methods1406|sm-tip|hum-tip|site-)")
+
+/**
+ * درس‌های ریاضی و آمار پایه‌ی ۱۰ تا ۱۲ که شناسه‌شان با math_0 شروع می‌شود؛
+ * پیش‌تر الگوی «math_0» همه را به مسیر صفر می‌برد. پایه از متن فصل کتاب گرفته شده.
+ */
+private val MATH_BOOK_GRADES = mapOf(
+    "math_02_equations" to Grade.G10,
+    "math_03_functions" to Grade.G10,
+    "math_03_radicals_powers" to Grade.G10,
+    "math_04_functions_domain" to Grade.G10,
+    "math_06_statistics_dispersion" to Grade.G10,
+    "math_09_statistics_percentiles" to Grade.G10,
+    "math_05c_grade11_functions_indices" to Grade.G11,
+    "math_07_grade12_regression_time_series" to Grade.G11, // فصل ۳ یازدهم (شاخص‌ها و سری زمانی)
+    "math_08_logic_propositions" to Grade.G11,
+    "math_05_sequences_arithmetic" to Grade.G12,
+    "math_05d_sequences_arithmetic_deep" to Grade.G12,
+    "math_05e_sequences_geometric_deep" to Grade.G12,
+    "math_07_combinatorics_probability" to Grade.G12,
+)
 
 private val BOOK_SUBJECTS_RE = Regex("""(فارسی|عربی|ریاضی و آمار|دین و زندگی|دینی|تاریخ|جغرافیا|جامعه‌شناسی|انگلیسی|نگارش|فلسفه|علوم و فنون|منطق|روان‌شناسی|اقتصاد)\s*([۱۲۳])(?![۱۲۳۴۵۶۷۸۹0-9])""")
 
@@ -3404,6 +3424,7 @@ fun ZeroLesson.hierarchyGrade(): Grade {
 }
 
 private fun bookGradeFromId(id: String): Grade? {
+    MATH_BOOK_GRADES[id]?.let { return it }
     Regex("""^(elem|mid)(\d)""").find(id)?.let { return grade1to9(it.groupValues[2].toInt()) }
     Regex("""^(far|farsi)([123])[-_]""").find(id)?.let { return grade10plus(it.groupValues[2].toInt()) }
     Regex("""^dini([123])[-_]""").find(id)?.let { return grade10plus(it.groupValues[1].toInt()) }
