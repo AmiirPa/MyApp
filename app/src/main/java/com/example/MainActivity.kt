@@ -93,6 +93,8 @@ import com.example.data.firebase.authStateFlow
 import com.example.data.local.LocalKonkoorStore
 import com.example.ui.AppTab
 import com.example.ui.KonkoorViewModel
+import com.example.ui.calm.CalmAppRoot
+import com.example.ui.calm.CalmTheme
 import com.example.ui.sharedPomodoroTimer
 import com.example.ui.components.BidiFormatter
 import com.example.ui.components.SavedItemsModalSheet
@@ -201,15 +203,19 @@ class MainActivity : ComponentActivity() {
 
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
                 MyApplicationTheme(themeController = themeController) {
-                    Surface(
-                        modifier = Modifier.fillMaxSize(),
-                        color = MaterialTheme.colorScheme.background
-                    ) {
-                        AppScaffold(
-                            viewModel = viewModel,
-                            currentUserId = currentUser?.uid,
-                            userDisplayName = "دانش‌آموز عزیز"
-                        )
+                    // رابط کاربری تازهٔ «آرام و مینیمال». AppScaffold قدیمی هنوز در کد هست
+                    // ولی دیگر استفاده نمی‌شود.
+                    CalmTheme {
+                        Surface(
+                            modifier = Modifier.fillMaxSize(),
+                            color = MaterialTheme.colorScheme.background
+                        ) {
+                            CalmAppRoot(
+                                viewModel = viewModel,
+                                currentUserId = currentUser?.uid,
+                                userDisplayName = "دانش‌آموز عزیز"
+                            )
+                        }
                     }
                 }
             }
@@ -217,6 +223,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@Suppress("unused")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AppScaffold(
