@@ -1218,23 +1218,19 @@ object KonkoorPastExamsArchive {
         baseQuestions.groupBy { it.subjectId }
     }
 
-    // الگوهای regex یک‌بار کامپایل می‌شوند؛ پیش از این هر فراخوانیِ
-    // stripOtherYearTags و هر سؤالِ شماره‌گذاری‌شده Regex تازه می‌ساخت
-    // (هزاران کامپایل در اولین ساخت آرشیو روی نخ اصلی).
-    private val yearTagRegex =
-        Regex("کنکور\\s*(سراسری|انسانی|فرهنگیان)?\\s*(اردیبهشت|تیر|دی)?\\s*[۱1][۳۴34][۹۰90][۰-۹0-9]")
-    private val printYearRegex =
-        Regex("چاپ\\s*[۱1][۴4][۰0][۰-۹0-9](\\s*تا\\s*[۱1][۴4][۰0][۰-۹0-9])?")
+    // الگوهای regex یک‌بار کامپایل می‌شوند (پیش از این هر سؤال Regex تازه می‌ساخت).
     private val lessonParenRegex = Regex("\\(\\s*درس\\s*[\\d۰-۹]+\\s*•[^)]*\\)")
     private val leadingQuestionNumberRegex = Regex("^سوال\\s*[\\d۰-۹]+\\s*[:\\-•]\\s*")
 
-    private fun stripOtherYearTags(rawTag: String, targetPersianYear: String): String {
-        val cleaned = rawTag
-            .replace(yearTagRegex, "کنکور سراسری $targetPersianYear")
-            .replace(printYearRegex, "کنکور $targetPersianYear")
-            .replace(lessonParenRegex, "")
-            .trim()
-        return if (cleaned.isBlank()) "کنکور سراسری $targetPersianYear" else cleaned
+    /**
+     * برچسب سؤال‌های تکمیلی (از درس‌ها/بانک سؤال/سال‌های دیگر) که فقط برای پرکردن
+     * دفترچه‌های گزیده و شبیه‌ساز اضافه می‌شوند. این سؤال‌ها سؤال کنکور همان سال نیستند،
+     * پس برچسب سال اصلی‌شان دست‌نخورده می‌ماند و صریحاً «تمرین تکمیلی» نام می‌گیرند
+     * (پیش‌تر stripOtherYearTags آن‌ها را «کنکور {سال}» برچسب می‌زد).
+     */
+    private fun supplementaryTag(rawTag: String): String {
+        val cleaned = rawTag.replace(lessonParenRegex, "").trim()
+        return if (cleaned.isBlank()) "تمرین تکمیلی" else cleaned
     }
 
     private fun buildCompleteOrderedBookletPaper(paper: PastKonkoorExamPaper, paperIndex: Int): PastKonkoorExamPaper {
@@ -1248,6 +1244,7 @@ object KonkoorPastExamsArchive {
         val persianYear = com.example.ui.components.BidiFormatter.toPersianDigits(paper.year.toString())
         val paperOwnBySubject = paper.questions.groupBy { it.subjectId }
         val assembled = mutableListOf<QuizQuestionItem>()
+        var supplementedCount = 0
 
         targetSequence.forEachIndexed { subjIdx, (subjId, sectionLabel) ->
             val ownList = paperOwnBySubject[subjId].orEmpty()
@@ -1276,12 +1273,19 @@ object KonkoorPastExamsArchive {
                 .distinctBy { it.questionText.trim() }
                 .take(targetCountForSubject)
 
+            val ownIds = ownList.map { it.id }.toSet()
             combinedForSubject.forEach { q ->
-                val cleanSubTag = stripOtherYearTags(q.difficultyTag, persianYear)
+                val isOwn = q.id in ownIds
+                val tag = if (isOwn) {
+                    "${paper.badge} • $sectionLabel • ${q.difficultyTag}"
+                } else {
+                    supplementedCount++
+                    "تمرین تکمیلی (سؤال کنکور $persianYear نیست) • $sectionLabel • ${supplementaryTag(q.difficultyTag)}"
+                }
                 assembled.add(
                     q.copy(
                         id = "${paper.id}_${q.id}_${assembled.size + 1}",
-                        difficultyTag = "کنکور $persianYear • $sectionLabel • $cleanSubTag"
+                        difficultyTag = tag
                     )
                 )
             }
@@ -1295,30 +1299,54 @@ object KonkoorPastExamsArchive {
             )
         }
 
-        return paper.copy(questions = numberedQuestions)
+        val supplementNote = if (supplementedCount > 0) {
+            val n = com.example.ui.components.BidiFormatter.toPersianDigits(supplementedCount.toString())
+            " + $n سؤال تمرین تکمیلی از درس‌نامه‌ها و بانک سؤال (سؤال کنکور این سال نیستند و جدا برچسب خورده‌اند)."
+        } else ""
+        return paper.copy(questions = numberedQuestions, description = paper.description + supplementNote)
     }
 
     private val completeOrderedExamPapers: List<PastKonkoorExamPaper> by lazy(LazyThreadSafetyMode.PUBLICATION) {
         examPapers.mapIndexed { index, paper ->
             buildCompleteOrderedBookletPaper(paper, index)
-        } + KonkoorRealQuestions1406.papers + KonkoorReal1404Tir1406.papers + KonkoorReal1404Ordibehesht1406.papers + KonkoorReal1405Sessions1406.papers + KonkoorReal1402Sessions1406.papers + KonkoorReal1397to1400_1406.papers + KonkoorRealFarhangian1406.papers + KonkoorReal1403Logic1406.papers
+        } + realExamPapers
     }
 
+    /** همه دفترچه‌های واقعی (سؤال‌های رسمی سازمان سنجش با کلید رسمی)؛ بدون گزیده/شبیه‌ساز و بدون پرکننده. */
+    private val realExamPapers: List<PastKonkoorExamPaper> by lazy(LazyThreadSafetyMode.PUBLICATION) {
+        KonkoorRealQuestions1406.papers + KonkoorReal1404Tir1406.papers + KonkoorReal1404Ordibehesht1406.papers +
+            KonkoorReal1405Sessions1406.papers + KonkoorReal1402Sessions1406.papers + KonkoorReal1397to1400_1406.papers +
+            KonkoorRealFarhangian1406.papers + KonkoorReal1403Logic1406.papers
+    }
+
+    /**
+     * نمای «کل دروس سال X»: فقط دفترچه واقعی کامل آن سال.
+     * دفترچه‌های واقعی یک نوبت (مثلاً دفترچه اول و دوم مرداد ۱۴۰۵، یا «ادامه»ی تیر ۱۴۰۰)
+     * با badge یکسان یکی می‌شوند و از بین نوبت‌های یک سال، کامل‌ترین (بیشترین سؤال) انتخاب می‌شود.
+     * گزیده‌ها و شبیه‌سازهای پرشده با سؤال درس‌نامه دیگر اینجا انتخاب نمی‌شوند؛
+     * سالی که دفترچه واقعی ندارد، نمای کل دروس ندارد.
+     */
     val standaloneYearlyAllSubjectsPapers: List<PastKonkoorExamPaper> by lazy(LazyThreadSafetyMode.PUBLICATION) {
-        val years = listOf(1405, 1404, 1403, 1402, 1401, 1400, 1399, 1398)
+        val years = listOf(1405, 1404, 1403, 1402, 1401, 1400, 1399, 1398, 1397)
         years.mapNotNull { yr ->
             val persianYr = com.example.ui.components.BidiFormatter.toPersianDigits(yr.toString())
-            val matching = completeOrderedExamPapers.firstOrNull { it.year == yr && !it.isFarhangianSpecial }
-            matching?.copy(
+            val sessions = realExamPapers
+                .filter { it.year == yr && !it.isFarhangianSpecial }
+                .groupBy { it.badge }
+                .values
+                .map { group -> group.sortedWith(compareBy({ it.bookletNumber }, { it.id })) }
+            val best = sessions.maxByOrNull { group -> group.sumOf { it.questions.size } } ?: return@mapNotNull null
+            val head = best.first()
+            val merged = best.flatMap { it.questions }.distinctBy { it.id }
+            head.copy(
                 id = "yearly_all_subjects_$yr",
-                title = "کل دروس کنکور سراسری $persianYr (صرفاً سوالات سال $persianYr)",
+                title = "کل دروس کنکور سراسری $persianYr — ${head.sessionTitle} (فقط سؤال‌های واقعی)",
                 sessionTitle = "کل دروس $persianYr",
                 badge = "کل دروس $persianYr",
-                // Re-id questions: the yearly paper copies the booklet paper's
-                // questions verbatim, so without this the two papers share
-                // question ids and answers/reveals leak between them (answer
-                // state is keyed by q.id). Prefix keeps ids globally unique.
-                questions = matching.questions.map { it.copy(id = "yearly_all_subjects_${yr}_${it.id}") }
+                description = best.joinToString("\n") { it.description },
+                // Re-id questions so answer state (keyed by q.id) never leaks
+                // between this view and the source booklet papers.
+                questions = merged.map { it.copy(id = "yearly_all_subjects_${yr}_${it.id}") }
             )
         }
     }
