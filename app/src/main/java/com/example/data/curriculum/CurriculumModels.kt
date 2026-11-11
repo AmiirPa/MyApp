@@ -1041,6 +1041,20 @@ fun ZeroLesson.subcategoryFolder(): Pair<Int, String> = when (id) {
     "fonoon_01b_verbal_figures_saj" -> 2 to "📗 پایه دهم انسانی (چاپ ۱۴۰۳ ویژه کنکور ۱۴۰۶) — علوم و فنون ادبی ۱ کامل (درس ۱ تا ۱۲)"
     "fon0-jinas" -> 2 to "📗 پایه دهم انسانی (چاپ ۱۴۰۳ ویژه کنکور ۱۴۰۶) — علوم و فنون ادبی ۱ کامل (درس ۱ تا ۱۲)"
 
+    // علوم و فنون ادبی ۱ درس‌به‌درس با شمارهٔ رسمی کتاب (Fonoon1PerLessonPart1..3Completion1406)
+    "fon1-01-mabani-tahlil-matn",
+    "fon1-02-sazeha-avamel-sher",
+    "fon1-03-vajarayi-vazhearayi",
+    "fon1-04-tarikh-adabiat-pish-az-eslam",
+    "fon1-05-hamahangi-pareha-kalam",
+    "fon1-06-saj-anvae",
+    "fon1-07-sabk-khorasani",
+    "fon1-08-vazn-sher-farsi",
+    "fon1-09-movazene-tarsi",
+    "fon1-10-sadehaye-5-6",
+    "fon1-11-ghafieh",
+    "fon1-12-jenas-anvae" -> 2 to "📗 پایه دهم انسانی (چاپ ۱۴۰۳ ویژه کنکور ۱۴۰۶) — علوم و فنون ادبی ۱ کامل (درس ۱ تا ۱۲)"
+
     "fonoon_11_ch1_history_eraqi",
     "fonoon_11_ch2_tashbih_types",
     "fonoon_11_ch3_estearah_majaz_kenayeh",
@@ -3887,6 +3901,19 @@ fun ZeroLesson.prerequisiteStepOrder(): Int = when (id) {
     "math_12_konkoor_80_percent_shortcuts" -> 20
 
     // 4. FONOON: Step-by-step from 24 literary devices zero-to-100 -> Grade 10 -> Grade 11 -> Grade 12 -> Micro-notes encyclopedia
+    // فنون ۱ درس‌به‌درس: منفی تا ۱۲ درس رسمی، اول پوشهٔ دهم و به ترتیب کتاب بیایند.
+    "fon1-01-mabani-tahlil-matn" -> -99
+    "fon1-02-sazeha-avamel-sher" -> -98
+    "fon1-03-vajarayi-vazhearayi" -> -97
+    "fon1-04-tarikh-adabiat-pish-az-eslam" -> -96
+    "fon1-05-hamahangi-pareha-kalam" -> -95
+    "fon1-06-saj-anvae" -> -94
+    "fon1-07-sabk-khorasani" -> -93
+    "fon1-08-vazn-sher-farsi" -> -92
+    "fon1-09-movazene-tarsi" -> -91
+    "fon1-10-sadehaye-5-6" -> -90
+    "fon1-11-ghafieh" -> -89
+    "fon1-12-jenas-anvae" -> -88
     "fonoon_00_zero_to_100_all_24_arrayeh_step_by_step" -> 1
     "fonoon_10_ch1_history_khorasani" -> 2
     "fonoon_10_ch2_badi_tarsee_movazeneh" -> 3

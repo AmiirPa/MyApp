@@ -123,6 +123,7 @@ object FlashcardAndQuizBank {
             addAll(Fonoon3MusicCompletion1406.lessons)
             addAll(Fonoon3FiguresCompletion1406.lessons)
             addAll(Fonoon1Lesson10Completion1406.lessons)
+            addAll(Fonoon1PerLessonPart1Completion1406.lessons)
             addAll(FoundationsMathPersian1406.lessons)
             addAll(FoundationsArabicEnglish1406.lessons)
             addAll(ArabicZeroTrackCompletion1406.lessons)
