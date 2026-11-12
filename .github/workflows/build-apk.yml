@@ -65,7 +65,7 @@ jobs:
           if-no-files-found: error
           retention-days: 90
 
-      # Publish official GitHub Release on branch pushes or manual runs
+      # Publish official GitHub Release only for builds of main
       - name: Publish Official APK to GitHub Releases
         uses: softprops/action-gh-release@v2
         if: github.ref == 'refs/heads/main'
