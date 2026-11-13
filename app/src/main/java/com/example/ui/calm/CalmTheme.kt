@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ui.theme.LocalAppThemeController
-import com.example.ui.theme.VazirmatnFontFamily
 
 /*
  * طراحی آرام (Calm UI)
@@ -116,10 +115,25 @@ val CalmShapes = Shapes(
     extraLarge = RoundedCornerShape(28.dp)
 )
 
-private fun calmTypography(): Typography {
-    val f = VazirmatnFontFamily
-    fun s(size: Int, line: Int, w: FontWeight = FontWeight.Normal) =
-        TextStyle(fontFamily = f, fontSize = size.sp, lineHeight = line.sp, fontWeight = w)
+private fun calmTypography(
+    fontFamily: androidx.compose.ui.text.font.FontFamily,
+    fontScale: Float,
+    lineSpacingScale: Float,
+    boldAll: Boolean
+): Typography {
+    fun s(size: Int, line: Int, w: FontWeight = FontWeight.Normal): TextStyle {
+        val weight = if (boldAll) when (w) {
+            FontWeight.Normal -> FontWeight.Medium
+            FontWeight.Medium -> FontWeight.Bold
+            else -> FontWeight.Bold
+        } else w
+        return TextStyle(
+            fontFamily = fontFamily,
+            fontSize = (size * fontScale).sp,
+            lineHeight = (line * fontScale * lineSpacingScale).sp,
+            fontWeight = weight
+        )
+    }
     return Typography(
         displayLarge = s(44, 56, FontWeight.Bold),
         displayMedium = s(36, 48, FontWeight.Bold),
@@ -181,6 +195,12 @@ val LocalCalmPrefs = staticCompositionLocalOf<CalmPrefs> { error("CalmPrefs not 
 /**
  * تم آرام. باید داخل MyApplicationTheme قرار بگیرد تا LocalAppThemeController
  * (حالت روشن/تیره و تنظیمات قدیمی) در دسترس بماند.
+ *
+ * همهٔ تنظیمات ظاهری از AppThemeController خوانده می‌شوند تا تغییرشان در صفحهٔ
+ * تنظیمات واقعاً اعمال شود (پیش‌تر رنگ و فونت اینجا ثابت بود و تنظیمات بی‌اثر
+ * می‌ماند): پالت رنگی و رنگ پویا لهجهٔ برنامه را می‌سازند، فونت و اندازه و
+ * فاصلهٔ خطوط و پررنگی تایپوگرافی را می‌سازند، و زبان جهت چیدمان را تعیین می‌کند.
+ * پس‌زمینه و سطح‌های خنثی آرام (بدون گرادیان) حفظ شده‌اند.
  */
 @Composable
 fun CalmTheme(content: @Composable () -> Unit) {
@@ -188,13 +208,52 @@ fun CalmTheme(content: @Composable () -> Unit) {
     val dark = controller.resolveIsDarkTheme(isSystemInDarkTheme())
     val context = LocalContext.current
     val prefs = remember { CalmPrefs(context) }
-    val typography = remember { calmTypography() }
+
+    // رنگ: پایه از پالت انتخابی یا رنگ پویای سیستم می‌آید؛ سطح‌های خنثی آرام ثابت‌اند.
+    val baseScheme = if (controller.useDynamicColor && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+        if (dark) androidx.compose.material3.dynamicDarkColorScheme(context) else androidx.compose.material3.dynamicLightColorScheme(context)
+    } else {
+        val palette = controller.selectedColorPalette
+        if (dark) palette.toDarkColorScheme() else palette.toLightColorScheme()
+    }
+    val calmNeutrals = if (dark) CalmDark else CalmLight
+    val colorScheme = baseScheme.copy(
+        background = calmNeutrals.background,
+        onBackground = calmNeutrals.onBackground,
+        surface = calmNeutrals.surface,
+        onSurface = calmNeutrals.onSurface,
+        surfaceVariant = calmNeutrals.surfaceVariant,
+        onSurfaceVariant = calmNeutrals.onSurfaceVariant,
+        surfaceTint = Color.Transparent,
+        outline = calmNeutrals.outline,
+        outlineVariant = calmNeutrals.outlineVariant,
+        inverseSurface = calmNeutrals.inverseSurface,
+        inverseOnSurface = calmNeutrals.inverseOnSurface,
+        scrim = calmNeutrals.scrim
+    )
+
+    // تایپوگرافی: فونت، اندازه، فاصلهٔ خطوط و پررنگی از تنظیمات می‌آیند.
+    val fontFamily = controller.customFontFamily
+        ?: controller.selectedFontPreset.toFontFamily()
+    val typography = remember(
+        fontFamily, controller.fontScale, controller.lineSpacingScale,
+        controller.isBoldTextEnabled, controller.fontRevision
+    ) {
+        calmTypography(
+            fontFamily = fontFamily,
+            fontScale = controller.fontScale,
+            lineSpacingScale = controller.lineSpacingScale,
+            boldAll = controller.isBoldTextEnabled
+        )
+    }
+
+    val layoutDirection = if (controller.appLanguage == "en") LayoutDirection.Ltr else LayoutDirection.Rtl
     CompositionLocalProvider(
-        LocalLayoutDirection provides LayoutDirection.Rtl,
+        LocalLayoutDirection provides layoutDirection,
         LocalCalmPrefs provides prefs
     ) {
         MaterialTheme(
-            colorScheme = if (dark) CalmDark else CalmLight,
+            colorScheme = colorScheme,
             typography = typography,
             shapes = CalmShapes
         ) {
