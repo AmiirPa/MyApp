@@ -427,8 +427,7 @@ object StagedLearningPathRepository {
                         keyConcepts = listOf("بار معنایی مثبت (امید، بخشش، عشق) در برابر منفی (طمع، حسد، غفلت)", "تقابل عقل مصلحت‌اندیش و عشق بی‌پروا", "تفکیک شکایت از فلک با توکل بر خدا"),
                         goldenTechnique = "با تشخیص مثبت یا منفی بودن پیام بیت، ۲ گزینه در ۵ ثانیه اول حذف می‌شوند.",
                         commonMistakeTrap = "برداشت تحت‌اللفظی از کلمات نمادین و مجازی در غزلیات.",
-                        targetExamYield = "افزایش سرعت تست‌زنی به زیر ۴۰ ثانیه در هر سوال",
-                        targetLessonId = "lesson_gherabat_elimination_tactics"
+                        targetExamYield = "افزایش سرعت تست‌زنی به زیر ۴۰ ثانیه در هر سوال"
                     ),
                     LearningStation(
                         id = "lit_p4_s3",
@@ -440,8 +439,7 @@ object StagedLearningPathRepository {
                         keyConcepts = listOf("مدیریت زمان ۶۰ ثانیه به ازای هر تست", "ترتیب طلایی پاسخ‌دهی: تاریخ ادبیات ➔ سبک‌شناسی ➔ آرایه ➔ قرابت ➔ عروض و قافیه", "تکنیک ضربدر و منفی برای مدیریت تست‌های زمان‌بر"),
                         goldenTechnique = "شروع با تاریخ ادبیات و سبک‌شناسی در ۵ دقیقه اول، ۱۰ دقیقه ذخیره زمانی برای عروض و آرایه ایجاد می‌کند.",
                         commonMistakeTrap = "گیر کردن روی یک بیت دشوار عروضی در ابتدای درس و از دست دادن تست‌های ساده انتهای دفترچه!",
-                        targetExamYield = "تضمین درصد بالای ۸۰٪ در علوم و فنون کنکور انسانی",
-                        targetLessonId = "lesson_fonoon_comprehensive_sim"
+                        targetExamYield = "تضمین درصد بالای ۸۰٪ در علوم و فنون کنکور انسانی"
                     )
                 )
             )
@@ -503,8 +501,7 @@ object StagedLearningPathRepository {
                         keyConcepts = listOf("امر مخاطب و امر غایب (با لِـ امر: لِیَکْتُبْ = باید بنویسد)", "تفاوت لا نهی (مجزوم‌کننده: لا تَکْذِبْ = دروغ نگو) و لا نفی (لا یَکْذِبُ = دروغ نمی‌گوید)", "ادوات ناصبه: أَنْ، لَنْ، کَیْ، حَتَّی، لِـ تعلیل", "ادوات جازمه: لَمْ، لَمّا، لام امر، لا نهی و ادوات شرط"),
                         goldenTechnique = "«لَمْ + مضارع مجزوم» همیشه به صورت ماضی منفی یا نقلی منفی ترجمه می‌شود (لَمْ یَذْهَبْ = نرفت).",
                         commonMistakeTrap = "ترجمه «لَنْ + مضارع منصوب» به صورت زمان حال به جای آینده منفی (هرگز نخواهد...).",
-                        targetExamYield = "۲ تست پرتکرار ترجمه و اعراب افعال",
-                        targetLessonId = "lesson_arab_amr_nahy_jazm"
+                        targetExamYield = "۲ تست پرتکرار ترجمه و اعراب افعال"
                     ),
                     LearningStation(
                         id = "arab_p1_s4",
@@ -516,8 +513,7 @@ object StagedLearningPathRepository {
                         keyConcepts = listOf("معتل مثال (حرف عله در فاءالفعل: وَعَدَ ⟵ یَعِدُ)", "معتل اجوف (حرف عله در عین‌الفعل: قالَ ⟵ یَقولُ ⟵ قُلْ)", "معتل ناقص (حرف عله در لام‌الفعل: دَعا، رَمَی، خَشِیَ)", "انواع اعلال: به اسکان، به قلب و به حذف"),
                         goldenTechnique = "در جزم و امر فعل اجوف، حرف عله وسط به علت التقای ساکنین حذف می‌شود (قُلْ، بِعْ، خَفْ) ⟵ اعلال به حذف!",
                         commonMistakeTrap = "فراموش کردن حذف واو در مضارع فعل مثال واوی (وَجَدَ ⟵ یَجِدُ: اعلال به حذف).",
-                        targetExamYield = "۲ تست اختصاصی تحلیل صرفی و اعلال در کنکور انسانی",
-                        targetLessonId = "lesson_arab_motal_verbs"
+                        targetExamYield = "۲ تست اختصاصی تحلیل صرفی و اعلال در کنکور انسانی"
                     )
                 )
             ),
@@ -586,8 +582,7 @@ object StagedLearningPathRepository {
                         keyConcepts = listOf("فاعل ظاهر و ضمیر بارز و مستتر", "نائب فاعل پس از فعل مجهول (فُعِلَ / یُفْعَلُ)", "انواع خبر: مفرد، جمله فعلیه/اسمیه، شبه‌جمله (جارومجرور یا ظرف)", "خبر مقدم (شبه جمله در ابتدای جمله اسمیه: فی البیتِ رَجُلٌ)"),
                         goldenTechnique = "هرگاه جمله با «جار و مجرور» یا «عِنْدَ / لَدی» شروع شود و بعدش اسم مرفوع بیاید = ۱۰۰٪ خبر مقدم و مبتدای مؤخر!",
                         commonMistakeTrap = "فاعل گرفتن اسم بعد از کانَ یا اسم قبل از فعل.",
-                        targetExamYield = "۲ تست قطعی در بخش قواعد و اعراب",
-                        targetLessonId = "lesson_arab_marfooat_mastery"
+                        targetExamYield = "۲ تست قطعی در بخش قواعد و اعراب"
                     ),
                     LearningStation(
                         id = "arab_p3_s2",
@@ -599,8 +594,7 @@ object StagedLearningPathRepository {
                         keyConcepts = listOf("افعال ناقصه (کانَ، صارَ، أَصبَحَ، لَیسَ، ما دامَ): اسم مرفوع و خبر منصوب", "حروف مشبهه (إِنَّ، أَنَّ، کَأَنَّ، لکِنَّ، لَیتَ، لَعَلَّ): اسم منصوب و خبر مرفوع", "لا نفی جنس: لا + اسم نکره مفرد مبنی بر فتح بدون تنوین + خبر مرفوع (لا شَکَّ فیهِ)"),
                         goldenTechnique = "لا + اسم نکره بدون ال و بدون تنوین با فتحه = لا نفی جنس (در محل نصب)!",
                         commonMistakeTrap = "فراموش کردن این‌که وقتی «ما» به «إنَّ» بچسبد (إِنَّما)، عمل آن باطل می‌شود و بعدش مبتدا و خبر معمولی می‌آید.",
-                        targetExamYield = "۲ تست بسیار رایج در سوالات اعراب و تحلیل صرفی",
-                        targetLessonId = "lesson_arab_navasekh_rules"
+                        targetExamYield = "۲ تست بسیار رایج در سوالات اعراب و تحلیل صرفی"
                     ),
                     LearningStation(
                         id = "arab_p3_s3",
@@ -673,8 +667,7 @@ object StagedLearningPathRepository {
                         keyConcepts = listOf("اسم اشاره نزدیک (هذا، هذه، هؤُلاء) در برابر دور (ذلِکَ، تِلْکَ، أُولئِکَ)", "ترجمه اسم اشاره + ال به صورت مفرد تا قبل از خبر", "تفکیک مفرد و جمع در کلمات فریبنده (مثل: إِخْوان، قَوْم، شَعْب)"),
                         goldenTechnique = "اگر در صورت سوال ضمیر وجود نداشت ولی در گزینه‌ای ضمیر «ش/تان/شان» اضافه شده بود (یا برعکس)، فوراً خط بزن!",
                         commonMistakeTrap = "ترجمه «هذا» به «آن» یا «ذلک» به «این».",
-                        targetExamYield = "۲ تست اختصاصی رد گزینه در ۵ ثانیه",
-                        targetLessonId = "lesson_arab_pronoun_reference_tricks"
+                        targetExamYield = "۲ تست اختصاصی رد گزینه در ۵ ثانیه"
                     ),
                     LearningStation(
                         id = "arab_p4_s3",
@@ -699,8 +692,7 @@ object StagedLearningPathRepository {
                         keyConcepts = listOf("ادوات شرط (إِنْ، مَنْ، ما، إِذا): فعل شرط ماضی به صورت مضارع التزامی ترجمه می‌شود", "حرف «لَوْ»: شرط غیرواقعی در گذشته (اگر می‌رفت... هرآینه موفق می‌شد)", "اسلوب جحود (ما کانَ / لَمْ یَکُنْ ... لِـ + مضارع منصوب): کسی نبود که ... کند"),
                         goldenTechnique = "دیدن «لَوْ» = هر دو فعل باید در فارسی ماضی استمراری یا بعید باشند (نه مضارع!).",
                         commonMistakeTrap = "ترجمه افعال ماضی بعد از «إِذا» یا «إِنْ» به صورت گذشته در فارسی.",
-                        targetExamYield = "۱ الی ۲ تست بسیار رایج در کنکورهای اخیر",
-                        targetLessonId = "lesson_arab_hasr_shart_translation"
+                        targetExamYield = "۱ الی ۲ تست بسیار رایج در کنکورهای اخیر"
                     ),
                     LearningStation(
                         id = "arab_p4_s5",
@@ -712,8 +704,7 @@ object StagedLearningPathRepository {
                         keyConcepts = listOf("اسکن چشمی کلمات کلیدی صورت سوال در متن", "شناسایی ادوات علت (لِأَنَّ، بِسَبَبِ) و هدف (لِکَیْ، حَتّی)", "رد گزینه‌های مغایر با نصّ متن در سوالات «أَیُّ العباراتِ صَحیحة / غَیرُ صَحیحة»"),
                         goldenTechnique = "اول صورت سوالات درک مطلب را بخوان و زیر کلیدواژه‌ها خط بکش؛ سپس جواب را خط به خط در متن شکار کن.",
                         commonMistakeTrap = "صرف ۱۰ دقیقه برای ترجمه کامل متن پیش از دیدن سوالات!",
-                        targetExamYield = "۴ سوال ثابت درک مطلب کنکور سراسری",
-                        targetLessonId = "lesson_arab_reading_comprehension"
+                        targetExamYield = "۴ سوال ثابت درک مطلب کنکور سراسری"
                     ),
                     LearningStation(
                         id = "arab_p4_s6",
@@ -725,8 +716,7 @@ object StagedLearningPathRepository {
                         keyConcepts = listOf("مدیریت زمان ۶۰ ثانیه برای هر سوال", "ترتیب پاسخ‌دهی: ترجمه و تعریب (۷ تست در ۴ دقیقه) ➔ واژگان ➔ قواعد و تحلیل صرفی ➔ درک مطلب"),
                         goldenTechnique = "با حل ۷ تست ترجمه در ۴ دقیقه اول، ۱۶ دقیقه زمان خالص برای قواعد و درک مطلب ذخیره می‌شود.",
                         commonMistakeTrap = "بی‌دقتی به حرکات آخر کلمات در سوالات تحلیل صرفی و اعراب.",
-                        targetExamYield = "تضمین درصد بالای ۸۵٪ در عربی تخصصی کنکور ۱۴۰۶",
-                        targetLessonId = "lesson_arab_full_exam_sim"
+                        targetExamYield = "تضمین درصد بالای ۸۵٪ در عربی تخصصی کنکور ۱۴۰۶"
                     )
                 )
             )
@@ -862,8 +852,7 @@ object StagedLearningPathRepository {
                         keyConcepts = listOf("تقوا ⟵ فرقان (نیروی تشخیص حق از باطل: إِنْ تَتَّقُوا اللّهَ یَجْعَلْ لَکُمْ فُرْقاناً)", "مجاهدت در راه خدا ⟵ هدایت به راه‌های الهی", "اعراض از یاد خدا ⟵ معیشت ضنک (زندگی تنگ و سخت)"),
                         goldenTechnique = "در جملات شرطی قرآنی (إِنْ / مَنْ)، عبارت اول همیشه «علت و مقدمه» و عبارت دوم «معلول و ثمره» است.",
                         commonMistakeTrap = "جابه‌جا کردن جای علت و معلول در گزینه‌های تستی.",
-                        targetExamYield = "۲ سوال تفکیک علت و معلول و پیام آیات",
-                        targetLessonId = "lesson_dini_ayat_causality"
+                        targetExamYield = "۲ سوال تفکیک علت و معلول و پیام آیات"
                     )
                 )
             ),
@@ -910,8 +899,7 @@ object StagedLearningPathRepository {
                         keyConcepts = listOf("آیه ۲۱ سوره روم (لِتَسْکُنُوا إِلَیْها وَ جَعَلَ بَیْنَکُمْ مَوَدَّةً وَ رَحْمَةً)", "اقتصاد اسلامی: کسب حلال، حرمت ربا (جنگ با خدا)، اسراف و تبذیر", "مراتب و شرایط امر به معروف و نهی از منکر"),
                         goldenTechnique = "اسراف = زیاده‌روی بیش از حد نیاز | تبذیر = ریخت‌وپاش و اتلاف مال حتی در مقدار کم!",
                         commonMistakeTrap = "اشتباه گرفتن مفهوم اسراف با تبذیر در آیه «إِنَّ الْمُبَذِّرینَ کانُوا إِخْوانَ الشَّیاطینِ».",
-                        targetExamYield = "بخش مهمی از بارم امتحان نهایی یازدهم و دوازدهم",
-                        targetLessonId = "lesson_dini_ahkam_khanevadeh"
+                        targetExamYield = "بخش مهمی از بارم امتحان نهایی یازدهم و دوازدهم"
                     ),
                     LearningStation(
                         id = "dini_p3_s4",
@@ -923,8 +911,7 @@ object StagedLearningPathRepository {
                         keyConcepts = listOf("علل ختم نبوت (بلوغ عقلی بشر، کامل بودن قرآن و وجود امامان معصوم)", "ابعاد سه گانه مقام امامت: مرجعیت دینی، ولایت ظاهری (حکومت) و ولایت معنوی", "مسئولیت منتظران در عصر غیبت و زمینه‌سازی تمدن اسلامی"),
                         goldenTechnique = "تبیین و تفسیر وحی = مرجعیت دینی | رهبری سیاسی و اجتماعی امت = ولایت ظاهری.",
                         commonMistakeTrap = "خلط کردن وظایف شأن نبوت (دریافت وحی) با شأن امامت (تبیین و اجرای وحی).",
-                        targetExamYield = "۲ سوال تضمینی نهایی و فرهنگیان",
-                        targetLessonId = "lesson_dini_velayat_and_tamadon"
+                        targetExamYield = "۲ سوال تضمینی نهایی و فرهنگیان"
                     )
                 )
             ),
@@ -945,8 +932,7 @@ object StagedLearningPathRepository {
                         keyConcepts = listOf("تفاوت تعلیم (انتقال اطلاعات) و تربیت (شکوفاسازی استعدادهای درونی)", "عقل مطبوع (فطری) و عقل مسموع (تجرّبی و اکتسابی)", "مبارزه با تقلید کورکورانه، تعصب جاهلانه و تحمیل عقیده", "نقش احساس کرامت و شرافت نفس (الحرّية و الکرامة) در تربیت اخلاقی"),
                         goldenTechnique = "از نگاه شهید مطهری، هدف معلم نباید پر کردن انبار حافظه باشد، بلکه باید قوه اجتهاد، تجزیه و تحلیل و تفکر مستقل را در شاگرد بپروراند.",
                         commonMistakeTrap = "اشتباه گرفتن عقل مسموع با عقل مطبوع در حدیث «العقل عقلان: عقل مطبوع و عقل مسموع».",
-                        targetExamYield = "۱۰ تست مستقیم در دفترچه اختصاصی فرهنگیان",
-                        targetLessonId = "lesson_farhangian_motahari_talim"
+                        targetExamYield = "۱۰ تست مستقیم در دفترچه اختصاصی فرهنگیان"
                     ),
                     LearningStation(
                         id = "dini_p4_s2",
@@ -984,8 +970,7 @@ object StagedLearningPathRepository {
                         keyConcepts = listOf("زمان‌بندی: ۱۵ دقیقه برای ۲۰ تست تعلیم و تربیت + ۴۵ دقیقه برای ۲۰ تست هوش معلمی", "آمادگی مصاحبه تخصصی و کانون ارزیابی دانشگاه فرهنگیان"),
                         goldenTechnique = "شروع دفترچه فرهنگیان با ۲۰ سوال تعلیم و تربیت اسلامی، روحیه و ذخیره زمانی عالی برای سوالات تحلیلی هوش ایجاد می‌کند.",
                         commonMistakeTrap = "گیر کردن روی سوالات وقت‌گیر هوش در ابتدای جلسه و نرسیدن به سوالات ساده معارف در انتهای دفترچه.",
-                        targetExamYield = "تضمین دعوت به مصاحبه و قبولی نهایی دانشگاه فرهنگیان",
-                        targetLessonId = "lesson_farhangian_full_exam_sim"
+                        targetExamYield = "تضمین دعوت به مصاحبه و قبولی نهایی دانشگاه فرهنگیان"
                     )
                 )
             )
@@ -1045,8 +1030,7 @@ object StagedLearningPathRepository {
                         ),
                         goldenTechnique = "پاداش و محیط = رفتاری | ناهشیار و کودکی = روان‌تحلیلی | پردازش ذهن و باور = شناختی | خودشکوفایی = انسان‌گرایی.",
                         commonMistakeTrap = "خلط کردن مکتب کنش‌گرایی (ویلیام جیمز: سازگاری ذهن با محیط) با ساخت‌گرایی (وونت: تجزیه عناصر هشیاری با درون‌نگری).",
-                        targetExamYield = "۱ الی ۲ تست ثابت در کنکور سراسری",
-                        targetLessonId = "lesson_psych_approaches"
+                        targetExamYield = "۱ الی ۲ تست ثابت در کنکور سراسری"
                     ),
                     LearningStation(
                         id = "psy_p1_s3",
@@ -1125,8 +1109,7 @@ object StagedLearningPathRepository {
                         ),
                         goldenTechnique = "جدول ۲×۲ بامریند: کنترل بالا + محبت بالا = مقتدرانه | کنترل بالا + محبت کم = مستبدانه!",
                         commonMistakeTrap = "اشتباه گرفتن واژه «مقتدرانه (مطلوب)» با «مستبدانه (نامطلوب)» در صورت سوالات.",
-                        targetExamYield = "۲ تست کاربردی در کنکور و آزمون فرهنگیان",
-                        targetLessonId = "lesson_psych_parenting_adolescence"
+                        targetExamYield = "۲ تست کاربردی در کنکور و آزمون فرهنگیان"
                     )
                 )
             ),
@@ -1283,8 +1266,7 @@ object StagedLearningPathRepository {
                         ),
                         goldenTechnique = "روان‌شناسی سریع‌ترین درس دفترچه ۱ پس از جامعه‌شناسی است؛ با تسلط بر کلیدواژه‌ها در ۸ دقیقه ۱۰۰٪ زده می‌شود.",
                         commonMistakeTrap = "بی‌توجهی به فعل آخر صورت سوال (می‌تواند / نمی‌تواند).",
-                        targetExamYield = "تضمین درصد ۹۰ تا ۱۰۰٪ در روان‌شناسی کنکور ۱۴۰۶",
-                        targetLessonId = "lesson_psych_full_sim"
+                        targetExamYield = "تضمین درصد ۹۰ تا ۱۰۰٪ در روان‌شناسی کنکور ۱۴۰۶"
                     )
                 )
             )
@@ -1405,8 +1387,7 @@ object StagedLearningPathRepository {
                         ),
                         goldenTechnique = "خرده‌فرهنگِ مخالف با اصول جامعه = ضدفرهنگ | فاصله بین ادعا و عمل مردم = شکاف فرهنگ آرمانی و واقعی!",
                         commonMistakeTrap = "یکسان دانستن «هرگونه تفاوت فرهنگی» با «ضدفرهنگ» (تفاوت شغلی و محلی خرده‌فرهنگ مثبت است).",
-                        targetExamYield = "۲ تست ثابت در کنکور سراسری",
-                        targetLessonId = "lesson_soc_culture_ideal_real"
+                        targetExamYield = "۲ تست ثابت در کنکور سراسری"
                     ),
                     LearningStation(
                         id = "soc_p2_s2",
@@ -1583,8 +1564,7 @@ object StagedLearningPathRepository {
                         ),
                         goldenTechnique = "کالایی شدن اوقات فراغت و استانداردسازی سلیقه‌ها توسط رسانه‌ها = مفهوم «صنعت فرهنگ» در مکتب فرانکفورت!",
                         commonMistakeTrap = "نادیده گرفتن نقش فعال کنشگران در مقاومت فرهنگی در برابر بمباران رسانه‌ای.",
-                        targetExamYield = "۱ تست مفهومی از فصل‌های پایانی دوازدهم",
-                        targetLessonId = "lesson_soc_leisure_consumption"
+                        targetExamYield = "۱ تست مفهومی از فصل‌های پایانی دوازدهم"
                     ),
                     LearningStation(
                         id = "soc_p4_s4",
@@ -1616,8 +1596,7 @@ object StagedLearningPathRepository {
                         ),
                         goldenTechnique = "بیش از ۴۰٪ سوالات جامعه‌شناسی کنکور مستقیماً با تشخیص ۳ رویکرد (تبیینی/تفسیری/انتقادی) و لایه‌های فرهنگ حل می‌شوند.",
                         commonMistakeTrap = "خلط کردن دیدگاه خودِ کتاب درسی (رویکرد اسلامی) با دیدگاه جامعه‌شناسی انتقادی در تست‌های چندگزاره‌ای.",
-                        targetExamYield = "تضمین درصد بالای ۹۰٪ در جامعه‌شناسی کنکور ۱۴۰۶ و نمره ۲۰ امتحان نهایی",
-                        targetLessonId = "lesson_soc_full_exam_sim"
+                        targetExamYield = "تضمین درصد بالای ۹۰٪ در جامعه‌شناسی کنکور ۱۴۰۶ و نمره ۲۰ امتحان نهایی"
                     )
                 )
             )

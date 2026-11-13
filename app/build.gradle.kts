@@ -17,14 +17,14 @@ android {
     applicationId = "com.aistudio.konkoorensani.fhkzqp"
     minSdk = 24
     versionCode = (System.getenv("BUILD_NUMBER")?.toIntOrNull() ?: 15)
-    versionName = "3.6"
+    versionName = "4.0"
     resourceConfigurations += setOf("fa", "en")
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
 
   base {
-    archivesName.set("Sefr_Ta_Farhangian_v3.6")
+    archivesName.set("Sefr_Ta_Farhangian_v4.0")
   }
 
   // Do not remove or modify these signingConfigs. They are necessary for building, installing,
@@ -115,6 +115,13 @@ googleServices { missingGoogleServicesStrategy = MissingGoogleServicesStrategy.W
 ksp {
   arg("room.schemaLocation", "$projectDir/schemas")
 }
+
+// kspDebugKotlin and kspReleaseKotlin both read/write the same Room schema JSON in
+// app/schemas; when Gradle runs them in parallel one can read a half-written file
+// ("JsonDecodingException: Expected start of the object '{', but had 'EOF'").
+// Serialize the KSP tasks so the schema file is never read mid-write.
+tasks.matching { it.name == "kspReleaseKotlin" }.configureEach { mustRunAfter("kspDebugKotlin") }
+tasks.matching { it.name == "kspDebugUnitTestKotlin" }.configureEach { mustRunAfter("kspDebugKotlin", "kspReleaseKotlin") }
 
 dependencies {
   implementation(platform(libs.androidx.compose.bom))

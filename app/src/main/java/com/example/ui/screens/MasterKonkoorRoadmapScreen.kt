@@ -1469,7 +1469,7 @@ private fun buildChronologicalRoadmapSteps(): List<RoadmapStepItem> = listOf(
         subjectName = "عروض و قافیه",
         whyFirst = "عروض ۴۰٪ نمره علوم و فنون کنکور است. اگر هجای کوتاه (U) و بلند (—) را یاد نگیری، در تمام سال‌های دهم تا دوازدهم در تست وزن گیر می‌کنی.",
         whatToMaster = "• بخش کردن کلمات مثل کلاس اول دبستان\n• تشخیص مصوت کوتاه (ـَـِـُ) و بلند (آ، او، ای)\n• علامت‌گذاری هجاها (U و —) بدون نیاز به گوش موسیقی",
-        targetLessonId = "arooz_00_zero_syllable_chopper_khodemoni",
+        targetLessonId = "arooz_10_ch1_syllables_and_script",
         hasLab = true,
         durationRecommendation = "زمان پیشنهادی: ۴ روز (روزی ۱ ساعت)",
         trapAlert = "سعی نکن با آواز خواندن وزن را پیدا کنی؛ فقط حروف را بشمار و علامت هجا بگذار!"
@@ -1485,7 +1485,7 @@ private fun buildChronologicalRoadmapSteps(): List<RoadmapStepItem> = listOf(
         subjectName = "ریاضی و آمار انسانی",
         whyFirst = "ریاضی انسانی بسیار ساده است؛ داوطلبان فقط به خاطر اشتباه در علامت منفی (- در - می‌شود +) و جمع کسرها صفر می‌زنند!",
         whatToMaster = "• ضرب علامت‌ها و اولویت پرانتز و توان\n• جمع و تفریق کسرها با مخرج مشترک سریع\n• حل معادله درجه ۱ (معلوم‌ها یک طرف، مجهول‌ها طرف دیگر)",
-        targetLessonId = "math_00_table_division_zero_to_hero",
+        targetLessonId = "math_00_elementary_school",
         hasLab = false,
         durationRecommendation = "زمان پیشنهادی: ۴ روز (روزی ۱ ساعت)",
         trapAlert = "فرار از ریاضی بزرگ‌ترین اشتباه است؛ با زدن فقط ۴ تست ریاضی ترازت ۲۵۰۰ تا بالا می‌پرد!"
@@ -1501,7 +1501,7 @@ private fun buildChronologicalRoadmapSteps(): List<RoadmapStepItem> = listOf(
         subjectName = "منطق جامع دهم",
         whyFirst = "منطق پایه و الفبای فلسفه است. اگر تصور و تصدیق و شروط تعریف را یاد نگیری، فلسفه یازدهم و دوازدهم برایت غیرقابل فهم می‌شود.",
         whatToMaster = "• تفاوت تصور (یک کلمه یا ترکیب بدون حکم) و تصدیق (جمله کامل با فعل است/نیست)\n• ۴ شرط تعریف درست: جامع بودن، مانع بودن، واضح‌تر بودن و دوری نبودن",
-        targetLessonId = "phil_00_logic_zero_gift_box",
+        targetLessonId = "phil_00_khodemoni_logic_10_complete",
         hasLab = false,
         durationRecommendation = "زمان پیشنهادی: ۳ روز (روزی ۱ ساعت)",
         trapAlert = "حفظ کردن تعاریف منطقی بدون مثال‌های روزمره باعث فراموشی در هفته بعد می‌شود."
@@ -1517,7 +1517,7 @@ private fun buildChronologicalRoadmapSteps(): List<RoadmapStepItem> = listOf(
         subjectName = "تاریخ جامع انسانی",
         whyFirst = "تاریخ حفظ کردن سال‌ها نیست! اگر توالی سلسله‌ها (ماد -> هخامنشی -> سلوکی -> اشکانی -> ساسانی -> طاهریان تا قاجار) را بدانی، سوالات توالی رو هوا حل می‌شوند.",
         whatToMaster = "• ترتیب زمانی ظهور و سقوط سلسله‌های ایران باستان و بعد از اسلام\n• مهم‌ترین پادشاه و پایتخت هر دوره با رمزهای داستان‌وار",
-        targetLessonId = "history_00_timeline_mastery",
+        targetLessonId = "hist_00_elementary_to_9th_zero",
         hasLab = false,
         durationRecommendation = "زمان پیشنهادی: ۳ روز (روزی ۱ ساعت)",
         trapAlert = "حفظ کردن تک‌تک تاریخ‌ها به جای دیدن نقشه زنجیره‌ای و خط زمان."
@@ -1647,7 +1647,7 @@ private fun buildChronologicalRoadmapSteps(): List<RoadmapStepItem> = listOf(
         stepTitle = "بسته هوش و استعداد معلمی: درک متن، استدلال تحلیلی، تجسم فضایی و روابط منطقی",
         subjectId = "farhangian",
         subjectName = "آزمون پذیرش دانشگاه فرهنگیان",
-        whyFirst = "دفترچه ویژه فرهنگیان ۵۰٪ تراز قبولی تربیت معلم است و ضریب فوق‌العاده بالایی دارد؛ سوالات آن مهارتی هستند نه حفظی.",
+        whyFirst = "آمادگی ویژه فرهنگیان (مهارت معلمی و دینی) برای مصاحبه و گزینش لازم است — در قاعده ۱۴۰۶ نمره کل = ۶۰٪ سوابق + ۴۰٪ کنکور و مصاحبه شرط قبولی است؛ سوالات آن مهارتی هستند نه حفظی.",
         whatToMaster = "• تکنیک اسکن سریع پاراگراف برای پاسخ به سوالات درک مطلب\n• جدول استدلال تحلیلی و چیدمان منطقی داده‌ها\n• تقارن، دوران اشکال هندسی و الگوهای عددی",
         targetLessonId = null,
         hasLab = false,
@@ -1814,7 +1814,7 @@ private fun buildAllDiagnosticTroubles(): List<DiagnosticTroubleItem> = listOf(
         rootCause = "فکر می‌کنی عروض یعنی آواز خواندن؛ در حالی که عروض فقط بخش کردن کلمات مثل کلاس اول دبستان است!",
         missingPrerequisite = "درس تقطیع هجایی از کلاس اول دبستان: صامت و مصوت کوتاه و بلند",
         quickFiveMinuteCure = "شعر را بخوان و برای هر هجا علامت بگذار: اگر مصوت کوتاه (ـَـِـُ) داشت ⬅️ علامت کوتاه (U)؛ اگر مصوت بلند (آ، او، ای) یا حرف بی‌صدا داشت ⬅️ علامت بلند (—). تمام!",
-        targetLessonId = "arooz_00_zero_syllable_chopper_khodemoni",
+        targetLessonId = "arooz_10_ch1_syllables_and_script",
         targetLabTab = true,
         badgeColor = SubjectAroozColor
     ),
@@ -1838,7 +1838,7 @@ private fun buildAllDiagnosticTroubles(): List<DiagnosticTroubleItem> = listOf(
         rootCause = "از دوره راهنمایی مفهوم ضرب علامت‌ها و پرانتز را تجسم نکرده‌ای.",
         missingPrerequisite = "درس ۰ و ۱ ریاضی انسانی: جدول ضرب مکمل ۱۰، تقسیم پیتزایی و جمع کسرها",
         quickFiveMinuteCure = "قاعده دوستانه: دوستِ دوستم = دوستم (+ در + = +) | دشمنِ دشمنم = دوستم (- در - = +) | دشمنِ دوستم = دشمنم (- در + = -). پرانتز همیشه اولویت اول است!",
-        targetLessonId = "math_00_table_division_zero_to_hero",
+        targetLessonId = "math_00_elementary_school",
         targetLabTab = false,
         badgeColor = SubjectMathColor
     ),
@@ -1862,7 +1862,7 @@ private fun buildAllDiagnosticTroubles(): List<DiagnosticTroubleItem> = listOf(
         rootCause = "مربع تقابل را به صورت تصویری روی کاغذ نکشیده‌ای و حفظی فکر می‌کنی.",
         missingPrerequisite = "درس ۵ و ۶ منطق دهم: جعبه کادو و مربع تقابل رنگی",
         quickFiveMinuteCure = "یک مربع بکش: گوشه بالا چپ = هر الف ب است (موجبه کلی) | قطر روبرو = بعضی الف ب نیست (سالبه جزئی). قطرها همیشه با هم «متناقض» هستند (یکی راست، آن یکی حتماً دروغ)!",
-        targetLessonId = "phil_00_logic_zero_gift_box",
+        targetLessonId = "phil_00_khodemoni_logic_10_complete",
         targetLabTab = false,
         badgeColor = Color(0xFF6366F1)
     ),
@@ -1898,7 +1898,7 @@ private fun buildAllDiagnosticTroubles(): List<DiagnosticTroubleItem> = listOf(
         rootCause = "مطالب را جدا از هم حفظ می‌کنی به جای اینکه زنجیره خط زمان را به عنوان یک قصه دنبال کنی.",
         missingPrerequisite = "درس تاریخ جامع: خط زمان مصور پادشاهان و سلسله‌های ایران",
         quickFiveMinuteCure = "رمز ۵ سلسله باستان: «مهشس» (ماد ⬅️ هخامنشی ⬅️ سلوکی ⬅️ اشکانی ⬅️ ساسانی). با همین ۱ رمز ۳ تست توالی کنکور را در ۳ ثانیه می‌زنی!",
-        targetLessonId = "history_00_timeline_mastery",
+        targetLessonId = "hist_00_elementary_to_9th_zero",
         targetLabTab = false,
         badgeColor = Color(0xFFD97706)
     ),
@@ -2389,7 +2389,7 @@ private fun buildRoadmapPrerequisiteTree(): List<RoadmapPrerequisiteNode> = list
         subjectTitle = "عروض و فنون",
         badgeColor = SubjectAroozColor,
         conceptSummary = "تقطیع هجایی از کلاس اول دبستان (U و —) بدون نیاز به خواندن آواز",
-        targetLessonId = "arooz_00_zero_syllable_chopper_khodemoni",
+        targetLessonId = "arooz_10_ch1_syllables_and_script",
         hasLab = true,
         children = listOf(
             RoadmapPrerequisiteNode(
@@ -2415,7 +2415,7 @@ private fun buildRoadmapPrerequisiteTree(): List<RoadmapPrerequisiteNode> = list
         subjectTitle = "ریاضی انسانی",
         badgeColor = SubjectMathColor,
         conceptSummary = "جدول ضرب مکمل ۱۰، تقسیم پیتزایی، ضرب علامت‌های منفی و اولویت پرانتزها",
-        targetLessonId = "math_00_table_division_zero_to_hero",
+        targetLessonId = "math_00_elementary_school",
         hasLab = false,
         children = listOf(
             RoadmapPrerequisiteNode(
@@ -2452,7 +2452,7 @@ private fun buildRoadmapPrerequisiteTree(): List<RoadmapPrerequisiteNode> = list
         subjectTitle = "فلسفه و منطق",
         badgeColor = SubjectPhilosophyColor,
         conceptSummary = "تصور و تصدیق، کلیات خمس، ۴ شرط تعریف درست و مربع تقابل",
-        targetLessonId = "phil_00_logic_zero_gift_box",
+        targetLessonId = "phil_00_khodemoni_logic_10_complete",
         hasLab = false,
         children = listOf(
             RoadmapPrerequisiteNode(
@@ -2478,7 +2478,7 @@ private fun buildRoadmapPrerequisiteTree(): List<RoadmapPrerequisiteNode> = list
         subjectTitle = "تاریخ و جغرافیا",
         badgeColor = Color(0xFFD97706),
         conceptSummary = "خط زمان مصور سلسله‌های ایران باستان (رمز «مهشس») و تاریخ اسلام و معاصر",
-        targetLessonId = "history_00_timeline_mastery",
+        targetLessonId = "hist_00_elementary_to_9th_zero",
         hasLab = false
     ),
 

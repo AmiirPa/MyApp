@@ -562,6 +562,18 @@ object LessonLogos1406 {
             "fonoon_10_ch2_badi_tarsee_movazeneh" -> return Icons.Default.AutoStories
             "fonoon_10_ch3_tashbih_majaz_10" -> return Icons.Default.AutoStories
             "fonoon_10_lesson10_sade5_6" -> return Icons.Default.HistoryEdu
+            "fon1-01-mabani-tahlil-matn" -> return Icons.Default.AutoStories
+            "fon1-02-sazeha-avamel-sher" -> return Icons.Default.AutoStories
+            "fon1-03-vajarayi-vazhearayi" -> return Icons.Default.AutoStories
+            "fon1-04-tarikh-adabiat-pish-az-eslam" -> return Icons.Default.HistoryEdu
+            "fon1-05-hamahangi-pareha-kalam" -> return Icons.Default.AutoStories
+            "fon1-06-saj-anvae" -> return Icons.Default.AutoStories
+            "fon1-07-sabk-khorasani" -> return Icons.Default.HistoryEdu
+            "fon1-08-vazn-sher-farsi" -> return Icons.Default.AutoStories
+            "fon1-09-movazene-tarsi" -> return Icons.Default.AutoStories
+            "fon1-10-sadehaye-5-6" -> return Icons.Default.HistoryEdu
+            "fon1-11-ghafieh" -> return Icons.Default.AutoStories
+            "fon1-12-jenas-anvae" -> return Icons.Default.AutoStories
             "fonoon_11_ch1_history_eraqi" -> return Icons.Default.HistoryEdu
             "fonoon_11_ch2_tashbih_types" -> return Icons.Default.AutoStories
             "fonoon_11_ch3_estearah_majaz_kenayeh" -> return Icons.Default.AutoStories
