@@ -57,6 +57,8 @@ fun TodayScreen(viewModel: KonkoorViewModel, uiState: KonkoorUiState, nav: CalmN
             }
         )
 
+        Spacer(Modifier.height(8.dp))
+        CalmHeroIllustration()
         Spacer(Modifier.height(12.dp))
 
         // ── کارت بزرگ درس بعدی ──
