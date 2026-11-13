@@ -55,13 +55,13 @@ jobs:
         run: |
           chmod +x gradlew
           ./gradlew testDebugUnitTest assembleRelease --no-daemon -Djava.awt.headless=true -Dorg.gradle.jvmargs="-Xmx3072m -XX:MaxMetaspaceSize=1024m -Djava.awt.headless=true"
-          cp app/build/outputs/apk/release/Sefr_Ta_Farhangian_v3.6-release.apk app/build/outputs/apk/release/Sefr_Ta_Farhangian_v3.6.apk
+          cp app/build/outputs/apk/release/Sefr_Ta_Farhangian_v4.0-release.apk app/build/outputs/apk/release/Sefr_Ta_Farhangian_v4.0.apk
 
       - name: Upload Official Release APK
         uses: actions/upload-artifact@v4
         with:
-          name: Sefr_Ta_Farhangian_v3.6
-          path: app/build/outputs/apk/release/Sefr_Ta_Farhangian_v3.6.apk
+          name: Sefr_Ta_Farhangian_v4.0
+          path: app/build/outputs/apk/release/Sefr_Ta_Farhangian_v4.0.apk
           if-no-files-found: error
           retention-days: 90
 
@@ -70,16 +70,16 @@ jobs:
         uses: softprops/action-gh-release@v2
         if: github.ref == 'refs/heads/main'
         with:
-          tag_name: v3.6-b${{ github.run_number }}
+          tag_name: v4.0-b${{ github.run_number }}
           name: "نسخه رسمی ۳.۶ صفر تا فرهنگیان (بیلد ${{ github.run_number }})"
           body: |
             فایل نصب رسمی و نهایی اپلیکیشن صفر تا فرهنگیان و کنکور انسانی ۱۴۰۶.
 
             - خروجی APK نسخه رسمی (Release)
-            - نام فایل: Sefr_Ta_Farhangian_v3.6.apk
+            - نام فایل: Sefr_Ta_Farhangian_v4.0.apk
             - ساخته‌شده پس از اجرای موفق ۱۰۰٪ تست‌های واحد
             - طراحی Material 3 Expressive و آیکون اختصاصی جدید
-          files: app/build/outputs/apk/release/Sefr_Ta_Farhangian_v3.6.apk
+          files: app/build/outputs/apk/release/Sefr_Ta_Farhangian_v4.0.apk
           prerelease: false
           make_latest: true
         env:

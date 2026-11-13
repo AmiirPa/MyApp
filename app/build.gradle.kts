@@ -17,14 +17,14 @@ android {
     applicationId = "com.aistudio.konkoorensani.fhkzqp"
     minSdk = 24
     versionCode = (System.getenv("BUILD_NUMBER")?.toIntOrNull() ?: 15)
-    versionName = "3.6"
+    versionName = "4.0"
     resourceConfigurations += setOf("fa", "en")
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
 
   base {
-    archivesName.set("Sefr_Ta_Farhangian_v3.6")
+    archivesName.set("Sefr_Ta_Farhangian_v4.0")
   }
 
   // Do not remove or modify these signingConfigs. They are necessary for building, installing,
