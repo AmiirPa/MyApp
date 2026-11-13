@@ -59,6 +59,7 @@ import com.example.data.curriculum.SubjectCatalog
 import com.example.data.curriculum.WorkedExample
 import com.example.data.curriculum.ZeroLesson
 import com.example.data.curriculum.ZeroStep
+import com.example.data.curriculum.getPrerequisiteLinks
 import com.example.data.curriculum.normalizedSubjectId
 import com.example.ui.KonkoorUiState
 import com.example.ui.KonkoorViewModel
