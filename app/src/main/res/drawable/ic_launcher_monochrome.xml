@@ -4,23 +4,12 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-
-    <!-- Crown at top of emblem -->
+    <!-- solid white open-book silhouette: the themed/dynamic layer.
+         The system tints this to match dark/light mode. -->
     <path
         android:fillColor="#FFFFFFFF"
-        android:pathData="M54,24 L61,36 L72,29 L67,44 L41,44 L36,29 L47,36 Z" />
-
-    <!-- Fountain Pen Nib in center -->
+        android:pathData="M54,38 Q38,35 22,38 L22,68 Q38,65 54,68 Z" />
     <path
         android:fillColor="#FFFFFFFF"
-        android:pathData="M48,46 L60,46 L64,58 L54,76 L44,58 Z" />
-
-    <!-- Open Book Shield Wings -->
-    <path
-        android:fillColor="#00000000"
-        android:strokeColor="#FFFFFFFF"
-        android:strokeWidth="3.5"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:pathData="M32,48 L32,72 L54,82 L76,72 L76,48 M37,45 L37,68 L54,76 L71,68 L71,45" />
+        android:pathData="M54,38 Q70,35 86,38 L86,68 Q70,65 54,68 Z" />
 </vector>
