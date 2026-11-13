@@ -35,6 +35,7 @@ fun CalmHeroIllustration(modifier: Modifier = Modifier) {
     val primary = MaterialTheme.colorScheme.primary
     val tertiary = MaterialTheme.colorScheme.tertiary
     val surface = MaterialTheme.colorScheme.surfaceVariant
+    val reduceMotion = com.example.ui.theme.LocalAppThemeController.current.reduceMotionEnabled
     val t = rememberInfiniteTransition(label = "hero")
     val phase by t.animateFloat(
         initialValue = 0f, targetValue = 1f,
@@ -46,6 +47,9 @@ fun CalmHeroIllustration(modifier: Modifier = Modifier) {
         animationSpec = infiniteRepeatable(tween(4200), RepeatMode.Reverse),
         label = "draw"
     )
+    // کاهش حرکت روشن باشد: قاب ثابت وسط انیمیشن، بدون حرکت مداوم.
+    val staticPhase = if (reduceMotion) 0.5f else phase
+    val staticDraw = if (reduceMotion) 1f else draw
 
     Canvas(
         modifier = modifier
@@ -66,7 +70,7 @@ fun CalmHeroIllustration(modifier: Modifier = Modifier) {
             p.lineTo(0f, base)
             var x = 0f
             while (x <= w) {
-                val y = base + sin((x / w * 2 * PI + phase * 2 * PI + layer).toFloat()) * h * 0.05f
+                val y = base + sin((x / w * 2 * PI + staticPhase * 2 * PI + layer).toFloat()) * h * 0.05f
                 p.lineTo(x, y); x += 8f
             }
             p.lineTo(w, h); p.close()
@@ -82,14 +86,14 @@ fun CalmHeroIllustration(modifier: Modifier = Modifier) {
         drawPath(
             trail, primary.copy(alpha = 0.9f),
             style = Stroke(width = 4f, pathEffect = androidx.compose.ui.graphics.PathEffect.dashPathEffect(
-                floatArrayOf(18f, 12f), phase = -phase * 120f))
+                floatArrayOf(18f, 12f), phase = -staticPhase * 120f))
         )
         // پرچم مقصد
         val fx = w * 0.88f; val fy = h * 0.18f
         drawLine(primary, Offset(fx, fy), Offset(fx, fy - h * 0.16f), strokeWidth = 4f)
         val flag = Path().apply {
             moveTo(fx, fy - h * 0.16f)
-            lineTo(fx + w * 0.06f * (0.8f + 0.2f * draw), fy - h * 0.12f)
+            lineTo(fx + w * 0.06f * (0.8f + 0.2f * staticDraw), fy - h * 0.12f)
             lineTo(fx, fy - h * 0.08f); close()
         }
         drawPath(flag, tertiary)
@@ -108,7 +112,7 @@ fun CalmHeroIllustration(modifier: Modifier = Modifier) {
         drawPath(right, Color.White.copy(alpha = 0.85f))
         drawPath(left, primary, style = Stroke(3f))
         drawPath(right, primary, style = Stroke(3f))
-        val turn = bx + bw * (1f - 2f * draw)
+        val turn = bx + bw * (1f - 2f * staticDraw)
         drawLine(tertiary, Offset(bx, by), Offset(turn, by + bh * 0.05f), strokeWidth = 3f)
         for (i in 1..3) {
             val ly = by + bh * i / 4.2f
@@ -119,7 +123,7 @@ fun CalmHeroIllustration(modifier: Modifier = Modifier) {
         // ستاره‌های چشمک‌زن با فاز متفاوت
         val stars = listOf(0.42f to 0.18f, 0.62f to 0.12f, 0.33f to 0.3f, 0.72f to 0.36f, 0.52f to 0.26f)
         stars.forEachIndexed { i, (sx, sy) ->
-            val a = 0.35f + 0.65f * ((sin((phase * 2 * PI + i * 1.3).toFloat()) + 1f) / 2f)
+            val a = 0.35f + 0.65f * ((sin((staticPhase * 2 * PI + i * 1.3).toFloat()) + 1f) / 2f)
             val c = Offset(w * sx, h * sy); val r = 5f + i
             drawLine(tertiary.copy(alpha = a), c - Offset(r, 0f), c + Offset(r, 0f), 2.5f)
             drawLine(tertiary.copy(alpha = a), c - Offset(0f, r), c + Offset(0f, r), 2.5f)

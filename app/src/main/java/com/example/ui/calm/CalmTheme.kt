@@ -119,14 +119,21 @@ private fun calmTypography(
     fontFamily: androidx.compose.ui.text.font.FontFamily,
     fontScale: Float,
     lineSpacingScale: Float,
-    boldAll: Boolean
+    fontWeightLevel: Int
 ): Typography {
     fun s(size: Int, line: Int, w: FontWeight = FontWeight.Normal): TextStyle {
-        val weight = if (boldAll) when (w) {
-            FontWeight.Normal -> FontWeight.Medium
-            FontWeight.Medium -> FontWeight.Bold
-            else -> FontWeight.Bold
-        } else w
+        val weight = when (fontWeightLevel) {
+            1 -> when (w) {
+                FontWeight.Normal -> FontWeight.Medium
+                else -> w
+            }
+            2 -> when (w) {
+                FontWeight.Normal -> FontWeight.Medium
+                FontWeight.Medium -> FontWeight.Bold
+                else -> FontWeight.Bold
+            }
+            else -> w
+        }
         return TextStyle(
             fontFamily = fontFamily,
             fontSize = (size * fontScale).sp,
@@ -237,13 +244,13 @@ fun CalmTheme(content: @Composable () -> Unit) {
         ?: controller.selectedFontPreset.toFontFamily()
     val typography = remember(
         fontFamily, controller.fontScale, controller.lineSpacingScale,
-        controller.isBoldTextEnabled, controller.fontRevision
+        controller.fontWeightLevel, controller.fontRevision
     ) {
         calmTypography(
             fontFamily = fontFamily,
             fontScale = controller.fontScale,
             lineSpacingScale = controller.lineSpacingScale,
-            boldAll = controller.isBoldTextEnabled
+            fontWeightLevel = controller.fontWeightLevel
         )
     }
 

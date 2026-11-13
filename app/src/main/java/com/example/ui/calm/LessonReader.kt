@@ -10,6 +10,7 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -48,6 +49,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
@@ -63,6 +65,7 @@ import com.example.ui.KonkoorViewModel
 import com.example.ui.components.BidiFormatter
 import com.example.ui.components.LessonInteractiveVisualCard
 import com.example.ui.components.SmartDiagramAndFormulaBlock
+import com.example.ui.theme.LocalAppThemeController
 
 /** هر بخش درس فقط یک ایده است. */
 private sealed interface LessonSection {
@@ -105,6 +108,9 @@ fun LessonReaderScreen(lessonId: String, viewModel: KonkoorViewModel, uiState: K
     var chosenOption by remember(lesson.id) { mutableIntStateOf(-1) }
 
     val prefs = LocalCalmPrefs.current
+    val prerequisiteLinks = remember(lesson.id, uiState.allLessons) {
+        runCatching { lesson.getPrerequisiteLinks(uiState.allLessons) }.getOrDefault(emptyList())
+    }
     val lessonById = remember(uiState.allLessons) { uiState.allLessons.associateBy { it.id } }
     val path = remember(prefs.startStage, uiState.allLessons, uiState.lessonProgressMap) {
         buildPathState(prefs.startStage, uiState.allLessons, lessonById, uiState.lessonProgressMap)
@@ -150,14 +156,19 @@ fun LessonReaderScreen(lessonId: String, viewModel: KonkoorViewModel, uiState: K
 
         // ── متن بخش ──
         Box(modifier = Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
+            val reduceMotion = LocalAppThemeController.current.reduceMotionEnabled
             AnimatedContent(
                 targetState = if (finished) -1 else index,
                 transitionSpec = {
-                    val forward = targetState == -1 || targetState > initialState
-                    if (forward) {
-                        (slideInHorizontally(tween(240)) { -it / 8 } + fadeIn(tween(240))) togetherWith fadeOut(tween(150))
+                    if (reduceMotion) {
+                        fadeIn(tween(0)) togetherWith fadeOut(tween(0))
                     } else {
-                        (slideInHorizontally(tween(240)) { it / 8 } + fadeIn(tween(240))) togetherWith fadeOut(tween(150))
+                        val forward = targetState == -1 || targetState > initialState
+                        if (forward) {
+                            (slideInHorizontally(tween(240)) { -it / 8 } + fadeIn(tween(240))) togetherWith fadeOut(tween(150))
+                        } else {
+                            (slideInHorizontally(tween(240)) { it / 8 } + fadeIn(tween(240))) togetherWith fadeOut(tween(150))
+                        }
                     }
                 },
                 label = "lessonSection"
@@ -173,7 +184,12 @@ fun LessonReaderScreen(lessonId: String, viewModel: KonkoorViewModel, uiState: K
                         FinishedSection(nextLesson, onNext = { n -> nav.openLesson(n.id) }, onBack = { nav.pop() })
                     } else {
                         when (val s = sections[i]) {
-                            LessonSection.Intro -> IntroSection(lesson, sections.size)
+                            LessonSection.Intro -> IntroSection(
+                                lesson,
+                                sections.size,
+                                prerequisiteLinks = prerequisiteLinks,
+                                onOpenLesson = { id -> nav.openLesson(id) }
+                            )
                             is LessonSection.Step -> StepSection(lesson, s, accent)
                             is LessonSection.Example -> ExampleSection(s, accent)
                             is LessonSection.Summary -> SummarySection(s)
@@ -224,9 +240,11 @@ fun LessonReaderScreen(lessonId: String, viewModel: KonkoorViewModel, uiState: K
 @Composable
 private fun readingStyle(): androidx.compose.ui.text.TextStyle {
     val scale = LocalCalmPrefs.current.readingScale
-    return MaterialTheme.typography.bodyLarge.copy(
-        fontSize = (18f * scale).sp,
-        lineHeight = (34f * scale).sp,
+    val controller = LocalAppThemeController.current
+    val base = MaterialTheme.typography.bodyLarge
+    return base.copy(
+        fontSize = (18f * controller.fontScale * scale).sp,
+        lineHeight = (34f * controller.fontScale * scale * controller.lineSpacingScale).sp,
         textDirection = TextDirection.Content
     )
 }
@@ -239,7 +257,15 @@ fun ReadingText(raw: String, accent: Color = MaterialTheme.colorScheme.primary) 
     val paragraphs = remember(raw) { raw.trim().split(Regex("\\n\\s*\\n")).map { it.trim() }.filter { it.isNotEmpty() } }
     val style = readingStyle()
     val onSurface = MaterialTheme.colorScheme.onSurface
-    Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+    val controller = LocalAppThemeController.current
+    val paragraphSpacing = controller.textVerticalSpacingDp.dp
+    val textAlign = when (controller.textAlignmentPreset) {
+        com.example.ui.theme.TextAlignmentPreset.RIGHT -> TextAlign.Right
+        com.example.ui.theme.TextAlignmentPreset.CENTER -> TextAlign.Center
+        com.example.ui.theme.TextAlignmentPreset.LEFT -> TextAlign.Left
+        else -> TextAlign.Start
+    }
+    Column(verticalArrangement = Arrangement.spacedBy(paragraphSpacing)) {
         paragraphs.forEach { p ->
             if (p.any { it in BoxChars }) {
                 SmartDiagramAndFormulaBlock(rawText = p, accentColor = accent)
@@ -251,33 +277,50 @@ fun ReadingText(raw: String, accent: Color = MaterialTheme.colorScheme.primary) 
                     text = emphasize(formatted, accent),
                     style = style,
                     color = onSurface,
-                    textAlign = TextAlign.Start
+                    textAlign = textAlign
                 )
             }
         }
     }
 }
 
-/** **پررنگ** و «کلیدواژه» را آرام برجسته می‌کند؛ بقیه دست‌نخورده. */
-private fun emphasize(text: String, accent: Color): AnnotatedString = buildAnnotatedString {
-    var i = 0
-    while (i < text.length) {
-        when {
-            text.startsWith("**", i) -> {
-                val end = text.indexOf("**", i + 2)
-                if (end > i + 2) {
-                    withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append(text.substring(i + 2, end)) }
-                    i = end + 2
-                } else { append("**"); i += 2 }
+/** **پررنگ** و «کلیدواژه» را آرام برجسته می‌کند؛ بقیه دست‌نخورده.
+ * نکته‌های **پررنگ** همان «نکته کلیدی»‌اند: هایلایت و خط زیر آن‌ها از تنظیمات
+ * می‌آید (رنگ و شدت هایلایت، روشن/خاموش بودن خط زیر). */
+@Composable
+private fun emphasize(text: String, accent: Color): AnnotatedString {
+    val controller = LocalAppThemeController.current
+    val isDark = androidx.compose.foundation.isSystemInDarkTheme()
+    val highlightBg = if (controller.isHighlighterEnabled) {
+        controller.selectedHighlighterPalette.resolveBackground(isDark, controller.highlightIntensity)
+    } else null
+    val underline = controller.isUnderlineKeyPointsEnabled
+    return buildAnnotatedString {
+        var i = 0
+        while (i < text.length) {
+            when {
+                text.startsWith("**", i) -> {
+                    val end = text.indexOf("**", i + 2)
+                    if (end > i + 2) {
+                        withStyle(
+                            SpanStyle(
+                                fontWeight = FontWeight.Bold,
+                                background = highlightBg ?: Color.Transparent,
+                                textDecoration = if (underline) TextDecoration.Underline else null
+                            )
+                        ) { append(text.substring(i + 2, end)) }
+                        i = end + 2
+                    } else { append("**"); i += 2 }
+                }
+                text[i] == '«' -> {
+                    val end = text.indexOf('»', i + 1)
+                    if (end > i && end - i < 60) {
+                        withStyle(SpanStyle(color = accent, fontWeight = FontWeight.Medium)) { append(text.substring(i, end + 1)) }
+                        i = end + 1
+                    } else { append(text[i]); i++ }
+                }
+                else -> { append(text[i]); i++ }
             }
-            text[i] == '«' -> {
-                val end = text.indexOf('»', i + 1)
-                if (end > i && end - i < 60) {
-                    withStyle(SpanStyle(color = accent, fontWeight = FontWeight.Medium)) { append(text.substring(i, end + 1)) }
-                    i = end + 1
-                } else { append(text[i]); i++ }
-            }
-            else -> { append(text[i]); i++ }
         }
     }
 }
@@ -296,10 +339,34 @@ private fun SectionHeading(text: String) {
 }
 
 @Composable
-private fun IntroSection(lesson: ZeroLesson, sectionCount: Int) {
+private fun IntroSection(
+    lesson: ZeroLesson,
+    sectionCount: Int,
+    prerequisiteLinks: List<com.example.data.curriculum.LessonPrerequisiteLink> = emptyList(),
+    onOpenLesson: (String) -> Unit = {}
+) {
+    val controller = LocalAppThemeController.current
     SectionKicker("درس تازه")
     SectionHeading(lesson.title)
     if (lesson.subtitle.isNotBlank()) ReadingText(lesson.subtitle)
+    if (controller.showPrerequisitesBeforeLesson && prerequisiteLinks.isNotEmpty()) {
+        Spacer(Modifier.height(22.dp))
+        QuietBox(title = "پیش‌نیاز این درس") {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                prerequisiteLinks.take(4).forEach { link ->
+                    Text(
+                        text = "• ${link.prerequisiteTitle}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onOpenLesson(link.prerequisiteLessonId) }
+                            .padding(vertical = 2.dp)
+                    )
+                }
+            }
+        }
+    }
     if (lesson.whyStudentsStruggle.isNotBlank() && lesson.whyStudentsStruggle != lesson.subtitle) {
         Spacer(Modifier.height(22.dp))
         QuietBox(title = "چرا این درس برای خیلی‌ها سخت است؟") { ReadingText(lesson.whyStudentsStruggle) }
@@ -320,6 +387,7 @@ private fun IntroSection(lesson: ZeroLesson, sectionCount: Int) {
 
 @Composable
 private fun StepSection(lesson: ZeroLesson, s: LessonSection.Step, accent: Color) {
+    val controller = LocalAppThemeController.current
     SectionKicker("بخش ${faDigits(s.index + 1)} از ${faDigits(s.total)}")
     if (s.step.title.isNotBlank()) SectionHeading(s.step.title)
     ReadingText(s.step.simpleExplanation, accent)
@@ -327,7 +395,7 @@ private fun StepSection(lesson: ZeroLesson, s: LessonSection.Step, accent: Color
         Spacer(Modifier.height(18.dp))
         SmartDiagramAndFormulaBlock(rawText = s.step.visualDiagramText, accentColor = accent)
     }
-    if (s.step.memoryTrick.isNotBlank()) {
+    if (controller.showMnemonicsAndMemoryTricks && s.step.memoryTrick.isNotBlank()) {
         Spacer(Modifier.height(18.dp))
         QuietBox(title = "برای اینکه یادت بماند") { ReadingText(s.step.memoryTrick, accent) }
     }
@@ -342,13 +410,17 @@ private fun StepSection(lesson: ZeroLesson, s: LessonSection.Step, accent: Color
 @Composable
 private fun ExampleSection(s: LessonSection.Example, accent: Color) {
     var show by remember(s.index, s.example.question) { mutableStateOf(false) }
+    val reduceMotion = LocalAppThemeController.current.reduceMotionEnabled
     SectionKicker("مثال ${faDigits(s.index + 1)}")
     ReadingText(s.example.question, accent)
     Spacer(Modifier.height(20.dp))
     if (!show) {
         SecondaryAction("دیدن راه‌حل قدم‌به‌قدم", modifier = Modifier.fillMaxWidth()) { show = true }
     }
-    AnimatedVisibility(visible = show, enter = fadeIn(tween(250)) + expandVertically(tween(250))) {
+    AnimatedVisibility(
+        visible = show,
+        enter = if (reduceMotion) fadeIn(tween(0)) else fadeIn(tween(250)) + expandVertically(tween(250))
+    ) {
         Column {
             QuietBox(title = "راه‌حل") {
                 if (s.example.stepByStepSolution.any { it in BoxChars }) {
