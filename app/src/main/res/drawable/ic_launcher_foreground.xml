@@ -1,8 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:width="66dp"
-        android:height="66dp"
-        android:drawable="@drawable/ic_launcher_art"
-        android:gravity="center" />
-</layer-list>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- depth shadow (book offset down 2.5) -->
+    <path
+        android:fillColor="#4704382C"
+        android:pathData="M54,40.5 Q38,37.5 22,40.5 L22,70.5 Q38,67.5 54,70.5 Z" />
+    <path
+        android:fillColor="#4704382C"
+        android:pathData="M54,40.5 Q70,37.5 86,40.5 L86,70.5 Q70,67.5 54,70.5 Z" />
+    <!-- glass book, left page -->
+    <path
+        android:fillColor="#EBFFFFFF"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="2.5"
+        android:strokeLineJoin="round"
+        android:pathData="M54,38 Q38,35 22,38 L22,68 Q38,65 54,68 Z" />
+    <!-- glass book, right page -->
+    <path
+        android:fillColor="#D1FFFFFF"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="2.5"
+        android:strokeLineJoin="round"
+        android:pathData="M54,38 Q70,35 86,38 L86,68 Q70,65 54,68 Z" />
+    <!-- spine -->
+    <path
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:pathData="M54,38 L54,68" />
+    <!-- page text lines -->
+    <path
+        android:strokeColor="#470B7D6C"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:pathData="M29,48 L48,48" />
+    <path
+        android:strokeColor="#380B7D6C"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:pathData="M29,55 L48,55" />
+    <path
+        android:strokeColor="#470B7D6C"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:pathData="M60,48 L79,48" />
+    <path
+        android:strokeColor="#380B7D6C"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:pathData="M60,55 L79,55" />
+    <!-- diagonal glass refraction streak -->
+    <path
+        android:strokeColor="#59FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:pathData="M34,66 L46,40" />
+</vector>
