@@ -7,6 +7,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -30,17 +31,18 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -71,18 +73,19 @@ fun CalmCard(
     )
     val colors = MaterialTheme.colorScheme
     val indication = androidx.compose.foundation.LocalIndication.current
-    Surface(
+    val shape = MaterialTheme.shapes.large
+    val gradient = Brush.linearGradient(listOf(colors.primaryContainer, colors.tertiaryContainer))
+    Box(
         modifier = modifier
             .fillMaxWidth()
             .scale(scale)
-            .clip(MaterialTheme.shapes.large)
+            .clip(shape)
+            .then(if (tonal) Modifier.background(gradient, shape) else Modifier.background(colors.surface, shape))
+            .then(if (tonal) Modifier else Modifier.border(BorderStroke(1.dp, colors.outlineVariant), shape))
             .then(
                 if (onClick != null) Modifier.clickable(interactionSource = interaction, indication = indication, onClick = onClick)
                 else Modifier
-            ),
-        shape = MaterialTheme.shapes.large,
-        color = if (tonal) colors.primaryContainer else colors.surface,
-        border = if (tonal) null else BorderStroke(1.dp, colors.outlineVariant)
+            )
     ) {
         Column(modifier = Modifier.padding(contentPadding), content = content)
     }
@@ -152,12 +155,14 @@ fun SectionLabel(text: String, modifier: Modifier = Modifier) {
     )
 }
 
-/** نوار پیشرفت باریک با انیمیشن. */
+/** نوار پیشرفت باریک با انیمیشن و گرادیان زنده. */
 @Composable
 fun ThinProgress(fraction: Float, modifier: Modifier = Modifier, height: Dp = 6.dp) {
     val animated by animateFloatAsState(fraction.coerceIn(0f, 1f), tween(700), label = "thinProgress")
     val track = MaterialTheme.colorScheme.surfaceVariant
-    val bar = MaterialTheme.colorScheme.primary
+    val barBrush = Brush.horizontalGradient(
+        listOf(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.tertiary)
+    )
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -170,17 +175,19 @@ fun ThinProgress(fraction: Float, modifier: Modifier = Modifier, height: Dp = 6.
                 .fillMaxWidth(animated)
                 .height(height)
                 .clip(CircleShape)
-                .background(bar)
+                .background(barBrush)
         )
     }
 }
 
-/** حلقهٔ کوچک پیشرفت. */
+/** حلقهٔ کوچک پیشرفت با کمان گرادیانی. */
 @Composable
 fun ProgressRing(fraction: Float, size: Dp = 56.dp, stroke: Dp = 6.dp, label: String? = null) {
     val animated by animateFloatAsState(fraction.coerceIn(0f, 1f), tween(900), label = "ring")
     val track = MaterialTheme.colorScheme.surfaceVariant
-    val bar = MaterialTheme.colorScheme.primary
+    val barBrush = Brush.linearGradient(
+        listOf(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.tertiary)
+    )
     Box(contentAlignment = Alignment.Center, modifier = Modifier.size(size)) {
         Canvas(modifier = Modifier.size(size)) {
             val w = stroke.toPx()
@@ -188,7 +195,7 @@ fun ProgressRing(fraction: Float, size: Dp = 56.dp, stroke: Dp = 6.dp, label: St
             val tl = Offset(w / 2, w / 2)
             drawArc(track, 0f, 360f, false, tl, Size(d, d), style = Stroke(w, cap = StrokeCap.Round))
             if (animated > 0f) {
-                drawArc(bar, -90f, 360f * animated, false, tl, Size(d, d), style = Stroke(w, cap = StrokeCap.Round))
+                drawArc(barBrush, -90f, 360f * animated, false, tl, Size(d, d), style = Stroke(w, cap = StrokeCap.Round))
             }
         }
         if (label != null) {
@@ -259,12 +266,16 @@ fun CalmRow(
 }
 
 @Composable
-fun IconBubble(icon: ImageVector, size: Dp = 40.dp, tint: Color = MaterialTheme.colorScheme.primary) {
+fun IconBubble(icon: ImageVector, size: Dp = 40.dp, tint: Color = MaterialTheme.colorScheme.onPrimary) {
     Box(
         modifier = Modifier
             .size(size)
             .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)),
+            .background(
+                Brush.linearGradient(
+                    listOf(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.tertiary)
+                )
+            ),
         contentAlignment = Alignment.Center
     ) {
         Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(size * 0.5f))
@@ -282,17 +293,21 @@ fun QuietNote(text: String, modifier: Modifier = Modifier) {
     )
 }
 
-/** دکمهٔ اصلی بزرگ و گرد. */
+/** دکمهٔ اصلی بزرگ و گرد با گرادیان زنده. */
 @Composable
 fun PrimaryAction(text: String, modifier: Modifier = Modifier, enabled: Boolean = true, onClick: () -> Unit) {
-    androidx.compose.material3.Button(
-        onClick = onClick,
-        enabled = enabled,
-        modifier = modifier.height(52.dp),
-        shape = RoundedCornerShape(16.dp),
-        contentPadding = PaddingValues(horizontal = 22.dp)
+    val colors = MaterialTheme.colorScheme
+    Box(
+        modifier = modifier
+            .height(52.dp)
+            .alpha(if (enabled) 1f else 0.5f)
+            .clip(RoundedCornerShape(16.dp))
+            .background(Brush.horizontalGradient(listOf(colors.primary, colors.tertiary)))
+            .clickable(enabled = enabled, onClick = onClick)
+            .padding(horizontal = 22.dp),
+        contentAlignment = Alignment.Center
     ) {
-        Text(text, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        Text(text, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = colors.onPrimary)
     }
 }
 

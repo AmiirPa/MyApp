@@ -60,7 +60,7 @@ fun CalmHeroIllustration(modifier: Modifier = Modifier) {
     ) {
         val w = size.width
         val h = size.height
-        drawRect(Brush.verticalGradient(listOf(surface, primary.copy(alpha = 0.18f))))
+        drawRect(Brush.verticalGradient(listOf(primary.copy(alpha = 0.30f), tertiary.copy(alpha = 0.20f), surface)))
 
         // تپه‌های موجی در پس‌زمینه
         for (layer in 0..1) {
@@ -74,7 +74,7 @@ fun CalmHeroIllustration(modifier: Modifier = Modifier) {
                 p.lineTo(x, y); x += 8f
             }
             p.lineTo(w, h); p.close()
-            drawPath(p, (if (layer == 0) primary else tertiary).copy(alpha = 0.22f + layer * 0.12f))
+            drawPath(p, (if (layer == 0) primary else tertiary).copy(alpha = 0.30f + layer * 0.12f))
         }
 
         // مسیر قله (کشیده‌شدن تدریجی)
